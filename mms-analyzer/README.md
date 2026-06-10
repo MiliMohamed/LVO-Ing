@@ -1,3 +1,14 @@
+---
+title: LVO MMS Analyzer - Maintenance Ascenseurs
+emoji: 🛗
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: "1.44.0"
+app_file: app.py
+pinned: false
+---
+
 # MMS Analyzer — Maintenance ascenseurs (LVO-Ingénierie)
 
 Application **Python + Streamlit** pour analyser les données brutes de maintenance ascenseurs et produire :
