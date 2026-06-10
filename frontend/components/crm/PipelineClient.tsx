@@ -7,7 +7,7 @@ import { CrmCreateButton } from "@/components/crm/CrmCreateButton";
 import { apiFetch } from "@/lib/api";
 import { canMutate, normalizeRole } from "@/lib/rbac";
 import type { OffreRow } from "@/lib/types";
-import { readToken } from "@/lib/token-storage";
+import { readRole, readToken } from "@/lib/token-storage";
 
 const COLUMN_ORDER = ["BROUILLON", "ENVOYEE", "EN COURS", "COMMANDEE", "ANNULEE"] as const;
 
