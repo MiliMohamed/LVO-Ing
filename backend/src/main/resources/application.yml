@@ -2,9 +2,12 @@ spring:
   application:
     name: lvo-crm-api
   datasource:
-    url: jdbc:postgresql://localhost:5433/lvo_crm
-    username: lvo
-    password: lvo_dev_change_me
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/lvo_crm}
+    username: ${DB_USERNAME:lvo}
+    password: ${DB_PASSWORD:lvo_dev_change_me}
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: validate
@@ -16,7 +19,7 @@ spring:
     enabled: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 logging:
   level:
@@ -24,7 +27,7 @@ logging:
 
 lvo:
   jwt:
-    secret: "lvo-demo-jwt-signing-key-min-32-characters-long!!"
+    secret: ${JWT_SECRET:lvo-demo-jwt-signing-key-min-32-characters-long!!}
     expiration-hours: 24
   storage:
     # MinIO local : docker compose → console http://localhost:9001 — bucket conseillé : lvo-crm-docs
