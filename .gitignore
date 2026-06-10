@@ -1,0 +1,46 @@
+# Environment
+.env
+.env.local
+.env*.local
+backend/.env
+
+# Node
+node_modules/
+frontend/node_modules/
+server/node_modules/
+lvo-next-scaffold/node_modules/
+npm-install.log
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Java / Maven
+backend/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Python
+mms-analyzer/__pycache__/
+mms-analyzer/**/__pycache__/
+mms-analyzer/.pytest_cache/
+mms-analyzer/*.pyc
+mms-analyzer/venv/
+mms-analyzer/.venv/
+
+# Server build
+server/dist/
+
+# Prisma
+prisma/migrations/*.sql.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.iml

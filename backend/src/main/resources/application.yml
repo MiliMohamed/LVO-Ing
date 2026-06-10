@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: lvo-crm-api
+  datasource:
+    url: jdbc:postgresql://localhost:5433/lvo_crm
+    username: lvo
+    password: lvo_dev_change_me
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.security: INFO
+
+lvo:
+  jwt:
+    secret: "lvo-demo-jwt-signing-key-min-32-characters-long!!"
+    expiration-hours: 24
+  storage:
+    # MinIO local : docker compose → console http://localhost:9001 — bucket conseillé : lvo-crm-docs
+    minio-endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:9000}
+    bucket: lvo-crm-docs
+  onedrive:
+    enabled: ${ONEDRIVE_ENABLED:false}
+    tenant-id: ${AZURE_TENANT_ID:}
+    client-id: ${AZURE_CLIENT_ID:}
+    client-secret: ${AZURE_CLIENT_SECRET:}
+    user-principal-name: ${ONEDRIVE_USER_EMAIL:}
+    # ID optionnel du dossier racine Sites (sinon créé automatiquement à la racine du drive)
+    sites-root-folder-id: ${ONEDRIVE_SITES_ROOT_FOLDER_ID:}
+    sites-root-folder-name: Sites

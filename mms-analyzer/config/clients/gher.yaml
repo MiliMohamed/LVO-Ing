@@ -1,0 +1,15 @@
+# Seuils marché GHER (valeurs par défaut groupement)
+client_site: GHER
+seuil_maintenance_jours: 42
+seuil_pannes_an: 2
+seuil_immo_h: 48
+seuil_delai_h: 2
+seuil_desincarc_min: 45
+seuil_parachute_mois: 12
+seuil_cables_mois: 6
+tarif_jour: 50
+tarif_panne: 150
+tarif_heure_immo: 50
+tarif_heure_delai: 50
+prorata_immo_trimestriel: false
+prorata_pannes_trimestriel: false

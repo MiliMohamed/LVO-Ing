@@ -1,0 +1,114 @@
+<h2 class="sr-only">Diagramme des classes Spring Boot — architecture couches LVO CRM</h2>
+<div id="cls" style="overflow-x:auto"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+  },
+});
+const diagram = `classDiagram
+  class SiteController {
+    +createSite(SiteDto) ResponseEntity
+    +getSiteById(Long) ResponseEntity
+    +updateSite(Long, SiteDto) ResponseEntity
+    +getOneDriveTree(Long) ResponseEntity
+  }
+  class SiteService {
+    -siteRepository SiteRepository
+    -oneDriveService OneDriveService
+    +saveSite(SiteDto) Site
+    +updateSite(Long, SiteDto) Site
+    +findById(Long) Site
+  }
+  class OneDriveService {
+    -authService OneDriveAuthService
+    -graphClient GraphServiceClient
+    +createSiteTree(Long siteId) String
+    +uploadFile(String path, File f) String
+    +downloadFile(String fileId) byte[]
+  }
+  class OneDriveAuthService {
+    -redisTemplate RedisTemplate
+    +getAccessToken() String
+    +refreshToken() String
+  }
+  class SiteRepository {
+    +findByClientId(Long) List~Site~
+    +findByConsultantId(Long) List~Site~
+    +findWithoutOneDrive() List~Site~
+  }
+  class Site {
+    -Long id
+    -String nom
+    -Client client
+    -User consultant
+    -String onedriveFolderId
+    -String onedriveFolderUrl
+  }
+  class CommandeService {
+    -commandeRepository CommandeRepository
+    -echeancierService EcheancierService
+    +createCommande(CommandeDto) Commande
+    +generateEcheancier(Commande) void
+  }
+  class EcheancierService {
+    -echeancierRepository EcheancierRepository
+    -emailService EmailService
+    +generateJalons(Commande) List
+    +checkAndSendAlerts() void
+  }
+  class AuthService {
+    -userRepo UserRepository
+    -jwtService JwtService
+    -mfaService MfaService
+    +login(String email, String pass) TokenPair
+    +refreshToken(String token) TokenPair
+    +logout(String token) void
+  }
+  class JwtService {
+    +generateAccessToken(UserDetails) String
+    +generateRefreshToken(UserDetails) String
+    +validateToken(String, UserDetails) boolean
+    +isBlacklisted(String) boolean
+  }
+
+  SiteController --> SiteService : uses
+  SiteService --> SiteRepository : uses
+  SiteService --> OneDriveService : triggers
+  OneDriveService --> OneDriveAuthService : uses
+  SiteRepository --> Site : manages
+  CommandeService --> EcheancierService : triggers
+  AuthService --> JwtService : uses
+`;
+const { svg } = await mermaid.render('cls-svg', diagram);
+document.getElementById('cls').innerHTML = svg;
+document.querySelectorAll('#cls svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill','stroke','stroke-width','class','style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+</script>

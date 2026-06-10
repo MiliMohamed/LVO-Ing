@@ -1,0 +1,349 @@
+// Phase 2 — alignement CRM LVO (docs/PLAN_ALIGNEMENT_CRM_LVO.md)
+// Schéma cible PostgreSQL. Les IDs sont en UUID pour coller aux FK de la spec ;
+// une migration depuis une API existante avec ids INT demandera une étape de transposition.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Enums ---
+
+enum ReferenceEntityType {
+  OFFRE
+  COMMANDE
+  FACTURE
+
+  @@map("reference_entity_type")
+}
+
+enum StatutPaiementFacture {
+  NON_PAYE
+  PARTIELLEMENT_PAYE
+  PAYE
+  EN_RETARD
+
+  @@map("statut_paiement_facture")
+}
+
+enum PaiementSource {
+  QUONTO_AUTO
+  MANUEL
+  IMPORT_CSV
+
+  @@map("paiement_source")
+}
+
+enum RelanceNiveau {
+  RAPPEL
+  PREMIERE_RELANCE
+  DEUXIEME_RELANCE
+  MISE_EN_DEMEURE
+
+  @@map("relance_niveau")
+}
+
+enum RelanceCanal {
+  EMAIL
+  COURRIER
+  TELEPHONE
+
+  @@map("relance_canal")
+}
+
+enum ContactClientStatut {
+  ACTIF
+  ANNULE
+  ARCHIVE
+
+  @@map("contact_client_statut")
+}
+
+// --- Cœur métier (champs minimaux + extensions Phase 2) ---
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  role      String   @default("CONSULTANT")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  cancelledContacts             Contact[]       @relation("ContactCancelledBy")
+  cancelledClients              Client[]        @relation("ClientCancelledBy")
+  avoirsCrees                   Avoir[]         @relation("AvoirCreatedBy")
+  paiementsRapproches           Paiement[]      @relation("PaiementRapprocheBy")
+  relancesEnvoyees              Relance[]       @relation("RelanceEnvoyeePar")
+  fichiersVersionsUpload        FichierVersion[] @relation("FichierVersionUploadedBy")
+  offresConsultantParDefaut     Offre[]         @relation("OffreConsultantDefaut")
+
+  @@map("users")
+}
+
+model Client {
+  id                  String              @id @default(uuid()) @db.Uuid
+  raisonSociale       String              @map("raison_sociale")
+  entite              String?
+  email               String?
+  telephone           String?
+  statut              ContactClientStatut @default(ACTIF)
+  cancelledAt         DateTime?           @map("cancelled_at") @db.Timestamptz(6)
+  cancelledById       String?             @map("cancelled_by") @db.Uuid
+  cancellationReason  String?             @map("cancellation_reason") @db.VarChar(200)
+  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  cancelledBy User? @relation("ClientCancelledBy", fields: [cancelledById], references: [id])
+
+  sites             Site[]
+  siteGestionnaires SiteGestionnaire[]
+  offres            Offre[]
+  commandes         Commande[]
+
+  @@map("clients")
+}
+
+model Contact {
+  id                 String              @id @default(uuid()) @db.Uuid
+  civilite           String?             @db.VarChar(10)
+  nom                String
+  prenom             String
+  entreprise         String?
+  fonction           String?
+  email              String?
+  telephone          String?
+  mobile             String?
+  statut             ContactClientStatut @default(ACTIF)
+  cancelledAt        DateTime?           @map("cancelled_at") @db.Timestamptz(6)
+  cancelledById      String?             @map("cancelled_by") @db.Uuid
+  cancellationReason String?             @map("cancellation_reason") @db.VarChar(200)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  cancelledBy User? @relation("ContactCancelledBy", fields: [cancelledById], references: [id])
+
+  @@map("contacts")
+}
+
+model Site {
+  id        String   @id @default(uuid()) @db.Uuid
+  clientId  String   @map("client_id") @db.Uuid
+  nom       String
+  typeSite  String?  @map("type_site")
+  adresse   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  client             Client              @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  offres             Offre[]
+  commandes          Commande[]
+  siteGestionnaires  SiteGestionnaire[]
+
+  @@map("sites")
+}
+
+model Offre {
+  id                        String    @id @default(uuid()) @db.Uuid
+  numeroOffre               String    @unique @map("numero_offre") @db.VarChar(50)
+  typeMission               String    @map("type_mission") @db.VarChar(10)
+  statut                    String    @db.VarChar(30)
+  montantHt                 Decimal   @map("montant_ht") @db.Decimal(12, 2)
+  dateOffre                 DateTime? @map("date_offre") @db.Date
+  clientId                  String    @map("client_id") @db.Uuid
+  siteId                    String    @map("site_id") @db.Uuid
+  legacyReference           String?   @map("legacy_reference") @db.VarChar(50)
+  echeancierFacturationJson Json?    @map("echeancier_facturation_json")
+  echeancierExecutionJson   Json?     @map("echeancier_execution_json")
+  consultantParDefautId     String?   @map("consultant_par_defaut_id") @db.Uuid
+  createdAt                 DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  client                Client      @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  site                  Site        @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  consultantParDefaut   User?       @relation("OffreConsultantDefaut", fields: [consultantParDefautId], references: [id])
+  phases                PhaseOffre[]
+  commandes             Commande[]
+  fichiers              Fichier[]
+
+  @@map("offres")
+}
+
+model Commande {
+  id               String    @id @default(uuid()) @db.Uuid
+  numeroCommande   String    @unique @map("numero_commande") @db.VarChar(50)
+  dateCommande     DateTime? @map("date_commande") @db.Date
+  typeMission      String    @map("type_mission") @db.VarChar(10)
+  montantHt        Decimal   @map("montant_ht") @db.Decimal(12, 2)
+  montantFacture   Decimal   @map("montant_facture") @db.Decimal(12, 2)
+  clientId         String    @map("client_id") @db.Uuid
+  siteId           String    @map("site_id") @db.Uuid
+  offreId          String?   @map("offre_id") @db.Uuid
+  legacyReference  String?   @map("legacy_reference") @db.VarChar(50)
+  numeroClient     String?   @map("numero_client") @db.VarChar(100)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  client  Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  site    Site     @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  offre   Offre?   @relation(fields: [offreId], references: [id])
+  factures Facture[]
+  avoirs   Avoir[]
+
+  @@map("commandes")
+}
+
+model Facture {
+  id                     String                 @id @default(uuid()) @db.Uuid
+  numeroFacture          String                 @unique @map("numero_facture") @db.VarChar(50)
+  commandeId             String                 @map("commande_id") @db.Uuid
+  dateFacture            DateTime?              @map("date_facture") @db.Date
+  dateEcheance           DateTime?              @map("date_echeance") @db.Date
+  montantHt              Decimal                @map("montant_ht") @db.Decimal(12, 2)
+  frais                  Decimal                @default(0) @db.Decimal(12, 2)
+  modeReglement          String                 @map("mode_reglement") @db.VarChar(30)
+  numeroCommandeClient   String?                @map("numero_commande_client") @db.VarChar(100)
+  statutPaiement         StatutPaiementFacture  @default(NON_PAYE) @map("statut_paiement")
+  montantPaye            Decimal                @default(0) @map("montant_paye") @db.Decimal(12, 2)
+  derniereRelanceAt      DateTime?              @map("derniere_relance_at") @db.Timestamptz(6)
+  niveauRelance          Int                    @default(0) @map("niveau_relance")
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  commande Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  paiements Paiement[]
+  relances  Relance[]
+  avoirs    Avoir[]   @relation("AvoirFactureOrigine")
+
+  @@index([statutPaiement], map: "idx_factures_statut_paiement")
+  @@map("factures")
+}
+
+model PhaseOffre {
+  id               String  @id @default(uuid()) @db.Uuid
+  offreId          String  @map("offre_id") @db.Uuid
+  codePhase        String  @map("code_phase") @db.VarChar(20)
+  libelle          String? @db.VarChar(200)
+  montantHt        Decimal? @map("montant_ht") @db.Decimal(12, 2)
+  ordre            Int     @default(0)
+  estInclus        Boolean @default(true) @map("est_inclus")
+  commentairePhase String? @map("commentaire_phase")
+
+  offre Offre @relation(fields: [offreId], references: [id], onDelete: Cascade)
+
+  @@map("phases_offre")
+}
+
+model Fichier {
+  id        String   @id @default(uuid()) @db.Uuid
+  offreId   String?  @map("offre_id") @db.Uuid
+  chemin    String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  offre    Offre?           @relation(fields: [offreId], references: [id])
+  versions FichierVersion[]
+
+  @@map("fichiers")
+}
+
+// --- Phase 2 : nouvelles tables ---
+
+model ReferenceCounter {
+  id          String                @id @default(uuid()) @db.Uuid
+  entityType  ReferenceEntityType   @map("entity_type")
+  year        Int
+  typeMission String                @default("") @map("type_mission") @db.VarChar(10)
+  lastValue   Int                   @default(0) @map("last_value")
+  updatedAt   DateTime              @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([entityType, year, typeMission], map: "reference_counters_entity_year_type_key")
+  @@map("reference_counters")
+}
+
+model Avoir {
+  id               String   @id @default(uuid()) @db.Uuid
+  numero           String   @unique @db.VarChar(30)
+  factureOrigineId String   @map("facture_origine_id") @db.Uuid
+  commandeId       String   @map("commande_id") @db.Uuid
+  motif              String   @db.VarChar(200)
+  montantHt          Decimal  @map("montant_ht") @db.Decimal(12, 2)
+  tauxTva            Decimal  @map("taux_tva") @db.Decimal(5, 2)
+  montantTtc         Decimal  @map("montant_ttc") @db.Decimal(12, 2)
+  dateEmission       DateTime @map("date_emission") @db.Date
+  pdfPath            String?  @map("pdf_path")
+  createdById        String   @map("created_by") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  factureOrigine Facture  @relation("AvoirFactureOrigine", fields: [factureOrigineId], references: [id], onDelete: Restrict)
+  commande       Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  createdBy      User     @relation("AvoirCreatedBy", fields: [createdById], references: [id])
+
+  @@index([factureOrigineId], map: "idx_avoirs_facture")
+  @@map("avoirs")
+}
+
+model Paiement {
+  id                  String         @id @default(uuid()) @db.Uuid
+  factureId           String         @map("facture_id") @db.Uuid
+  montant             Decimal        @db.Decimal(12, 2)
+  datePaiement        DateTime       @map("date_paiement") @db.Date
+  source              PaiementSource
+  referenceExterne    String?        @map("reference_externe") @db.VarChar(100)
+  quontoTransactionId String?        @map("quonto_transaction_id") @db.VarChar(100)
+  rapprocheAt         DateTime       @default(now()) @map("rapproche_at") @db.Timestamptz(6)
+  rapprocheById       String?        @map("rapproche_by") @db.Uuid
+  notes               String?
+
+  facture     Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  rapprocheBy User?   @relation("PaiementRapprocheBy", fields: [rapprocheById], references: [id])
+
+  @@index([factureId], map: "idx_paiements_facture")
+  @@map("paiements")
+}
+
+model Relance {
+  id               String        @id @default(uuid()) @db.Uuid
+  factureId        String        @map("facture_id") @db.Uuid
+  niveau           RelanceNiveau
+  dateEnvoi        DateTime      @map("date_envoi") @db.Timestamptz(6)
+  canal            RelanceCanal
+  contenu          String?
+  envoyeParId      String        @map("envoye_par") @db.Uuid
+  reponseRecueAt   DateTime?     @map("reponse_recue_at") @db.Timestamptz(6)
+
+  facture   Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  envoyePar User    @relation("RelanceEnvoyeePar", fields: [envoyeParId], references: [id])
+
+  @@index([factureId], map: "idx_relances_facture")
+  @@map("relances")
+}
+
+model SiteGestionnaire {
+  id          String    @id @default(uuid()) @db.Uuid
+  siteId      String    @map("site_id") @db.Uuid
+  clientId    String    @map("client_id") @db.Uuid
+  isPrincipal Boolean   @default(false) @map("is_principal")
+  dateDebut   DateTime? @map("date_debut") @db.Date
+  dateFin     DateTime? @map("date_fin") @db.Date
+  notes       String?
+
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Restrict)
+
+  @@unique([siteId, clientId], map: "site_gestionnaires_site_client_key")
+  @@map("site_gestionnaires")
+}
+
+model FichierVersion {
+  id                    String    @id @default(uuid()) @db.Uuid
+  fichierId             String    @map("fichier_id") @db.Uuid
+  versionNum            Int       @map("version_num")
+  s3Path                String?   @map("s3_path")
+  onedrivePath          String?   @map("onedrive_path")
+  onedriveItemId        String?   @map("onedrive_item_id") @db.VarChar(100)
+  tailleOctets          BigInt?   @map("taille_octets")
+  checksumSha256        String?   @map("checksum_sha256") @db.VarChar(64)
+  uploadedById          String    @map("uploaded_by") @db.Uuid
+  uploadedAt            DateTime  @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+  archivedToOnedriveAt  DateTime? @map("archived_to_onedrive_at") @db.Timestamptz(6)
+
+  fichier    Fichier @relation(fields: [fichierId], references: [id], onDelete: Cascade)
+  uploadedBy User    @relation("FichierVersionUploadedBy", fields: [uploadedById], references: [id])
+
+  @@map("fichiers_versions")
+}

@@ -1,0 +1,12 @@
+# Marché CADJEE × OTIS SCI
+client_site: CADJEE
+adresse_site: Centre d'Affaires CADJEE
+prestataire_defaut: OTIS
+seuil_maintenance_jours: 42
+seuil_pannes_an: 2
+seuil_immo_h: 48
+seuil_delai_h: 2
+tarif_jour: 50
+tarif_panne: 150
+tarif_heure_immo: 50
+tarif_heure_delai: 50

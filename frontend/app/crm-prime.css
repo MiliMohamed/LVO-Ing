@@ -1,0 +1,264 @@
+/**
+ * Thème PrimeReact — aligné charte LVO (navy / orange).
+ * Complète lvo-brand.css ; classes préfixées .crm-prime.
+ */
+
+.crm-prime {
+  --p-primary-50: #fff4eb;
+  --p-primary-100: #ffe4cc;
+  --p-primary-200: #ffc999;
+  --p-primary-300: #ffad66;
+  --p-primary-400: #ff9233;
+  --p-primary-500: #ff6b00;
+  --p-primary-600: #e65f00;
+  --p-primary-700: #cc5500;
+  --p-primary-800: #994000;
+  --p-primary-900: #662a00;
+  --p-primary-950: #331500;
+
+  --p-surface-0: #ffffff;
+  --p-surface-50: #f8f9fa;
+  --p-surface-100: #f1f3f5;
+  --p-surface-200: #e9ecef;
+  --p-surface-300: #dee2e6;
+  --p-surface-400: #ced4da;
+  --p-surface-500: #adb5bd;
+  --p-surface-600: #6c757d;
+  --p-surface-700: #495057;
+  --p-surface-800: #343a40;
+  --p-surface-900: #1a2b4c;
+  --p-surface-950: #111d35;
+
+  --p-content-border-radius: 10px;
+  --p-border-radius-md: 10px;
+  --p-border-radius-lg: 12px;
+  font-family: var(--font-dm), "DM Sans", system-ui, sans-serif;
+}
+
+.crm-prime .p-menubar {
+  border: none;
+  border-radius: 0;
+  background: var(--navy3);
+  padding: 0 0.75rem;
+  min-height: 52px;
+}
+
+.crm-prime .crm-menubar.p-menubar .p-menubar-root-list > .p-menubar-item > .p-menubar-item-content {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.crm-prime .crm-menubar.p-menubar .p-menubar-root-list > .p-menubar-item > .p-menubar-item-content:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.crm-prime .crm-menubar .p-menubar-end {
+  margin-left: auto;
+  gap: 0.5rem;
+}
+
+.crm-prime .crm-brand-title {
+  font-family: var(--font-bebas), "Bebas Neue", sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+  color: #fff;
+}
+
+.crm-prime .crm-sidebar-panel.p-panelmenu .p-panelmenu-panel {
+  border: none;
+  margin-bottom: 0.25rem;
+}
+
+.crm-prime .crm-sidebar-panel.p-panelmenu .p-panelmenu-header-content {
+  background: transparent;
+  border: none;
+  padding: 0.65rem 0.85rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.crm-prime .crm-sidebar-panel.p-panelmenu .p-panelmenu-content {
+  border: none;
+  padding: 0 0.35rem 0.5rem;
+  background: transparent;
+}
+
+.crm-prime .crm-sidebar-panel .p-menuitem-link {
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--g600);
+  gap: 0.5rem;
+}
+
+.crm-prime .crm-sidebar-panel .p-menuitem-link:hover {
+  background: var(--g50);
+  color: var(--navy);
+}
+
+.crm-prime .crm-sidebar-panel .p-menuitem-link.p-menuitem-link-active,
+.crm-prime .crm-sidebar-panel .p-menuitem-link-active {
+  background: rgba(26, 43, 76, 0.08);
+  color: var(--navy);
+  font-weight: 600;
+  border-left: 3px solid var(--orange);
+  padding-left: calc(0.75rem - 3px);
+}
+
+.crm-prime .crm-sidebar-panel .p-menuitem-icon {
+  color: var(--orange);
+  font-size: 0.9rem;
+}
+
+.crm-prime .crm-layout-prime {
+  display: flex;
+  padding-top: 52px;
+  min-height: 100vh;
+  background: var(--g100);
+}
+
+.crm-prime .crm-aside-prime {
+  width: 272px;
+  flex-shrink: 0;
+  position: fixed;
+  top: 52px;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  z-index: 100;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafc 100%);
+  border-right: 1px solid var(--g200);
+  box-shadow: 2px 0 18px rgba(26, 43, 76, 0.04);
+  padding: 0.75rem 0.5rem 1.5rem;
+}
+
+.crm-prime .crm-main-prime {
+  margin-left: 272px;
+  flex: 1;
+  min-height: calc(100vh - 52px);
+  padding: 1.35rem 1.5rem 2rem;
+}
+
+.crm-prime .crm-page-header {
+  margin-bottom: 1.25rem;
+}
+
+.crm-prime .crm-page-header h1 {
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+}
+
+.crm-prime .crm-page-header .crm-page-subtitle {
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--g600);
+  max-width: 52rem;
+  line-height: 1.5;
+}
+
+.crm-prime .crm-form-card.p-card {
+  border: 1px solid var(--g200);
+  box-shadow: var(--sh);
+  border-radius: var(--r12);
+}
+
+.crm-prime .crm-form-card .p-card-body {
+  padding: 1.25rem 1.35rem;
+}
+
+.crm-prime .crm-form-card .p-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.15rem;
+}
+
+.crm-prime .crm-form-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--smoke);
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--g200);
+}
+
+.crm-prime .crm-form-grid {
+  display: grid;
+  gap: 1rem 1.15rem;
+}
+
+@media (min-width: 640px) {
+  .crm-prime .crm-form-grid.cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.crm-prime .crm-field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 0.35rem;
+}
+
+.crm-prime .crm-field-hint {
+  font-size: 0.7rem;
+  color: var(--g600);
+  margin-top: 0.25rem;
+}
+
+.crm-prime .crm-field-error {
+  font-size: 0.7rem;
+  color: var(--red);
+  margin-top: 0.25rem;
+}
+
+.crm-prime .crm-dialog.p-dialog .p-dialog-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--g200);
+}
+
+.crm-prime .crm-dialog.p-dialog .p-dialog-content {
+  padding: 1.15rem 1.25rem;
+}
+
+.crm-prime .crm-dialog.p-dialog .p-dialog-footer {
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--g200);
+  gap: 0.5rem;
+}
+
+.crm-prime .p-datatable.crm-table .p-datatable-thead > tr > th {
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.65rem 0.85rem;
+}
+
+.crm-prime .p-datatable.crm-table .p-datatable-tbody > tr > td {
+  font-size: 0.8125rem;
+  padding: 0.6rem 0.85rem;
+}
+
+.crm-prime .p-inputtext,
+.crm-prime .p-dropdown,
+.crm-prime .p-inputnumber-input,
+.crm-prime .p-textarea {
+  font-size: 0.875rem;
+}
+
+.crm-prime .p-button.p-button-sm {
+  font-size: 0.8125rem;
+}
+

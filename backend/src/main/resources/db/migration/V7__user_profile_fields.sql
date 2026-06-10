@@ -1,0 +1,6 @@
+-- Profil utilisateur CRM (données personnelles + avatar)
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS prenom VARCHAR(128);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS nom VARCHAR(128);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS telephone VARCHAR(32);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_path VARCHAR(512);
