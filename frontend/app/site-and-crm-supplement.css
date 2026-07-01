@@ -740,6 +740,7 @@
   flex-direction: column;
   max-height: min(90vh, 860px);
   width: 100%;
+  margin-top: 57px;
   margin-bottom: 0;
   box-shadow: 0 24px 48px rgba(26, 43, 76, 0.18);
 }
@@ -949,6 +950,49 @@
   padding: 4px 10px;
   font-size: 11px;
 }
+.cbtn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 9px;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.12s;
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
+}
+.cbtn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cbtn-icon--primary {
+  background: var(--navy);
+  color: #fff;
+}
+.cbtn-icon--primary:hover:not(:disabled) {
+  background: var(--navy2, #233a63);
+}
+.cbtn-icon--ghost {
+  background: transparent;
+  color: var(--g600);
+  border-color: var(--g300);
+}
+.cbtn-icon--ghost:hover:not(:disabled) {
+  background: var(--g100);
+  color: var(--navy);
+}
+.cbtn-icon--danger {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+.cbtn-icon--danger:hover:not(:disabled) {
+  background: #fee2e2;
+}
 .td-mono {
   font-family: monospace;
   font-size: 11px;
@@ -986,23 +1030,36 @@
 .fcard {
   background: #fff;
   border: 1px solid var(--g200);
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(26, 43, 76, 0.04), 0 8px 24px -16px rgba(26, 43, 76, 0.12);
 }
 .fcard-hdr {
-  background: var(--navy);
-  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2, #233a63) 100%);
+  padding: 16px 22px;
+  position: relative;
+}
+.fcard-hdr::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orange) 0%, rgba(255, 107, 0, 0) 70%);
 }
 .fcard-hdr h2 {
   color: #fff;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
+  letter-spacing: 0.01em;
   font-family: var(--font-montserrat), "Montserrat", sans-serif;
 }
 .fcard-hdr-sub {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.52);
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
 }
 .fcard-hdr-toggle {
   display: flex;
@@ -1294,19 +1351,52 @@ label.crm-field {
 }
 
 .crm-stack {
-  border-radius: 12px;
+  position: relative;
+  border-radius: 14px;
   border: 1px solid var(--g200);
-  background: var(--g50);
-  padding: 14px 16px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--g50) 100%);
+  padding: 16px 18px 18px;
+  box-shadow: 0 1px 2px rgba(26, 43, 76, 0.03);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.crm-stack::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--orange);
+  opacity: 0.85;
+}
+.crm-stack:hover {
+  border-color: var(--g300);
+  box-shadow: 0 2px 10px -4px rgba(26, 43, 76, 0.12);
 }
 .crm-stack-title {
-  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--navy);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-family: var(--font-montserrat), "Montserrat", sans-serif;
+}
+.crm-stack-title__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: rgba(255, 107, 0, 0.12);
+  color: var(--orange);
+  font-size: 12px;
+  flex-shrink: 0;
 }
 
 /* En-tête coloré Gantt (planning) — focus visible sur fond sombre */
@@ -1958,4 +2048,82 @@ label.crm-field {
   flex-wrap: wrap;
   gap: 6px;
   justify-content: flex-end;
+}
+
+/* ─── SiteHubBar left offset — moved from inline style ─── */
+.site-hub-bar {
+  left: 263px;
+}
+
+/* ─── Mobile ≤ 768px ─── */
+@media (max-width: 768px) {
+  .site-hub-bar {
+    left: 0;
+  }
+
+  /* Filter bar stacks vertically */
+  .crm-list-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .crm-list-filters__fields {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .crm-list-filters__search {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Footer grid → 2 cols */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  /* Pipeline board scrolls natively */
+  .pipeline-board {
+    padding-bottom: 12px;
+  }
+}
+
+/* ─── Very small screens ≤ 480px ─── */
+@media (max-width: 480px) {
+  /* Search palette fits viewport */
+  .crm-search-palette {
+    max-width: calc(100vw - 16px);
+  }
+  .crm-search-palette-backdrop {
+    padding: 10vh 8px 8px;
+  }
+
+  /* Toolbar inputs/selects go full width */
+  .crm-toolbar-input {
+    width: 100%;
+  }
+  .crm-toolbar-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Modal slides up from bottom on small screens */
+  .crm-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .crm-modal-shell {
+    max-height: calc(100dvh - 48px);
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+
+  /* Footer → single column */
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Charts row already 1fr at 900px; ensure on small too */
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
 }

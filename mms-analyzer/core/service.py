@@ -386,7 +386,7 @@ def executer_analyse(
         },
         "clients": _liste_valeurs(interventions, "client"),
         "adresses": _liste_valeurs(interventions, "adresse"),
-        "ascenseurs": _liste_valeurs(interventions, "ascenseur"),
+        "ascenseurs": _liste_valeurs_multi([interventions, resultats.get("maintenance", pd.DataFrame())], "ascenseur"),
         "hypotheses_client_applique": client_hyp,
         "graphiques": viz.get("graphiques", {}),
         "tableaux_apercu": viz.get("tableaux", {}),
@@ -399,4 +399,13 @@ def executer_analyse(
 def _liste_valeurs(df: pd.DataFrame, col: str) -> list[str]:
     if df.empty or col not in df.columns:
         return []
-    return sorted(df[col].dropna().astype(str).unique().tolist())
+    return sorted({v.strip() for v in df[col].dropna().astype(str) if v.strip()})
+
+
+def _liste_valeurs_multi(dfs: list[pd.DataFrame], col: str) -> list[str]:
+    """Union dédoublonnée des valeurs d'une colonne sur plusieurs feuilles (ex. interventions + maintenance),
+    pour couvrir les appareils sans intervention mais avec des visites de maintenance."""
+    valeurs: set[str] = set()
+    for df in dfs:
+        valeurs.update(_liste_valeurs(df, col))
+    return sorted(valeurs)

@@ -1,0 +1,100 @@
+
+> api:dev
+> npm run dev -w lvo-api-server
+
+
+> lvo-api-server@0.1.0 dev
+> tsx watch src/index.ts
+
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Extraction OK — marque=RIVIERE_SCHINDLER n°=P16375 montant=78
+23:48:29 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+23:49:18 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+23:49:38 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+23:51:01 [tsx] change in ./src\store-persist.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+23:51:11 [tsx] change in ./src\store-persist.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+23:51:20 [tsx] change in ./src\store-persist.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Extraction OK — marque=RIVIERE_SCHINDLER n°=P16375 montant=78
+00:14:38 [tsx] change in ./src\pdf-overlay.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:14:45 [tsx] change in ./src\store.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:14:56 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:15:26 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+ReferenceError: upload is not defined
+    at registerClientDevisRoutes (C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\routes\devis-groupement.ts:903:5)
+    at main (C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\index.ts:876:3)
+00:15:48 [tsx] change in ./src\routes\devis-groupement.ts Rerunning...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:40:01 [tsx] change in ./src\store.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:40:11 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:40:18 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:40:28 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:40:35 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+00:42:26 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Extraction OK — marque=CEGELEC n°=DVTSP26.T2080 montant=8438
+03:37:57 [tsx] change in ./src\pdf-overlay.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Extraction OK — marque=OTIS n°=OP-002345865 montant=672
+[signer-admin] Overlay PDF échoué (signature stockée quand même) : WinAnsi cannot encode "✓" (0x2713)
+[download] Overlay signature échoué, envoi PDF original : WinAnsi cannot encode "✓" (0x2713)
+[client-download] Overlay signature échoué : WinAnsi cannot encode "✓" (0x2713)
+15:53:08 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+15:53:15 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+^C^C^C

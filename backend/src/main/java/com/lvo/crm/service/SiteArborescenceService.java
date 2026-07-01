@@ -18,14 +18,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Arborescence documentaire interne — même structure que {@code arborescence_onedrive_lvo.svg}.
@@ -170,6 +176,66 @@ public class SiteArborescenceService {
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier physique introuvable");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] downloadAllAsZip(Long siteId) throws IOException {
+        Site site = requireSite(siteId);
+        List<SiteArborescenceNode> all = nodes.findAllBySiteId(siteId);
+        String rootName = siteZipRootName(site);
+
+        Map<Long, SiteArborescenceNode> nodeMap = new HashMap<>();
+        for (SiteArborescenceNode n : all) {
+            nodeMap.put(n.getId(), n);
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipOutputStream zip = new ZipOutputStream(baos, StandardCharsets.UTF_8)) {
+            for (SiteArborescenceNode node : all) {
+                if (!SiteArborescenceNode.TYPE_FOLDER.equals(node.getNodeType())) continue;
+                zip.putNextEntry(new ZipEntry(buildNodeZipPath(node, nodeMap, rootName, true)));
+                zip.closeEntry();
+            }
+            for (SiteArborescenceNode node : all) {
+                if (!SiteArborescenceNode.TYPE_FILE.equals(node.getNodeType())) continue;
+                if (node.getStoredPath() == null || node.getStoredPath().isBlank()) continue;
+                Path physPath = Path.of(node.getStoredPath());
+                if (!Files.exists(physPath)) continue;
+                zip.putNextEntry(new ZipEntry(buildNodeZipPath(node, nodeMap, rootName, false)));
+                Files.copy(physPath, zip);
+                zip.closeEntry();
+            }
+        }
+        return baos.toByteArray();
+    }
+
+    public String siteZipFilename(Long siteId) {
+        return siteZipRootName(requireSite(siteId)) + ".zip";
+    }
+
+    public String siteZipRootName(Site site) {
+        String raw = site.getNom() != null && !site.getNom().isBlank() ? site.getNom().trim() : "site-" + site.getId();
+        String safe = raw.replace('\\', '-').replace('/', '-').replace(':', '-')
+                .replace('*', '-').replace('?', '-').replace('"', '-')
+                .replace('<', '-').replace('>', '-').replace('|', '-').trim();
+        if (safe.isEmpty()) {
+            return "site-" + site.getId();
+        }
+        return safe.length() > 120 ? safe.substring(0, 120) : safe;
+    }
+
+    private String buildNodeZipPath(
+            SiteArborescenceNode node, Map<Long, SiteArborescenceNode> nodeMap, String rootName, boolean asDirectory) {
+        Deque<String> parts = new ArrayDeque<>();
+        parts.addFirst(node.getNom());
+        SiteArborescenceNode current = node.getParent() != null ? nodeMap.get(node.getParent().getId()) : null;
+        while (current != null) {
+            parts.addFirst(current.getNom());
+            current = current.getParent() != null ? nodeMap.get(current.getParent().getId()) : null;
+        }
+        parts.addFirst(rootName);
+        String joined = String.join("/", parts);
+        return asDirectory ? joined + "/" : joined;
     }
 
     @Transactional

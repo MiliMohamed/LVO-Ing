@@ -1,0 +1,3 @@
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123

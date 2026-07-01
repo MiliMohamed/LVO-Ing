@@ -114,7 +114,7 @@ export function SiteEquipementsPanel({ siteId, siteNom, onChanged }: { siteId: n
     }
   }
 
-  const mmsHref = `/crm/outils/maintenance-mms${siteNom ? `?site=${encodeURIComponent(siteNom)}` : ""}`;
+  const mmsHref = `/exploitation/maintenance-mms${siteNom ? `?site=${encodeURIComponent(siteNom)}` : ""}`;
 
   return (
     <div className="mt-4 border-t border-[var(--g200)] pt-4">

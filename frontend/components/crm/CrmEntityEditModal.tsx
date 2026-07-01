@@ -305,131 +305,133 @@ export function CrmEntityEditModal({ path, row, onClose, onSaved }: Props) {
           <button type="button" className="cbtn cbtn-primary" disabled={busy} onClick={() => void save()}>
             Enregistrer
           </button>
-          <button type="button" className="cbtn cbtn-ghost" disabled={busy} onClick={onClose}>
-            Annuler
+          <button type="button" className="cbtn-icon cbtn-icon--ghost" title="Annuler" aria-label="Annuler" disabled={busy} onClick={onClose}>
+            ✕
           </button>
         </>
       }
     >
-      <div className="crm-form-grid crm-form-grid--tight">
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {path === "/api/offres" ? (
             <>
-              {field("numeroOffre", "N° offre")}
-              <div className="crm-field crm-span-2">
-                <span className="crm-label">Types de mission (sélection multiple)</span>
-                {missionCheckboxes(offreMissionPick, setOffreMissionPick, "edit-offre-m")}
+              <div className="crm-stack">
+                <p className="crm-stack-title">
+                  <span className="crm-stack-title__icon" aria-hidden>▤</span> Référence &amp; statut
+                </p>
+                <div className="crm-form-grid crm-form-grid--tight">
+                  {field("numeroOffre", "N° offre")}
+                  {field("dateOffre", "Date offre", { type: "date" })}
+                  <label className="crm-field">
+                    <span className="crm-label">Statut</span>
+                    <select className="crm-select" value={form.statut ?? "ENVOYEE"} onChange={(e) => setField("statut", e.target.value)}>
+                      {CRM_OFFRE_STATUTS.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                      {!CRM_OFFRE_STATUTS.some((o) => o.value === form.statut) && form.statut ? (
+                        <option value={form.statut}>{form.statut} (valeur actuelle)</option>
+                      ) : null}
+                    </select>
+                  </label>
+                  {field("montantHt", "Montant HT (€)", { type: "text", placeholder: "0" })}
+                </div>
               </div>
-              <label className="crm-field">
-                <span className="crm-label">Statut</span>
-                <select className="crm-select" value={form.statut ?? "ENVOYEE"} onChange={(e) => setField("statut", e.target.value)}>
-                  {CRM_OFFRE_STATUTS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                  {!CRM_OFFRE_STATUTS.some((o) => o.value === form.statut) && form.statut ? (
-                    <option value={form.statut}>{form.statut} (valeur actuelle)</option>
-                  ) : null}
-                </select>
-              </label>
-              {field("montantHt", "Montant HT (€)", { type: "text", placeholder: "0" })}
-              {field("dateOffre", "Date offre", { type: "date" })}
-              {field("clientNom", "Client")}
-              {field("siteNom", "Site")}
-              {field("consultantEmail", "Consultant (email)")}
-              <label className="crm-field crm-span-2">
-                <span className="crm-label">Gestionnaire (syndic / prestataire / propriétaire)</span>
-                <select
-                  className="crm-select"
-                  value={form.gestionnaireNom ?? ""}
-                  disabled={!offreParties?.options.length}
-                  onChange={(e) => {
-                    const nom = e.target.value;
-                    const opt = offreParties?.options.find((o) => o.clientNom === nom);
-                    setField("gestionnaireNom", nom);
-                    if (opt?.responsableContact) setField("gestionnaireContact", opt.responsableContact);
-                  }}
-                >
-                  <option value="">—</option>
-                  {(offreParties?.options ?? []).map((o) => (
-                    <option key={o.clientNom} value={o.clientNom}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              {field("gestionnaireContact", "Contact gestionnaire (personne)")}
-              {field("tauxTva", "TVA (%)", { type: "number" })}
-              <label className="crm-field crm-span-2">
-                <span className="crm-label">Mode phases</span>
-                <select
-                  className="crm-select"
-                  value={form.phasesMode ?? "SELECTION"}
-                  onChange={(e) => setField("phasesMode", e.target.value)}
-                >
-                  <option value="SELECTION">Sélection</option>
-                  <option value="ALL">Tout le référentiel</option>
-                  <option value="CUSTOM">Personnalisé</option>
-                </select>
-              </label>
-              <label className="crm-field crm-span-2">
-                <span className="crm-label">Missions (JSON)</span>
-                <textarea
-                  className="crm-textarea crm-textarea--mono min-h-24"
-                  value={form.missionsJson ?? ""}
-                  onChange={(e) => setField("missionsJson", e.target.value)}
-                />
-              </label>
-              <label className="crm-field crm-span-2">
-                <span className="crm-label">Échéancier facturation (JSON)</span>
-                <textarea
-                  className="crm-textarea crm-textarea--mono min-h-20"
-                  value={form.echeancierFacturationJson ?? ""}
-                  onChange={(e) => setField("echeancierFacturationJson", e.target.value)}
-                />
-              </label>
-              <label className="crm-field crm-span-2">
-                <span className="crm-label">Échéancier exécution (JSON)</span>
-                <textarea
-                  className="crm-textarea crm-textarea--mono min-h-20"
-                  value={form.echeancierExecutionJson ?? ""}
-                  onChange={(e) => setField("echeancierExecutionJson", e.target.value)}
-                />
-              </label>
+              <div className="crm-stack">
+                <p className="crm-stack-title">
+                  <span className="crm-stack-title__icon" aria-hidden>◎</span> Client, site &amp; gestionnaire
+                </p>
+                <div className="crm-form-grid crm-form-grid--tight">
+                  {field("clientNom", "Client")}
+                  {field("siteNom", "Site")}
+                  {field("consultantEmail", "Consultant (email)")}
+                  <label className="crm-field crm-span-2">
+                    <span className="crm-label">Gestionnaire (syndic / prestataire / propriétaire)</span>
+                    <select
+                      className="crm-select"
+                      value={form.gestionnaireNom ?? ""}
+                      disabled={!offreParties?.options.length}
+                      onChange={(e) => {
+                        const nom = e.target.value;
+                        const opt = offreParties?.options.find((o) => o.clientNom === nom);
+                        setField("gestionnaireNom", nom);
+                        if (opt?.responsableContact) setField("gestionnaireContact", opt.responsableContact);
+                      }}
+                    >
+                      <option value="">—</option>
+                      {(offreParties?.options ?? []).map((o) => (
+                        <option key={o.clientNom} value={o.clientNom}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {field("gestionnaireContact", "Contact gestionnaire (personne)")}
+                </div>
+              </div>
+              <div className="crm-stack">
+                <p className="crm-stack-title">
+                  <span className="crm-stack-title__icon" aria-hidden>✓</span> Mission
+                </p>
+                <div className="crm-field">
+                  {missionCheckboxes(offreMissionPick, setOffreMissionPick, "edit-offre-m")}
+                </div>
+              </div>
             </>
           ) : null}
 
           {path === "/api/commandes" ? (
             <>
-              {field("numeroCommande", "N° commande")}
-              {field("dateCommande", "Date commande", { type: "date" })}
-              <div className="crm-field crm-span-2">
-                <span className="crm-label">Types de mission</span>
-                {missionCheckboxes(cmdMissionPick, setCmdMissionPick, "edit-cmd-m")}
+              <div className="crm-stack">
+                <p className="crm-stack-title">
+                  <span className="crm-stack-title__icon" aria-hidden>▦</span> Référence &amp; statut
+                </p>
+                <div className="crm-form-grid crm-form-grid--tight">
+                  {field("numeroCommande", "N° commande")}
+                  {field("dateCommande", "Date commande", { type: "date" })}
+                  <label className="crm-field">
+                    <span className="crm-label">Statut commande</span>
+                    <select className="crm-select" value={form.statut ?? "EN_ATTENTE"} onChange={(e) => setField("statut", e.target.value)}>
+                      {CRM_COMMANDE_STATUTS.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                      {!CRM_COMMANDE_STATUTS.some((o) => o.value === form.statut) && form.statut ? (
+                        <option value={form.statut}>{form.statut} (valeur actuelle)</option>
+                      ) : null}
+                    </select>
+                  </label>
+                  {field("numeroClient", "N° commande client")}
+                </div>
               </div>
-              <label className="crm-field">
-                <span className="crm-label">Statut commande</span>
-                <select className="crm-select" value={form.statut ?? "EN_ATTENTE"} onChange={(e) => setField("statut", e.target.value)}>
-                  {CRM_COMMANDE_STATUTS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                  {!CRM_COMMANDE_STATUTS.some((o) => o.value === form.statut) && form.statut ? (
-                    <option value={form.statut}>{form.statut} (valeur actuelle)</option>
-                  ) : null}
-                </select>
-              </label>
-              {field("montantHt", "Montant HT (€)")}
-              {field("montantFacture", "Montant déjà facturé (€)")}
-              {field("clientNom", "Client")}
-              {field("siteNom", "Site")}
-              {field("numeroClient", "N° commande client")}
+              <div className="crm-stack">
+                <p className="crm-stack-title">
+                  <span className="crm-stack-title__icon" aria-hidden>◎</span> Client &amp; site
+                </p>
+                <div className="crm-form-grid crm-form-grid--tight">
+                  {field("clientNom", "Client")}
+                  {field("siteNom", "Site")}
+                </div>
+              </div>
+              <div className="crm-stack">
+                <p className="crm-stack-title">
+                  <span className="crm-stack-title__icon" aria-hidden>€</span> Mission &amp; montants
+                </p>
+                <div className="crm-form-grid crm-form-grid--tight">
+                  <div className="crm-field crm-span-2">
+                    <span className="crm-label">Types de mission</span>
+                    {missionCheckboxes(cmdMissionPick, setCmdMissionPick, "edit-cmd-m")}
+                  </div>
+                  {field("montantHt", "Montant HT (€)")}
+                  {field("montantFacture", "Montant déjà facturé (€)")}
+                </div>
+              </div>
             </>
           ) : null}
 
           {path === "/api/factures" ? (
-            <>
+            <div className="crm-form-grid crm-form-grid--tight">
               {field("numeroFacture", "N° facture")}
               {field("dateFacture", "Date facture", { type: "date" })}
               {field("numeroCommande", "N° commande")}
@@ -451,7 +453,7 @@ export function CrmEntityEditModal({ path, row, onClose, onSaved }: Props) {
                   <option value="PAYEE">Payée</option>
                 </select>
               </label>
-            </>
+            </div>
           ) : null}
         </div>
     </CrmEntityModal>

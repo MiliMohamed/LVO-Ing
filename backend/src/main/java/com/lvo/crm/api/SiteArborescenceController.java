@@ -22,6 +22,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/sites/{siteId}/arborescence")
 public class SiteArborescenceController {
@@ -61,6 +62,18 @@ public class SiteArborescenceController {
                 .contentType(MediaType.parseMediaType(payload.contentType()))
                 .contentLength(payload.sizeBytes() != null ? payload.sizeBytes() : -1)
                 .body(payload.resource());
+    }
+
+    @GetMapping("/download-all")
+    public ResponseEntity<byte[]> downloadAll(@PathVariable Long siteId) throws IOException {
+        byte[] zipBytes = arborescenceService.downloadAllAsZip(siteId);
+        String filename = arborescenceService.siteZipFilename(siteId);
+        String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encoded)
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .contentLength(zipBytes.length)
+                .body(zipBytes);
     }
 
     @DeleteMapping("/files/{fileId}")

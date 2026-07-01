@@ -1,6 +1,8 @@
 const DEV_API_HOSTS = new Set([
   "http://localhost:8080",
   "http://127.0.0.1:8080",
+  "http://localhost:8081",
+  "http://127.0.0.1:8081",
 ]);
 
 /** Base URL des appels CRM. En dev navigateur : même origine (proxy Next → Express, évite CORS / Failed to fetch). */

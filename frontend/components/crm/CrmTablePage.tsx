@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 import { CancelCommandeModal } from "@/components/crm/CancelCommandeModal";
 import { CrmPageHeader, CrmListFilters } from "@/components/crm/ui";
@@ -27,11 +28,16 @@ export type ColumnKey<T> = {
   key: keyof T | string;
   label: string;
   /** Formats côté client (évite de passer des fonctions depuis les Server Components) */
-  preset?: "moneyFr";
+  preset?: "moneyFr" | "bool";
 };
 
-function formatCell<T extends object>(row: T, col: ColumnKey<T>): string {
+function formatCell<T extends object>(row: T, col: ColumnKey<T>): ReactNode {
   const raw = row[col.key as keyof T];
+  if (col.preset === "bool") {
+    return raw
+      ? <span style={{ color: "var(--green)", fontWeight: 700 }}>✓</span>
+      : <span style={{ color: "var(--g400)" }}>—</span>;
+  }
   if (raw == null) return "—";
   if (col.preset === "moneyFr") {
     const n = typeof raw === "number" ? raw : Number(raw);
@@ -226,9 +232,9 @@ export function CrmTablePage<T extends object>({
         ) : null}
       </CrmListFilters>
 
-      {path === "/api/sites" && hiddenByFilters > 0 ? (
+      {hiddenByFilters > 0 ? (
         <p className="crm-alert crm-alert--warn mb-3">
-          {hiddenByFilters} site(s) masqué(s) par les filtres actifs
+          {hiddenByFilters} enregistrement(s) masqué(s) par les filtres actifs
           {agenceScope !== "ALL" ? ` (périmètre : ${scopeDef(agenceScope).label})` : ""}
           {gestionnaireFilter ? ` (gestionnaire : ${gestionnaireFilter})` : ""}. Passez le périmètre sur « Toutes
           agences » ou cliquez « Effacer les filtres ».
@@ -266,7 +272,9 @@ export function CrmTablePage<T extends object>({
                         <>
                           <button
                             type="button"
-                            className="cbtn cbtn-ghost cbtn-sm"
+                            className="cbtn-icon cbtn-icon--ghost"
+                            title="Modifier"
+                            aria-label="Modifier"
                             disabled={busyId === Number((row as Record<string, unknown>).id)}
                             onClick={async () => {
                               const id = Number((row as Record<string, unknown>).id);
@@ -297,11 +305,13 @@ export function CrmTablePage<T extends object>({
                               }
                             }}
                           >
-                            Modifier
+                            ✎
                           </button>
                           <button
                             type="button"
-                            className="cbtn cbtn-ghost cbtn-sm"
+                            className="cbtn-icon cbtn-icon--danger"
+                            title="Supprimer"
+                            aria-label="Supprimer"
                             disabled={busyId === Number((row as Record<string, unknown>).id)}
                             onClick={async () => {
                               const id = Number((row as Record<string, unknown>).id);
@@ -321,7 +331,7 @@ export function CrmTablePage<T extends object>({
                               }
                             }}
                           >
-                            Supprimer
+                            🗑
                           </button>
                         </>
                       )}
@@ -330,7 +340,10 @@ export function CrmTablePage<T extends object>({
                           {path === "/api/offres" ? (
                             <button
                               type="button"
-                              className="cbtn cbtn-ghost cbtn-sm"
+                              className="cbtn-icon cbtn-icon--ghost"
+                              title="Dupliquer"
+                              aria-label="Dupliquer"
+                              disabled={busyId === Number((row as Record<string, unknown>).id)}
                               onClick={async () => {
                                 const id = Number((row as Record<string, unknown>).id);
                                 if (!Number.isFinite(id)) return;
@@ -348,12 +361,31 @@ export function CrmTablePage<T extends object>({
                                 }
                               }}
                             >
-                              Dupliquer
+                              ⧉
                             </button>
+                          ) : null}
+                          {path === "/api/offres" && (row as Record<string, unknown>).statut === "ACCEPTEE" ? (
+                            <Link
+                              href={`/crm/nouveau/commande?${new URLSearchParams({
+                                offreId: String((row as Record<string, unknown>).id ?? ""),
+                                numeroOffre: String((row as Record<string, unknown>).numeroOffre ?? ""),
+                                clientNom: String((row as Record<string, unknown>).clientNom ?? ""),
+                                siteNom: String((row as Record<string, unknown>).siteNom ?? ""),
+                                montantHt: String((row as Record<string, unknown>).montantHt ?? ""),
+                                typeMission: String((row as Record<string, unknown>).typeMission ?? ""),
+                              }).toString()}`}
+                              className="cbtn-icon cbtn-icon--ghost"
+                              title="Créer une commande à partir de cette offre (offre acceptée)"
+                              aria-label="Créer une commande à partir de cette offre"
+                            >
+                              ▦
+                            </Link>
                           ) : null}
                           <button
                             type="button"
-                            className="cbtn cbtn-ghost cbtn-sm"
+                            className="cbtn-icon cbtn-icon--ghost"
+                            title="Annuler"
+                            aria-label="Annuler"
                             onClick={async () => {
                               const id = Number((row as Record<string, unknown>).id);
                               if (!Number.isFinite(id)) return;
@@ -378,7 +410,7 @@ export function CrmTablePage<T extends object>({
                               }
                             }}
                           >
-                            Annuler
+                            ✕
                           </button>
                         </>
                       ) : null}

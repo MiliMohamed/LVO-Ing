@@ -273,6 +273,24 @@ a {
   background: transparent;
   color: var(--orange);
 }
+.nav-client {
+  background: rgba(255, 165, 0, 0.12);
+  color: var(--amber, #f5a623);
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.nav-client:hover {
+  background: rgba(255, 165, 0, 0.2);
+  border-color: var(--amber, #f5a623);
+}
 .nav-crm {
   background: rgba(255, 255, 255, 0.08);
   color: var(--mist);
@@ -1386,4 +1404,147 @@ table.ct tbody tr:hover {
 table.ct tbody td {
   padding: 9px 12px;
   font-size: 12px;
+}
+
+/* ─── Hamburger button (topnav — CRM + Espace Client) ─── */
+.ctb-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  margin-right: 2px;
+}
+.ctb-hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.ctb-hamburger:hover span {
+  background: #fff;
+}
+
+/* Sidebar backdrop overlay (mobile) */
+.crm-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  background: rgba(11, 18, 32, 0.48);
+  backdrop-filter: blur(2px);
+}
+.crm-sidebar-overlay--visible {
+  display: block;
+}
+
+/* Site-nav hamburger button */
+.nav-hamburger {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--line2);
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: var(--mist);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  align-items: center;
+}
+
+/* ─── Mobile breakpoint ≤ 768px ─── */
+@media (max-width: 768px) {
+  /* CRM sidebar → slide-in drawer */
+  .crm-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 150;
+  }
+  .crm-sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(11, 18, 32, 0.2);
+  }
+
+  /* Main content fills full width */
+  .crm-main {
+    margin-left: 0 !important;
+  }
+
+  /* Show hamburger in topnav */
+  .ctb-hamburger {
+    display: flex;
+  }
+
+  /* Hide username text, keep avatar */
+  .ctb-user-name {
+    display: none;
+  }
+
+  /* Site nav: hide horizontal links, show hamburger */
+  .nav-links {
+    display: none;
+  }
+  .nav-links.nav-open {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    order: 10;
+    padding: 4px 0 12px;
+    gap: 16px;
+  }
+  .nav-hamburger {
+    display: flex;
+  }
+  #site-nav.scrolled {
+    padding: 10px 20px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 80px 20px 56px;
+  }
+
+  /* Sections */
+  .site-section {
+    padding: clamp(36px, 6vw, 72px) 20px;
+  }
+
+  /* Footer */
+  .site-footer-lite {
+    padding: 28px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Stats: 2 cols */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ─── Very small screens ≤ 480px ─── */
+@media (max-width: 480px) {
+  .hero {
+    padding: 72px 16px 48px;
+  }
+  .login-card {
+    padding: 32px 20px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  /* KPI grid stays 2 cols min */
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
 }

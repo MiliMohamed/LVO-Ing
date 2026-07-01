@@ -1,0 +1,10 @@
+
+> api:dev
+> npm run dev -w lvo-api-server
+
+
+> lvo-api-server@0.1.0 dev
+> tsx watch src/index.ts
+
+[minio] Impossible de vérifier/créer le bucket "lvo-sites" : read ECONNRESET
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : read ECONNRESET

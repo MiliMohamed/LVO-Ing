@@ -1,9 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
+import { PassThrough } from "node:stream";
 import { randomUUID } from "node:crypto";
+
+import { ZipArchive } from "archiver";
 
 import type { SiteArborescenceNodeRow } from "./store.js";
 import { siteArborescenceNodes } from "./store.js";
+import { getMinio, MINIO_BUCKETS } from "./db.js";
 
 const LEVEL1_FOLDERS = [
   "1-Offre",
@@ -69,7 +73,6 @@ function saveFolder(siteId: number, parentId: number | null, nom: string, sortOr
   return row;
 }
 
-/** Crée les 20 dossiers standard LVO pour un site (idempotent). */
 export function provisionSiteArborescence(siteId: number): void {
   if (hasArborescence(siteId)) return;
 
@@ -145,25 +148,50 @@ export function sitesUploadRoot(): string {
   return path.resolve("uploads", "sites");
 }
 
-export function saveUploadedFile(
+/** Détermine si une valeur est une clé MinIO (pas un chemin absolu local) */
+function isMinioKey(p: string): boolean {
+  return !path.isAbsolute(p) && !p.startsWith("./") && !p.startsWith(".\\");
+}
+
+/**
+ * Enregistre un fichier uploadé :
+ *  1. Tentative vers MinIO (prioritaire)
+ *  2. Fallback vers le disque local si MinIO indisponible
+ */
+export async function saveUploadedFile(
   siteId: number,
   folderId: number,
   originalName: string,
   buffer: Buffer,
   contentType: string | null,
   uploadedByUserId: number | null,
-): SiteArborescenceNodeRow {
+): Promise<SiteArborescenceNodeRow> {
   const folder = findArborescenceNode(siteId, folderId);
   if (!folder || folder.nodeType !== "FOLDER") {
     throw new Error("Dossier introuvable");
   }
 
-  const safeName = sanitizeFileName(originalName);
-  const dir = path.join(sitesUploadRoot(), String(siteId));
-  fs.mkdirSync(dir, { recursive: true });
-  const storedName = `${randomUUID()}-${safeName}`;
-  const storedPath = path.join(dir, storedName);
-  fs.writeFileSync(storedPath, buffer);
+  const safeName  = sanitizeFileName(originalName);
+  const objectKey = `sites/${siteId}/${randomUUID()}-${safeName}`;
+  let storedPath: string;
+
+  try {
+    await getMinio().putObject(
+      MINIO_BUCKETS.sites,
+      objectKey,
+      buffer,
+      buffer.length,
+      { "Content-Type": contentType ?? "application/octet-stream" },
+    );
+    storedPath = objectKey;
+  } catch (e) {
+    // Fallback local
+    const dir = path.join(sitesUploadRoot(), String(siteId));
+    fs.mkdirSync(dir, { recursive: true });
+    storedPath = path.join(dir, `${randomUUID()}-${safeName}`);
+    fs.writeFileSync(storedPath, buffer);
+    console.warn("[arborescence] MinIO indisponible, fallback local :", (e as Error).message);
+  }
 
   const row: SiteArborescenceNodeRow = {
     id: nextNodeId(),
@@ -182,17 +210,39 @@ export function saveUploadedFile(
   return row;
 }
 
-export function deleteArborescenceFile(siteId: number, fileId: number): void {
+/** Télécharge un fichier depuis MinIO ou le disque local */
+export async function downloadArborescenceFile(node: SiteArborescenceNodeRow): Promise<Buffer | null> {
+  if (!node.storedPath) return null;
+  try {
+    if (isMinioKey(node.storedPath)) {
+      const stream = await getMinio().getObject(MINIO_BUCKETS.sites, node.storedPath);
+      return new Promise((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        stream.on("data", (c: Buffer) => chunks.push(c));
+        stream.on("end", () => resolve(Buffer.concat(chunks)));
+        stream.on("error", reject);
+      });
+    }
+    if (fs.existsSync(node.storedPath)) return fs.readFileSync(node.storedPath);
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteArborescenceFile(siteId: number, fileId: number): Promise<void> {
   const file = findArborescenceNode(siteId, fileId);
   if (!file || file.nodeType !== "FILE") {
     throw new Error("Fichier introuvable");
   }
   if (file.storedPath) {
     try {
-      fs.unlinkSync(file.storedPath);
-    } catch {
-      /* ignore */
-    }
+      if (isMinioKey(file.storedPath)) {
+        await getMinio().removeObject(MINIO_BUCKETS.sites, file.storedPath);
+      } else {
+        fs.unlinkSync(file.storedPath);
+      }
+    } catch { /* ignore */ }
   }
   const idx = siteArborescenceNodes.findIndex((n) => n.id === fileId);
   if (idx >= 0) siteArborescenceNodes.splice(idx, 1);
@@ -201,4 +251,64 @@ export function deleteArborescenceFile(siteId: number, fileId: number): void {
 export function sanitizeFileName(name: string): string {
   const trimmed = (name || "fichier").trim().replace(/[\\/]/g, "-");
   return trimmed.length > 200 ? trimmed.slice(0, 200) : trimmed;
+}
+
+export function siteZipRootName(siteId: number, siteNom?: string | null): string {
+  const raw  = (siteNom || `site-${siteId}`).trim();
+  const safe = raw.replace(/[\\/:*?"<>|]/g, "-").trim();
+  if (!safe) return `site-${siteId}`;
+  return safe.length > 120 ? safe.slice(0, 120) : safe;
+}
+
+function buildNodeZipPath(
+  node: SiteArborescenceNodeRow,
+  nodeMap: Map<number, SiteArborescenceNodeRow>,
+  rootName: string,
+  asDirectory = false,
+): string {
+  const parts = [node.nom];
+  let current = node.parentId != null ? nodeMap.get(node.parentId) : undefined;
+  while (current) {
+    parts.unshift(current.nom);
+    current = current.parentId != null ? nodeMap.get(current.parentId) : undefined;
+  }
+  parts.unshift(rootName);
+  const joined = parts.join("/");
+  return asDirectory ? `${joined}/` : joined;
+}
+
+export async function downloadAllAsZip(siteId: number, siteNom?: string | null): Promise<Buffer> {
+  const nodes    = siteArborescenceNodes.filter((n) => n.siteId === siteId);
+  const nodeMap  = new Map(nodes.map((n) => [n.id, n]));
+  const rootName = siteZipRootName(siteId, siteNom);
+
+  return new Promise((resolve, reject) => {
+    const passthrough = new PassThrough();
+    const chunks: Buffer[] = [];
+    passthrough.on("data", (chunk: Buffer) => chunks.push(chunk));
+    passthrough.on("end", () => resolve(Buffer.concat(chunks)));
+    passthrough.on("error", reject);
+
+    const archive = new ZipArchive({ zlib: { level: 6 } });
+    archive.on("error", reject);
+    archive.pipe(passthrough);
+
+    // Dossiers vides
+    for (const node of nodes) {
+      if (node.nodeType !== "FOLDER") continue;
+      archive.append(Buffer.alloc(0), { name: buildNodeZipPath(node, nodeMap, rootName, true) });
+    }
+
+    // Fichiers (download depuis MinIO ou disque local)
+    const fileNodes = nodes.filter((n) => n.nodeType === "FILE" && n.storedPath);
+    const filePromises = fileNodes.map(async (node) => {
+      const buf = await downloadArborescenceFile(node);
+      if (!buf) return;
+      archive.append(buf, { name: buildNodeZipPath(node, nodeMap, rootName) });
+    });
+
+    Promise.all(filePromises)
+      .then(() => archive.finalize())
+      .catch(reject);
+  });
 }

@@ -45,7 +45,12 @@ async function authorizedFetch(
         res = await fetch(url, { ...init, headers });
       } else {
         clearSession();
+        if (globalThis.window !== undefined) globalThis.window.location.href = "/login";
       }
+    } else {
+      // No token and no refresh token → redirect to login
+      clearSession();
+      if (globalThis.window !== undefined) globalThis.window.location.href = "/login";
     }
   }
   return res;
@@ -58,7 +63,7 @@ function networkErrorMessage(err: unknown): string {
   return err instanceof Error ? err.message : "Erreur réseau";
 }
 
-export async function apiFetch(path: string, init: RequestInit & { token?: string | null } = {}) {
+export async function apiFetch<T = unknown>(path: string, init: RequestInit & { token?: string | null } = {}): Promise<T | null> {
   const url = apiAbsoluteUrl(path);
   let res: Response;
   try {
@@ -81,7 +86,7 @@ export async function apiFetch(path: string, init: RequestInit & { token?: strin
   }
   const ct = res.headers.get("content-type") || "";
   if (!ct.includes("application/json")) return null;
-  return res.json();
+  return res.json() as Promise<T>;
 }
 
 /** Pour POST documents / exports binaires (PDF, CSV…) avec refresh token */

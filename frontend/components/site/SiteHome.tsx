@@ -119,19 +119,7 @@ export function SiteHome() {
                 <div className="l">Années d&apos;expertise</div>
               </div>
             </div>
-            <Link href="/login" className="hero-crm-teaser">
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <span className="nav-crm-dot" />
-                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--orange)", letterSpacing: 1 }}>
-                  Espace CRM
-                </span>
-                <span style={{ color: "var(--orange)", marginLeft: "auto" }}>→</span>
-              </div>
-              <div style={{ fontSize: 14, fontWeight: 700 }}>Accéder au tableau de bord</div>
-              <div style={{ fontSize: 12, color: "var(--smoke)", marginTop: 4 }}>
-                Connexion JWT — données PostgreSQL Spring Boot
-              </div>
-            </Link>
+       
           </div>
         </div>
       </section>

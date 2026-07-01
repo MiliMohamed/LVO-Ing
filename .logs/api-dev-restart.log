@@ -1,0 +1,87 @@
+
+> api:dev
+> npm run dev -w lvo-api-server
+
+
+> lvo-api-server@0.1.0 dev
+> tsx watch src/index.ts
+
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:30:08 [tsx] change in ./src\routes\crm.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:43:30 [tsx] change in ./src\index.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:43:41 [tsx] change in ./src\index.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Erreur extraction : Erreur lecture PDF : No /Root object! - Is this really a PDF?
+14:53:00 [tsx] change in ./src\store.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:53:09 [tsx] change in ./src\store.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:53:32 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:54:03 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:54:53 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:55:04 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+14:55:29 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Erreur extraction : Erreur lecture PDF : No /Root object! - Is this really a PDF?
+[devis-extractor] Erreur extraction : Erreur lecture PDF : No /Root object! - Is this really a PDF?
+15:29:23 [tsx] change in ./src\routes\crm.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+15:29:46 [tsx] change in ./src\routes\crm.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Erreur extraction : Erreur lecture PDF : No /Root object! - Is this really a PDF?
+SyntaxError: Unexpected token ''', "'{email:ad"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at createStrictSyntaxError (C:\Users\Mili\OneDrive\Bureau\lvo-web\node_modules\body-parser\lib\types\json.js:165:10)
+    at parse (C:\Users\Mili\OneDrive\Bureau\lvo-web\node_modules\body-parser\lib\types\json.js:86:15)
+    at C:\Users\Mili\OneDrive\Bureau\lvo-web\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\Mili\OneDrive\Bureau\lvo-web\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\Mili\OneDrive\Bureau\lvo-web\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\Mili\OneDrive\Bureau\lvo-web\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:28)
+    at endReadableNT (node:internal/streams/readable:1701:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+15:46:03 [tsx] change in ./src\store-persist.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+15:46:15 [tsx] change in ./src\store-persist.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+15:46:32 [tsx] change in ./src\store-persist.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123

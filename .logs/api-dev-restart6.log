@@ -1,0 +1,2360 @@
+
+> api:dev
+> npm run dev -w lvo-api-server
+
+
+> lvo-api-server@0.1.0 dev
+> tsx watch src/index.ts
+
+[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+prisma:error 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.client.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:698:19
+
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 698   prisma.client.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.contact.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:699:20
+
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698   prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 699   prisma.contact.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.ascensoriste.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:700:25
+
+  697 prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 700 prisma.ascensoriste.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.site.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:701:17
+
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 701 prisma.site.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteGestionnaire.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:702:29
+
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 702 prisma.siteGestionnaire.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteEquipement.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:703:27
+
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 703 prisma.siteEquipement.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteArborescenceNode.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:704:33
+
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 704 prisma.siteArborescenceNode.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.offre.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:705:18
+
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 705 prisma.offre.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.commande.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:706:21
+
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 706 prisma.commande.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.facture.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:707:20
+
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 707 prisma.facture.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.avoir.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:708:18
+
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 708 prisma.avoir.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmTask.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:709:20
+
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 709 prisma.crmTask.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:710:28
+
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 710 prisma.crmNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalMessage.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:711:32
+
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 711 prisma.clientPortalMessage.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalDocument.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:712:33
+
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 712 prisma.clientPortalDocument.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:713:37
+
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 713 prisma.clientPortalNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientContrat.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:714:26
+
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 714 prisma.clientContrat.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientIntervention.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:715:31
+
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 715 prisma.clientIntervention.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientAlertesConfig.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:716:32
+
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 716 prisma.clientAlertesConfig.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.mmsRapport.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:717:23
+
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+→ 717 prisma.mmsRapport.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.pendingQuontoTransaction.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:718:37
+
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 718 prisma.pendingQuontoTransaction.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.auditLog.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:719:21
+
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 719 prisma.auditLog.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.historiqueAnnulation.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:720:33
+
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  719 prisma.auditLog.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 720 prisma.historiqueAnnulation.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] DB indisponible, fallback snapshot JSON : 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[devis-groupement] MinIO fallback local : 
+[devis-extractor] Extraction OK — marque=RIVIERE_SCHINDLER n°=P16375 montant=78
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[bon-commande-extractor] Extraction OK — numero=315642 fournisseur=OTIS client=SIDR
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:101:30
+
+   98 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+   99 try {
+  100   const prisma = getPrisma();
+→ 101   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+21:25:48 [tsx] change in ./src\store.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+21:25:59 [tsx] change in ./src\store-persist.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+21:26:05 [tsx] change in ./src\store-persist.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+21:26:12 [tsx] change in ./src\store-persist.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+21:26:20 [tsx] change in ./src\store-persist.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+prisma:error 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.client.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:698:19
+
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 698   prisma.client.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.contact.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:699:20
+
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698   prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 699   prisma.contact.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.ascensoriste.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:700:25
+
+  697 prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 700 prisma.ascensoriste.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.site.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:701:17
+
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 701 prisma.site.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteGestionnaire.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:702:29
+
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 702 prisma.siteGestionnaire.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteEquipement.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:703:27
+
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 703 prisma.siteEquipement.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteArborescenceNode.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:704:33
+
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 704 prisma.siteArborescenceNode.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.offre.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:705:18
+
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 705 prisma.offre.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.commande.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:706:21
+
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 706 prisma.commande.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.facture.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:707:20
+
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 707 prisma.facture.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.avoir.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:708:18
+
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 708 prisma.avoir.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmTask.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:709:20
+
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 709 prisma.crmTask.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:710:28
+
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 710 prisma.crmNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalMessage.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:711:32
+
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 711 prisma.clientPortalMessage.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalDocument.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:712:33
+
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 712 prisma.clientPortalDocument.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:713:37
+
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 713 prisma.clientPortalNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientContrat.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:714:26
+
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 714 prisma.clientContrat.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientIntervention.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:715:31
+
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 715 prisma.clientIntervention.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientAlertesConfig.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:716:32
+
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 716 prisma.clientAlertesConfig.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.mmsRapport.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:717:23
+
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+→ 717 prisma.mmsRapport.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.pendingQuontoTransaction.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:718:37
+
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 718 prisma.pendingQuontoTransaction.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.auditLog.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:719:21
+
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 719 prisma.auditLog.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.historiqueAnnulation.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:720:33
+
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  719 prisma.auditLog.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 720 prisma.historiqueAnnulation.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] DB indisponible, fallback snapshot JSON : 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+21:34:05 [tsx] change in ./src\index.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+21:34:13 [tsx] change in ./src\index.ts Restarting...
+c21:34:21 [tsx] change in ./src\index.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+prisma:error 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.client.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:698:19
+
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 698   prisma.client.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.contact.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:699:20
+
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698   prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 699   prisma.contact.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.ascensoriste.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:700:25
+
+  697 prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 700 prisma.ascensoriste.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.site.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:701:17
+
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 701 prisma.site.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteGestionnaire.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:702:29
+
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 702 prisma.siteGestionnaire.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteEquipement.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:703:27
+
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 703 prisma.siteEquipement.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteArborescenceNode.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:704:33
+
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 704 prisma.siteArborescenceNode.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.offre.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:705:18
+
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 705 prisma.offre.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.commande.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:706:21
+
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 706 prisma.commande.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.facture.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:707:20
+
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 707 prisma.facture.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.avoir.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:708:18
+
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 708 prisma.avoir.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmTask.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:709:20
+
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 709 prisma.crmTask.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:710:28
+
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 710 prisma.crmNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalMessage.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:711:32
+
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 711 prisma.clientPortalMessage.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalDocument.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:712:33
+
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 712 prisma.clientPortalDocument.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:713:37
+
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 713 prisma.clientPortalNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientContrat.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:714:26
+
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 714 prisma.clientContrat.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientIntervention.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:715:31
+
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 715 prisma.clientIntervention.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientAlertesConfig.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:716:32
+
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 716 prisma.clientAlertesConfig.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.mmsRapport.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:717:23
+
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+→ 717 prisma.mmsRapport.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.pendingQuontoTransaction.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:718:37
+
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 718 prisma.pendingQuontoTransaction.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.auditLog.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:719:21
+
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 719 prisma.auditLog.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.historiqueAnnulation.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:720:33
+
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  719 prisma.auditLog.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 720 prisma.historiqueAnnulation.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] DB indisponible, fallback snapshot JSON : 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[appareils-arret] MinIO indisponible, fallback local : 
+prisma:error 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Échec sauvegarde DB normalisée, fallback snapshot : 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:52:33
+
+  49 
+  50 // 1. Users
+  51 for (const u of users) {
+→ 52   const r = await prisma.user.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.appSnapshot.upsert()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\store-persist.ts:134:30
+
+  131 // Tentative app_snapshot (JSON blob) si Prisma est dispo
+  132 try {
+  133   const prisma = getPrisma();
+→ 134   await prisma.appSnapshot.upsert(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+21:56:16 [tsx] change in ./src\routes\appareils-arret.ts Restarting...
+c21:56:29 [tsx] change in ./src\routes\appareils-arret.ts Restarting...
+c21:56:37 [tsx] change in ./src\routes\appareils-arret.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+prisma:error 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.client.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:698:19
+
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 698   prisma.client.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.contact.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:699:20
+
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698   prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 699   prisma.contact.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.ascensoriste.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:700:25
+
+  697 prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 700 prisma.ascensoriste.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.site.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:701:17
+
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 701 prisma.site.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteGestionnaire.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:702:29
+
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 702 prisma.siteGestionnaire.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteEquipement.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:703:27
+
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 703 prisma.siteEquipement.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteArborescenceNode.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:704:33
+
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 704 prisma.siteArborescenceNode.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.offre.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:705:18
+
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 705 prisma.offre.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.commande.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:706:21
+
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 706 prisma.commande.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.facture.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:707:20
+
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 707 prisma.facture.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.avoir.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:708:18
+
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 708 prisma.avoir.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmTask.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:709:20
+
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 709 prisma.crmTask.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:710:28
+
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 710 prisma.crmNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalMessage.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:711:32
+
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 711 prisma.clientPortalMessage.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalDocument.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:712:33
+
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 712 prisma.clientPortalDocument.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:713:37
+
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 713 prisma.clientPortalNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientContrat.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:714:26
+
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 714 prisma.clientContrat.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientIntervention.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:715:31
+
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 715 prisma.clientIntervention.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientAlertesConfig.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:716:32
+
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 716 prisma.clientAlertesConfig.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.mmsRapport.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:717:23
+
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+→ 717 prisma.mmsRapport.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.pendingQuontoTransaction.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:718:37
+
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 718 prisma.pendingQuontoTransaction.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.auditLog.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:719:21
+
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 719 prisma.auditLog.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.historiqueAnnulation.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:720:33
+
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  719 prisma.auditLog.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 720 prisma.historiqueAnnulation.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] DB indisponible, fallback snapshot JSON : 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+21:56:50 [tsx] change in ./src\routes\appareils-arret.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+prisma:error 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.client.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:698:19
+
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 698   prisma.client.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.contact.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:699:20
+
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698   prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 699   prisma.contact.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.ascensoriste.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:700:25
+
+  697 prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 700 prisma.ascensoriste.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.site.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:701:17
+
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 701 prisma.site.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteGestionnaire.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:702:29
+
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 702 prisma.siteGestionnaire.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteEquipement.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:703:27
+
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 703 prisma.siteEquipement.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteArborescenceNode.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:704:33
+
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 704 prisma.siteArborescenceNode.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.offre.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:705:18
+
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 705 prisma.offre.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.commande.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:706:21
+
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 706 prisma.commande.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.facture.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:707:20
+
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 707 prisma.facture.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.avoir.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:708:18
+
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 708 prisma.avoir.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmTask.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:709:20
+
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 709 prisma.crmTask.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:710:28
+
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 710 prisma.crmNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalMessage.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:711:32
+
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 711 prisma.clientPortalMessage.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalDocument.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:712:33
+
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 712 prisma.clientPortalDocument.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:713:37
+
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 713 prisma.clientPortalNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientContrat.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:714:26
+
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 714 prisma.clientContrat.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientIntervention.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:715:31
+
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 715 prisma.clientIntervention.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientAlertesConfig.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:716:32
+
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 716 prisma.clientAlertesConfig.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.mmsRapport.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:717:23
+
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+→ 717 prisma.mmsRapport.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.pendingQuontoTransaction.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:718:37
+
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 718 prisma.pendingQuontoTransaction.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.auditLog.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:719:21
+
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 719 prisma.auditLog.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.historiqueAnnulation.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:720:33
+
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  719 prisma.auditLog.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 720 prisma.historiqueAnnulation.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] DB indisponible, fallback snapshot JSON : 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+21:57:46 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+21:57:56 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+21:58:06 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+prisma:error 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.client.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:698:19
+
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 698   prisma.client.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.contact.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:699:20
+
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698   prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 699   prisma.contact.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.ascensoriste.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:700:25
+
+  697 prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 700 prisma.ascensoriste.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.site.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:701:17
+
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 701 prisma.site.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteGestionnaire.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:702:29
+
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 702 prisma.siteGestionnaire.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteEquipement.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:703:27
+
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 703 prisma.siteEquipement.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteArborescenceNode.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:704:33
+
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 704 prisma.siteArborescenceNode.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.offre.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:705:18
+
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 705 prisma.offre.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.commande.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:706:21
+
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 706 prisma.commande.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.facture.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:707:20
+
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 707 prisma.facture.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.avoir.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:708:18
+
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 708 prisma.avoir.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmTask.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:709:20
+
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 709 prisma.crmTask.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:710:28
+
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 710 prisma.crmNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalMessage.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:711:32
+
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 711 prisma.clientPortalMessage.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalDocument.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:712:33
+
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 712 prisma.clientPortalDocument.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:713:37
+
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 713 prisma.clientPortalNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientContrat.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:714:26
+
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 714 prisma.clientContrat.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientIntervention.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:715:31
+
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 715 prisma.clientIntervention.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientAlertesConfig.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:716:32
+
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 716 prisma.clientAlertesConfig.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.mmsRapport.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:717:23
+
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+→ 717 prisma.mmsRapport.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.pendingQuontoTransaction.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:718:37
+
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 718 prisma.pendingQuontoTransaction.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.auditLog.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:719:21
+
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 719 prisma.auditLog.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.historiqueAnnulation.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:720:33
+
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  719 prisma.auditLog.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 720 prisma.historiqueAnnulation.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] DB indisponible, fallback snapshot JSON : 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+21:58:27 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[minio] Impossible de vérifier/créer le bucket "lvo-sites" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-mms" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-client-docs" : 
+[minio] Impossible de vérifier/créer le bucket "lvo-documents" : 
+prisma:error 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.client.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:698:19
+
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 698   prisma.client.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.contact.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:699:20
+
+  696 ] = await Promise.all([
+  697   prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698   prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 699   prisma.contact.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.ascensoriste.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:700:25
+
+  697 prisma.user.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 700 prisma.ascensoriste.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.site.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:701:17
+
+  698 prisma.client.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 701 prisma.site.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteGestionnaire.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:702:29
+
+  699 prisma.contact.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 702 prisma.siteGestionnaire.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteEquipement.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:703:27
+
+  700 prisma.ascensoriste.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 703 prisma.siteEquipement.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.siteArborescenceNode.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:704:33
+
+  701 prisma.site.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 704 prisma.siteArborescenceNode.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.offre.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:705:18
+
+  702 prisma.siteGestionnaire.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 705 prisma.offre.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.commande.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:706:21
+
+  703 prisma.siteEquipement.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 706 prisma.commande.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.facture.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:707:20
+
+  704 prisma.siteArborescenceNode.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 707 prisma.facture.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.avoir.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:708:18
+
+  705 prisma.offre.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 708 prisma.avoir.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmTask.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:709:20
+
+  706 prisma.commande.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 709 prisma.crmTask.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.crmNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:710:28
+
+  707 prisma.facture.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 710 prisma.crmNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalMessage.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:711:32
+
+  708 prisma.avoir.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 711 prisma.clientPortalMessage.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalDocument.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:712:33
+
+  709 prisma.crmTask.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 712 prisma.clientPortalDocument.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientPortalNotification.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:713:37
+
+  710 prisma.crmNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 713 prisma.clientPortalNotification.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientContrat.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:714:26
+
+  711 prisma.clientPortalMessage.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 714 prisma.clientContrat.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientIntervention.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:715:31
+
+  712 prisma.clientPortalDocument.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 715 prisma.clientIntervention.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.clientAlertesConfig.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:716:32
+
+  713 prisma.clientPortalNotification.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 716 prisma.clientAlertesConfig.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.mmsRapport.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:717:23
+
+  714 prisma.clientContrat.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+→ 717 prisma.mmsRapport.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.pendingQuontoTransaction.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:718:37
+
+  715 prisma.clientIntervention.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 718 prisma.pendingQuontoTransaction.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.auditLog.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:719:21
+
+  716 prisma.clientAlertesConfig.findMany(),
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 719 prisma.auditLog.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+prisma:error 
+Invalid `prisma.historiqueAnnulation.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:720:33
+
+  717 prisma.mmsRapport.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  718 prisma.pendingQuontoTransaction.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+  719 prisma.auditLog.findMany({ where: { legacyId: { not: null } }, orderBy: { legacyId: "asc" } }),
+→ 720 prisma.historiqueAnnulation.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] DB indisponible, fallback snapshot JSON : 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Mili\OneDrive\Bureau\lvo-web\server\src\db-store.ts:697:17
+
+  694   dbContrats, dbInterventions, dbAlertes, dbMms,
+  695   dbPendingQ, dbAudit, dbHistorique,
+  696 ] = await Promise.all([
+→ 697   prisma.user.findMany(
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123

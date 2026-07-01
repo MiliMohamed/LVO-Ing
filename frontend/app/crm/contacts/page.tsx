@@ -5,7 +5,7 @@ export default function ContactsPage() {
   return (
     <CrmTablePage<ContactRow>
       title="Contacts"
-      subtitle="Phase 5 — fiche (PATCH), suppression si aucune commande liée au rattachement entreprise"
+      subtitle="Personnes physiques rattachées à un client — cliquez sur Fiche pour consulter ou modifier."
       path="/api/contacts"
       phase5EntityMode="contact"
       columns={[
@@ -17,6 +17,7 @@ export default function ContactsPage() {
         { key: "email", label: "Email" },
         { key: "telephone", label: "Tél." },
         { key: "mobile", label: "Mobile" },
+        { key: "hasClientPassword", label: "Portail", preset: "bool" },
       ]}
       enableCrud={true}
       createSlug="contact"

@@ -17,18 +17,15 @@ import {
   LVO_MISSION_TYPES,
   primaryMissionFromSelection,
   referenceHints,
-  validateCommandeReference,
   validateFactureReference,
   validateOffreReference,
 } from "@/lib/reference-lvo";
-import { CRM_COMMANDE_STATUTS, CRM_OFFRE_STATUTS } from "@/lib/crm-workflow";
+import { CRM_OFFRE_STATUTS } from "@/lib/crm-workflow";
 import { readToken } from "@/lib/token-storage";
 import type { ClientRow, CommandeRow, SiteRow } from "@/lib/types";
 
 import { ContactFormFields } from "@/components/crm/forms/ContactFormFields";
 import { CrmFormActions, CrmPageHeader } from "@/components/crm/ui";
-
-import { PlanningExecutionEditor } from "./PlanningExecutionEditor";
 
 export type Slug = "contact" | "client" | "site" | "offre" | "commande" | "facture" | "phases";
 
@@ -48,6 +45,9 @@ type FormShape = Record<string, string>;
 
 type PhaseRef = { typeMission: string; code: string; libelle: string; prixIndicatifHt: number; ordre: number };
 
+const SUGGESTED_CLIENTS_GROUPEMENT = ["SIDR", "SODIAC", "SEMADER"];
+const SITE_CLIENT_AUTRE = "__AUTRE__";
+
 const BASE_FORM: Record<Slug, FormShape> = {
   contact: { civilite: "M.", prenom: "", nom: "", entreprise: "", fonction: "", email: "", telephone: "", mobile: "" },
   client: { raisonSociale: "", entite: "", email: "", telephone: "", siret: "", codePostal: "", responsableEmail: "" },
@@ -60,11 +60,11 @@ const BASE_FORM: Record<Slug, FormShape> = {
     dateOffre: "",
     clientNom: "",
     siteNom: "",
-    phasesMode: "SELECTION",
+    phasesMode: "ALL",
     consultantEmail: "",
     gestionnaireNom: "",
     gestionnaireContact: "",
-    tauxTva: "20",
+    tauxTva: "8.5",
     missions:
       '[{"code":"MS-REG","libelle":"Mission réglementaire / obligations code du travail","montantHt":3200},{"code":"MS-VP","libelle":"Visites périodiques & registre","montantHt":2100}]',
     echeancierFacturation:
@@ -97,10 +97,14 @@ const BASE_FORM: Record<Slug, FormShape> = {
   phases: { conception: "40", execution: "60", note: "" },
 };
 
+const DOM_TOM_NOMS = ["REUNION", "GUADELOUPE", "MARTINIQUE", "GUYANE", "MAYOTTE"];
+
 function clientIsDomTom(c: ClientRow): boolean {
   const e = String(c.entite || "").trim();
   if (/^(97|98)/.test(e.replace(/\s/g, ""))) return true;
   if (["974", "971", "972", "973", "976", "978"].includes(e)) return true;
+  const eNorm = e.toUpperCase().normalize("NFD").replace(new RegExp("[\\u0300-\\u036f]", "g"), "");
+  if (DOM_TOM_NOMS.some((nom) => eNorm.includes(nom))) return true;
   const cp = String(c.codePostal || "").replace(/\s/g, "");
   return /^(97|98)\d{3}/.test(cp);
 }
@@ -124,6 +128,19 @@ function isPositiveNumber(v: string) {
   if (!v.trim()) return false;
   const n = Number(v);
   return Number.isFinite(n) && n >= 0;
+}
+
+/** Génère le prochain n° LVO séquentiel, format LVO-{TYPE}-{YYYY}-{nnn} (ex. LVO-MOE-2026-001). */
+function nextCommandeNumero(existing: CommandeRow[], typeMission: string): string {
+  const year = new Date().getFullYear();
+  const prefix = `LVO-${typeMission}-${year}-`;
+  const seqs = existing
+    .map((c) => c.numeroCommande)
+    .filter((n) => n.startsWith(prefix))
+    .map((n) => Number(n.slice(prefix.length)))
+    .filter((n) => Number.isFinite(n));
+  const next = (seqs.length ? Math.max(...seqs) : 0) + 1;
+  return `${prefix}${String(next).padStart(3, "0")}`;
 }
 
 export function NouveauEntityForm({ slug, meta }: Props) {
@@ -154,6 +171,43 @@ export function NouveauEntityForm({ slug, meta }: Props) {
   const [offreMissionPick, setOffreMissionPick] = useState<Record<string, boolean>>({});
   const [agenceScope, setAgenceScope] = useState<AgenceScopeId>("ALL");
 
+  // Commande — import bon de commande (extraction PDF) et échéancier de paiement
+  const [bcFile, setBcFile] = useState<File | null>(null);
+  const [bcExtracting, setBcExtracting] = useState(false);
+  const [bcExtractError, setBcExtractError] = useState<string | null>(null);
+  const [bcExtraction, setBcExtraction] = useState<{
+    numero: string | null;
+    adresse: string | null;
+    fournisseur: string | null;
+    client: string | null;
+    montantTtc: number | null;
+    referenceDevis: string | null;
+  } | null>(null);
+  const [paiementMode, setPaiementMode] = useState<"UNIQUE" | "ECHELONNE">("UNIQUE");
+  const [echeances, setEcheances] = useState<{ montant: string; date: string }[]>([{ montant: "", date: "" }]);
+  const [bcPreviewUrl, setBcPreviewUrl] = useState<string | null>(null);
+  const [showBcPreview, setShowBcPreview] = useState(false);
+  // Client/Site/Paiement restent masqués tant que l'extraction n'a pas tourné (ou échoué) au
+  // moins une fois — l'extraction est censée les remplir automatiquement pour une commande.
+  const [showManualFields, setShowManualFields] = useState(false);
+
+  // Commande créée depuis le bouton « Créer une commande » d'une offre (CrmTablePage) :
+  // récupère le contexte de l'offre via les paramètres d'URL pour pré-remplir le formulaire.
+  const [offreOrigine, setOffreOrigine] = useState<{ offreId: number; numeroOffre: string } | null>(null);
+
+  // Aperçu du bon de commande déposé — utile si l'extraction automatique échoue
+  // (PDF scanné/image sans calque texte) : l'admin peut consulter le document
+  // et saisir les champs manuellement à la place.
+  useEffect(() => {
+    if (!bcFile) {
+      setBcPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(bcFile);
+    setBcPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [bcFile]);
+
   useEffect(() => {
     setAgenceScope(readAgenceScope());
     return onAgenceScopeChange(() => setAgenceScope(readAgenceScope()));
@@ -164,6 +218,14 @@ export function NouveauEntityForm({ slug, meta }: Props) {
     return clients.filter((c) => rowMatchesAgenceScope(c as unknown as Record<string, unknown>, agenceScope));
   }, [clients, slug, agenceScope]);
 
+  const [siteClientAutre, setSiteClientAutre] = useState(false);
+
+  const siteClientOptions = useMemo(() => {
+    const names = new Set<string>(SUGGESTED_CLIENTS_GROUPEMENT);
+    for (const c of clientsForSite) names.add(c.raisonSociale);
+    return [...names].sort((a, b) => a.localeCompare(b));
+  }, [clientsForSite]);
+
   useEffect(() => {
     if (!["site", "offre", "commande", "facture"].includes(slug)) return;
     const token = readToken();
@@ -173,12 +235,13 @@ export function NouveauEntityForm({ slug, meta }: Props) {
         const calls: Promise<unknown>[] = [];
         calls.push(apiFetch("/api/clients", { token }));
         if (slug === "offre" || slug === "commande") calls.push(apiFetch("/api/sites", { token }));
-        if (slug === "facture") calls.push(apiFetch("/api/commandes", { token }));
+        if (slug === "facture" || slug === "commande") calls.push(apiFetch("/api/commandes", { token }));
         const data = await Promise.all(calls);
         if (cancel) return;
         setClients(Array.isArray(data[0]) ? (data[0] as ClientRow[]) : []);
         if (slug === "offre" || slug === "commande") setSites(Array.isArray(data[1]) ? (data[1] as SiteRow[]) : []);
         if (slug === "facture") setCommandes(Array.isArray(data[1]) ? (data[1] as CommandeRow[]) : []);
+        if (slug === "commande") setCommandes(Array.isArray(data[2]) ? (data[2] as CommandeRow[]) : []);
       } catch {
         if (!cancel) setErr("Impossible de charger les référentiels (clients/sites/commandes).");
       }
@@ -186,6 +249,30 @@ export function NouveauEntityForm({ slug, meta }: Props) {
     return () => {
       cancel = true;
     };
+  }, [slug]);
+
+  // Pré-remplissage depuis le bouton « Créer une commande » d'une offre (CrmTablePage) :
+  // ?offreId=…&numeroOffre=…&clientNom=…&siteNom=…&montantHt=…&typeMission=…
+  useEffect(() => {
+    if (slug !== "commande") return;
+    const qs = new URLSearchParams(window.location.search);
+    const offreId = qs.get("offreId");
+    if (!offreId) return;
+    const numeroOffre = qs.get("numeroOffre") || "";
+    const clientNom = qs.get("clientNom") || "";
+    const siteNom = qs.get("siteNom") || "";
+    const montantHt = qs.get("montantHt") || "";
+    const typeMission = qs.get("typeMission") || "";
+    if (clientNom) setField("clientNom", clientNom);
+    if (siteNom) setField("siteNom", siteNom);
+    if (typeMission) setCommandeMissionPick((prev) => ({ ...prev, [typeMission]: true }));
+    if (montantHt && Number(montantHt) > 0) {
+      setEcheances([{ montant: montantHt, date: "" }]);
+    }
+    setOffreOrigine({ offreId: Number(offreId), numeroOffre });
+    // Le client/site sont déjà connus via l'offre : pas besoin d'attendre l'extraction du bon
+    // de commande pour les afficher — l'admin n'a plus qu'à vérifier/compléter.
+    setShowManualFields(true);
   }, [slug]);
 
   useEffect(() => {
@@ -256,9 +343,9 @@ export function NouveauEntityForm({ slug, meta }: Props) {
           ...prev,
           consultantEmail: prev.consultantEmail?.trim() ? prev.consultantEmail : st?.defaultConsultantEmail ?? "",
           tauxTva:
-            prev.tauxTva && prev.tauxTva !== "20"
+            prev.tauxTva && prev.tauxTva !== "8.5"
               ? prev.tauxTva
-              : String(st?.tvaMetropolePercent ?? 20),
+              : String(st?.tvaDomPercent ?? 8.5),
         }));
       } catch {
         /* ignore */
@@ -385,6 +472,64 @@ export function NouveauEntityForm({ slug, meta }: Props) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  async function extractBonCommande() {
+    if (!bcFile) return;
+    setBcExtracting(true);
+    setBcExtractError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", bcFile);
+      const data = await apiFetch<{
+        numero: string | null;
+        adresse: string | null;
+        fournisseur: string | null;
+        client: string | null;
+        montantTtc: number | null;
+        referenceDevis: string | null;
+      }>("/api/commandes/extract-bon-commande", { token: readToken(), method: "POST", body: fd });
+      if (!data) return;
+      setBcExtraction(data);
+      setForm((prev) => ({
+        ...prev,
+        numeroClient: data.numero ?? prev.numeroClient,
+      }));
+      if (data.client) {
+        const match = clients.find((c) => c.raisonSociale.toUpperCase() === data.client?.toUpperCase());
+        if (match) {
+          setField("clientNom", match.raisonSociale);
+          const matchingSites = sites.filter((s) => s.clientNom === match.raisonSociale);
+          if (matchingSites.length === 1) setField("siteNom", matchingSites[0].nom);
+        }
+      }
+      if (data.montantTtc != null) {
+        setEcheances((prev) =>
+          prev.length === 1 && !prev[0].montant.trim() ? [{ ...prev[0], montant: String(data.montantTtc) }] : prev,
+        );
+      }
+      setShowManualFields(true);
+    } catch (e) {
+      setBcExtractError(e instanceof Error ? e.message : "Erreur lors de l'extraction");
+      setShowBcPreview(true);
+      // Extraction impossible (image / PDF scanné) : on ouvre directement les champs manuels
+      // au lieu de laisser l'admin chercher comment compléter la commande.
+      setShowManualFields(true);
+    } finally {
+      setBcExtracting(false);
+    }
+  }
+
+  function addEcheance() {
+    setEcheances((prev) => [...prev, { montant: "", date: "" }]);
+  }
+
+  function removeEcheance(i: number) {
+    setEcheances((prev) => (prev.length <= 1 ? prev : prev.filter((_, idx) => idx !== i)));
+  }
+
+  function updateEcheance(i: number, patch: Partial<{ montant: string; date: string }>) {
+    setEcheances((prev) => prev.map((e, idx) => (idx === i ? { ...e, ...patch } : e)));
+  }
+
   function validate(): string | null {
     if (slug === "contact") {
       if (!form.nom.trim() || !form.prenom.trim()) return "Nom et prénom sont obligatoires.";
@@ -399,29 +544,17 @@ export function NouveauEntityForm({ slug, meta }: Props) {
     }
     if (slug === "offre" || slug === "commande") {
       if (!form.clientNom.trim() || !form.siteNom.trim()) return "Client et site sont obligatoires.";
-      if (!isPositiveNumber(form.montantHt)) return "Montant HT invalide.";
-      if (slug === "commande" && !isPositiveNumber(form.montantFacture)) return "Montant facturé invalide.";
+      if (slug === "offre" && !isPositiveNumber(form.montantHt)) return "Montant HT invalide.";
     }
     if (slug === "offre") {
       if (!offreMissionsSelected.length) return "Sélectionnez au moins un type de mission.";
       const refErr = validateOffreReference(form.numeroOffre, offrePrimaryMission);
       if (refErr) return refErr;
-      const mode = form.phasesMode || "SELECTION";
-      if (mode === "SELECTION") {
-        const any = refPhases.some((p) => phasePick[p.code]);
-        if (!any) return "Sélectionnez au moins une phase du référentiel, ou passez en mode « Tout » / « Personnalisé ».";
-      }
-      if (mode === "CUSTOM") {
-        const lines = (form.customPhases || "").split("\n").filter((l) => l.trim());
-        if (!lines.length) return "Mode personnalisé : une ligne minimum (format CODE|Libellé|montant HT).";
-      }
     }
     if (slug === "commande") {
-      const selected = LVO_MISSION_TYPES.filter((t) => commandeMissionPick[t]);
-      if (!selected.length) return "Sélectionnez au moins un type de mission.";
-      const primary = primaryMissionFromSelection(selected);
-      const refErr = validateCommandeReference(form.numeroCommande, primary);
-      if (refErr) return refErr;
+      const valid = echeances.filter((e) => e.montant.trim() && e.date.trim());
+      if (!valid.length) return "Indiquez le montant et la date du paiement.";
+      if (valid.some((e) => !isPositiveNumber(e.montant))) return "Montant d'échéance invalide.";
     }
     if (slug === "facture") {
       if (!form.numeroCommande.trim()) return "Numéro de commande obligatoire.";
@@ -562,19 +695,23 @@ export function NouveauEntityForm({ slug, meta }: Props) {
         };
       }
       if (slug === "commande") {
-        const selected = LVO_MISSION_TYPES.filter((t) => commandeMissionPick[t]);
-        const primary = primaryMissionFromSelection(selected);
+        const valid = echeances.filter((e) => e.montant.trim() && e.date.trim());
+        const sumMontant = valid.reduce((s, e) => s + Number(e.montant), 0);
+        const numeroCommande = nextCommandeNumero(commandes, "MS");
         return {
-          numeroCommande: form.numeroCommande,
-          dateCommande: form.dateCommande || null,
-          typeMission: primary,
-          typeMissions: selected,
-          statut: form.statut?.trim() || "EN_ATTENTE",
-          montantHt: Number(form.montantHt),
-          montantFacture: Number(form.montantFacture),
+          numeroCommande,
+          dateCommande: valid[0]?.date || new Date().toISOString().slice(0, 10),
+          typeMission: "MS",
+          typeMissions: ["MS"],
+          statut: "EN_ATTENTE",
+          montantHt: sumMontant,
+          montantFacture: 0,
           clientNom: form.clientNom,
           siteNom: form.siteNom,
-          numeroClient: form.numeroClient?.trim() || null,
+          numeroClient: bcExtraction?.numero?.trim() || null,
+          modePaiementCommande: paiementMode,
+          echeancierPaiement: valid.map((e) => ({ montant: Number(e.montant), date: e.date })),
+          offreId: offreOrigine?.offreId ?? null,
         };
       }
       if (slug === "facture") {
@@ -604,18 +741,22 @@ export function NouveauEntityForm({ slug, meta }: Props) {
     setSaving(true);
     void (async () => {
       try {
-        await apiFetch(target, {
+        const result = await apiFetch(target, {
           token,
           method: "POST",
           body: JSON.stringify(postJsonBody()),
-        });
-        setOk("Enregistrement effectué.");
+        }) as { id?: number; defaultPassword?: string } | null;
+        const passwordNote =
+          slug === "contact" && result?.defaultPassword
+            ? ` — Mot de passe provisoire espace client : ${result.defaultPassword}`
+            : "";
+        setOk(`Enregistrement effectué.${passwordNote}`);
         notifyCountsRefresh();
         if (meta.listHref) {
           setTimeout(() => {
             router.push(meta.listHref as string);
             router.refresh();
-          }, 500);
+          }, passwordNote ? 4000 : 500);
         }
       } catch (error) {
         setErr(error instanceof Error ? error.message : "Erreur lors de l'enregistrement.");
@@ -651,410 +792,492 @@ export function NouveauEntityForm({ slug, meta }: Props) {
           {(slug === "contact" || slug === "client" || slug === "site" || slug === "offre" || slug === "commande" || slug === "facture") && (
             <>
               {slug === "contact" ? (
-                <ContactFormFields
-                  idPrefix={fid}
-                  values={{
-                    civilite: form.civilite,
-                    prenom: form.prenom,
-                    nom: form.nom,
-                    entreprise: form.entreprise,
-                    fonction: form.fonction,
-                    email: form.email,
-                    telephone: form.telephone,
-                    mobile: form.mobile ?? "",
-                  }}
-                  onChange={(patch) => {
-                    for (const [k, v] of Object.entries(patch)) setField(k, v);
-                  }}
-                />
+                <div className="crm-stack crm-span-2">
+                  <p className="crm-stack-title">
+                    <span className="crm-stack-title__icon" aria-hidden>◇</span> Contact
+                  </p>
+                  <div className="crm-form-grid crm-form-grid--tight">
+                    <ContactFormFields
+                      idPrefix={fid}
+                      values={{
+                        civilite: form.civilite,
+                        prenom: form.prenom,
+                        nom: form.nom,
+                        entreprise: form.entreprise,
+                        fonction: form.fonction,
+                        email: form.email,
+                        telephone: form.telephone,
+                        mobile: form.mobile ?? "",
+                      }}
+                      onChange={(patch) => {
+                        for (const [k, v] of Object.entries(patch)) setField(k, v);
+                      }}
+                    />
+                  </div>
+                </div>
               ) : null}
 
               {slug === "client" ? (
                 <>
-                  <label className="crm-field crm-span-2">
-                    <span className="crm-label">
-                      Raison sociale <span className="crm-req">*</span>
-                    </span>
-                    <input className="crm-input" value={form.raisonSociale} onChange={(e) => setField("raisonSociale", e.target.value)} placeholder="Société anonyme…" autoComplete="organization" />
-                  </label>
-                  <label className="crm-field">
-                    <span className="crm-label">Entité / département</span>
-                    <input className="crm-input" value={form.entite} onChange={(e) => setField("entite", e.target.value)} placeholder="Siège, agence…" />
-                  </label>
-                  <label className="crm-field">
-                    <span className="crm-label">Téléphone</span>
-                    <input className="crm-input" type="tel" value={form.telephone} onChange={(e) => setField("telephone", e.target.value)} placeholder="+33 …" />
-                  </label>
-                  <label className="crm-field crm-span-2">
-                    <span className="crm-label">Email</span>
-                    <input className="crm-input" type="email" value={form.email} onChange={(e) => setField("email", e.target.value)} placeholder="contact@entreprise.fr" />
-                  </label>
-                  <label className="crm-field crm-span-2">
-                    <span className="crm-label">
-                      SIRET <span className="crm-opt">(optionnel)</span>
-                    </span>
-                    <input className="crm-input" value={form.siret} onChange={(e) => setField("siret", e.target.value)} placeholder="14 chiffres" inputMode="numeric" />
-                  </label>
-                  <label className="crm-field crm-span-2">
-                    <span className="crm-label">Responsable client (suivi)</span>
-                    <input
-                      className="crm-input"
-                      type="email"
-                      value={form.responsableEmail ?? ""}
-                      onChange={(e) => setField("responsableEmail", e.target.value)}
-                      placeholder="contact.technique@client.fr"
-                    />
-                    <p className="crm-hint">Référent côté client pour le suivi des étapes (distinct de l’email société).</p>
-                  </label>
+                  <div className="crm-stack crm-span-2">
+                    <p className="crm-stack-title">
+                      <span className="crm-stack-title__icon" aria-hidden>◎</span> Identité
+                    </p>
+                    <div className="crm-form-grid crm-form-grid--tight">
+                      <label className="crm-field crm-span-2">
+                        <span className="crm-label">
+                          Raison sociale <span className="crm-req">*</span>
+                        </span>
+                        <input className="crm-input" value={form.raisonSociale} onChange={(e) => setField("raisonSociale", e.target.value)} placeholder="Société anonyme…" autoComplete="organization" />
+                      </label>
+                      <label className="crm-field">
+                        <span className="crm-label">Entité / département</span>
+                        <input className="crm-input" value={form.entite} onChange={(e) => setField("entite", e.target.value)} placeholder="Siège, agence…" />
+                      </label>
+                      <label className="crm-field">
+                        <span className="crm-label">
+                          SIRET <span className="crm-opt">(optionnel)</span>
+                        </span>
+                        <input className="crm-input" value={form.siret} onChange={(e) => setField("siret", e.target.value)} placeholder="14 chiffres" inputMode="numeric" />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="crm-stack crm-span-2">
+                    <p className="crm-stack-title">
+                      <span className="crm-stack-title__icon" aria-hidden>@</span> Coordonnées
+                    </p>
+                    <div className="crm-form-grid crm-form-grid--tight">
+                      <label className="crm-field">
+                        <span className="crm-label">Téléphone</span>
+                        <input className="crm-input" type="tel" value={form.telephone} onChange={(e) => setField("telephone", e.target.value)} placeholder="+33 …" />
+                      </label>
+                      <label className="crm-field">
+                        <span className="crm-label">Email</span>
+                        <input className="crm-input" type="email" value={form.email} onChange={(e) => setField("email", e.target.value)} placeholder="contact@entreprise.fr" />
+                      </label>
+                      <label className="crm-field crm-span-2">
+                        <span className="crm-label">Responsable client (suivi)</span>
+                        <input
+                          className="crm-input"
+                          type="email"
+                          value={form.responsableEmail ?? ""}
+                          onChange={(e) => setField("responsableEmail", e.target.value)}
+                          placeholder="contact.technique@client.fr"
+                        />
+                        <p className="crm-hint">Référent côté client pour le suivi des étapes (distinct de l’email société).</p>
+                      </label>
+                    </div>
+                  </div>
                 </>
               ) : null}
 
               {slug === "site" ? (
                 <>
-                  <label className="crm-field">
-                    <span className="crm-label">
-                      Nom du site <span className="crm-req">*</span>
-                    </span>
-                    <input className="crm-input" value={form.nom} onChange={(e) => setField("nom", e.target.value)} placeholder="Libellé interne du site" />
-                  </label>
-                  <label className="crm-field">
-                    <span className="crm-label">Type de site</span>
-                    <input className="crm-input" value={form.typeSite} onChange={(e) => setField("typeSite", e.target.value)} placeholder="Bureaux, entrepôt, gare…" />
-                  </label>
-                  <label className="crm-field crm-span-2">
-                    <span className="crm-label">Adresse</span>
-                    <input className="crm-input" value={form.adresse ?? ""} onChange={(e) => setField("adresse", e.target.value)} placeholder="Voie, code postal, ville" autoComplete="street-address" />
-                  </label>
-                  <div className="crm-field crm-span-2">
-                    <label htmlFor={`${fid}-site-client`} className="crm-label">
-                      Client rattaché <span className="crm-req">*</span>
-                    </label>
-                    <select id={`${fid}-site-client`} className="crm-select" value={form.clientNom} onChange={(e) => setField("clientNom", e.target.value)}>
-                      <option value="">Choisir un client…</option>
-                      {clientsForSite.map((c) => (
-                        <option key={c.id} value={c.raisonSociale}>
-                          {c.raisonSociale}
-                        </option>
-                      ))}
-                    </select>
-                    {agenceScope !== "ALL" ? (
-                      <p className="crm-hint">
-                        Périmètre actif : {scopeDef(agenceScope).label} — seuls les clients de cette agence sont
-                        proposés (le site apparaîtra dans la liste avec le même périmètre).
-                      </p>
-                    ) : null}
+                  <div className="crm-stack crm-span-2">
+                    <p className="crm-stack-title">
+                      <span className="crm-stack-title__icon" aria-hidden>▣</span> Identité du site
+                    </p>
+                    <div className="crm-form-grid crm-form-grid--tight">
+                      <label className="crm-field">
+                        <span className="crm-label">
+                          Nom du site <span className="crm-req">*</span>
+                        </span>
+                        <input className="crm-input" value={form.nom} onChange={(e) => setField("nom", e.target.value)} placeholder="Libellé interne du site" />
+                      </label>
+                      <label className="crm-field">
+                        <span className="crm-label">Type de site</span>
+                        <input className="crm-input" value={form.typeSite} onChange={(e) => setField("typeSite", e.target.value)} placeholder="Bureaux, entrepôt, gare…" />
+                      </label>
+                      <label className="crm-field crm-span-2">
+                        <span className="crm-label">Adresse</span>
+                        <input className="crm-input" value={form.adresse ?? ""} onChange={(e) => setField("adresse", e.target.value)} placeholder="Voie, code postal, ville" autoComplete="street-address" />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="crm-stack crm-span-2">
+                    <p className="crm-stack-title">
+                      <span className="crm-stack-title__icon" aria-hidden>◎</span> Rattachement client
+                    </p>
+                    <div className="crm-form-grid crm-form-grid--tight">
+                      <div className="crm-field crm-span-2">
+                        <label htmlFor={`${fid}-site-client`} className="crm-label">
+                          Client rattaché <span className="crm-req">*</span>
+                        </label>
+                        <select
+                          id={`${fid}-site-client`}
+                          className="crm-select"
+                          value={siteClientAutre ? SITE_CLIENT_AUTRE : form.clientNom}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            if (v === SITE_CLIENT_AUTRE) {
+                              setSiteClientAutre(true);
+                              setField("clientNom", "");
+                            } else {
+                              setSiteClientAutre(false);
+                              setField("clientNom", v);
+                            }
+                          }}
+                        >
+                          <option value="">Choisir un client…</option>
+                          {siteClientOptions.map((name) => (
+                            <option key={name} value={name}>
+                              {name}
+                            </option>
+                          ))}
+                          <option value={SITE_CLIENT_AUTRE}>Autre (saisie libre)…</option>
+                        </select>
+                        {siteClientAutre ? (
+                          <input
+                            className="crm-input"
+                            style={{ marginTop: 8 }}
+                            value={form.clientNom}
+                            onChange={(e) => setField("clientNom", e.target.value)}
+                            placeholder="Nom du client"
+                            autoFocus
+                          />
+                        ) : null}
+                        {agenceScope !== "ALL" ? (
+                          <p className="crm-hint">
+                            Périmètre actif : {scopeDef(agenceScope).label} — seuls les clients de cette agence sont
+                            proposés (le site apparaîtra dans la liste avec le même périmètre).
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
                 </>
               ) : null}
 
               {slug === "offre" || slug === "commande" ? (
                 <>
-                  <div className="crm-field crm-span-2">
-                    <label htmlFor={`${fid}-ref-num`} className="crm-label">
-                      {slug === "offre" ? "Référence offre" : "Référence commande"}
-                    </label>
-                    <input
-                      id={`${fid}-ref-num`}
-                      className="crm-input"
-                      value={slug === "offre" ? form.numeroOffre : form.numeroCommande}
-                      onChange={(e) => setField(slug === "offre" ? "numeroOffre" : "numeroCommande", e.target.value)}
-                      placeholder={slug === "offre" ? "ex. LVO-MOE-26009" : "ex. 2026-LVO-MOE-006"}
-                    />
-                    <p className="crm-hint">
-                      {slug === "offre"
-                        ? `${hints.offre} — le TYPE du n° doit être le type « principal » parmi les missions cochées (ordre LVO : A, ADC, MOE…).`
-                        : `${hints.commande} — le préfixe TYPE doit être le type « principal » (ordre LVO : A, ADC, MOE…) parmi les missions cochées.`}
-                    </p>
-                  </div>
+                  {slug === "commande" && offreOrigine ? (
+                    <div className="crm-stack crm-span-2">
+                      <p className="crm-alert crm-alert--info">
+                        Commande créée à partir de l&apos;offre <strong>{offreOrigine.numeroOffre || "—"}</strong> —
+                        client, site et montant ont été repris automatiquement ; vérifiez-les ci-dessous.
+                      </p>
+                    </div>
+                  ) : null}
                   {slug === "commande" ? (
-                    <label className="crm-field crm-span-2">
-                      <span className="crm-label">N° bon / commande client</span>
-                      <input className="crm-input" value={form.numeroClient ?? ""} onChange={(e) => setField("numeroClient", e.target.value)} placeholder="Référence chez le client (Phase 9)" />
-                    </label>
-                  ) : null}
-                  <label className="crm-field">
-                    <span className="crm-label">{slug === "offre" ? "Date de l’offre" : "Date de commande"}</span>
-                    <input className="crm-input" type="date" value={slug === "offre" ? form.dateOffre : form.dateCommande} onChange={(e) => setField(slug === "offre" ? "dateOffre" : "dateCommande", e.target.value)} />
-                  </label>
-                  <div className="crm-field">
-                    <label htmlFor={`${fid}-cmd-client`} className="crm-label">
-                      Client <span className="crm-req">*</span>
-                    </label>
-                    <select id={`${fid}-cmd-client`} className="crm-select" value={form.clientNom} onChange={(e) => setField("clientNom", e.target.value)}>
-                      {slug === "offre" ? (
-                        <>
-                          {(offreParties?.options ?? clients.map((c) => ({ clientNom: c.raisonSociale, label: c.raisonSociale }))).map((o) => (
-                            <option key={o.clientNom} value={o.clientNom}>
-                              {o.label}
-                            </option>
-                          ))}
-                        </>
-                      ) : (
-                        <>
-                          <option value="">Choisir un client…</option>
-                          {clients.map((c) => (
-                            <option key={c.id} value={c.raisonSociale}>
-                              {c.raisonSociale}
-                            </option>
-                          ))}
-                        </>
-                      )}
-                    </select>
-                  </div>
-                  {slug === "offre" ? (
-                    <p className="crm-hint crm-span-2">
-                      Client destinataire : propriétaire du site et/ou gestionnaires actifs — défaut : gestionnaire principal si défini.
-                    </p>
-                  ) : null}
-                  <div className="crm-field">
-                    <label htmlFor={`${fid}-cmd-site`} className="crm-label">
-                      Site <span className="crm-req">*</span>
-                    </label>
-                    <select id={`${fid}-cmd-site`} className="crm-select" value={form.siteNom} onChange={(e) => setField("siteNom", e.target.value)}>
-                      <option value="">Choisir un site…</option>
-                      {filteredSites.map((s) => (
-                        <option key={s.id} value={s.nom}>
-                          {s.nom}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {slug === "offre" ? (
-                    <div className="crm-field crm-span-2">
-                      <span className="crm-label">Types de mission (sélection multiple)</span>
-                      <div className="crm-checkbox-grid mt-1">
-                        {LVO_MISSION_TYPES.map((t) => (
-                          <label key={`offre-m-${t}`} className="crm-field-check">
-                            <input
-                              type="checkbox"
-                              checked={!!offreMissionPick[t]}
-                              onChange={() => {
-                                setOffreMissionPick((prev) => {
-                                  const next = { ...prev, [t]: !prev[t] };
-                                  const any = LVO_MISSION_TYPES.some((x) => next[x]);
-                                  if (!any) return { ...prev, [t]: true };
-                                  return next;
-                                });
-                              }}
-                            />
-                            {t}
-                          </label>
-                        ))}
+                    <div className="crm-stack crm-span-2">
+                      <p className="crm-stack-title">
+                        <span className="crm-stack-title__icon" aria-hidden>⇪</span> Bon de commande
+                      </p>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                        <input
+                          type="file"
+                          accept="application/pdf,image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] ?? null;
+                            setBcFile(file);
+                            setBcExtraction(null);
+                            setBcExtractError(null);
+                            if (file && file.type.startsWith("image/")) {
+                              // Image : pas de texte à extraire, on ouvre directement la saisie manuelle
+                              // au lieu de tenter une extraction PDF qui échouerait à coup sûr.
+                              setBcExtractError("Image détectée — l'extraction automatique ne fonctionne que sur un PDF texte.");
+                              setShowBcPreview(true);
+                              setShowManualFields(true);
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="cbtn cbtn-ghost cbtn-sm"
+                          disabled={!bcFile || bcExtracting || bcFile.type.startsWith("image/")}
+                          onClick={() => void extractBonCommande()}
+                        >
+                          {bcExtracting ? "Extraction…" : "Extraire les données"}
+                        </button>
+                        {bcPreviewUrl ? (
+                          <button type="button" className="cbtn cbtn-ghost cbtn-sm" onClick={() => setShowBcPreview(true)}>
+                            Voir le document
+                          </button>
+                        ) : null}
                       </div>
-                      {offreMissionsSelected.length > 1 ? (
-                        <p className="crm-hint mt-1">
-                          Type principal pour le n° d&apos;offre : <strong>{offrePrimaryMission}</strong>
+                      <p className="crm-hint">
+                        PDF ou photo/scan (image) acceptés. Au lieu de tout saisir à la main : dépose le bon de
+                        commande, le n° du bon client, l&apos;adresse, le fournisseur et le client sont détectés
+                        automatiquement à partir d&apos;un PDF texte — si le client détecté n&apos;a qu&apos;un seul
+                        site, il est aussi pré-sélectionné, et le montant détecté pré-remplit la première échéance (à
+                        vérifier). Pour une image ou un PDF scanné, l&apos;extraction automatique échoue : complétez
+                        les champs Client / Site / Paiement ci-dessous à partir du document affiché avec « Voir le
+                        document ». Le n° de commande LVO interne (ex. LVO-MS-2026-001) est attribué automatiquement
+                        à l&apos;enregistrement.
+                      </p>
+                      {bcExtractError ? (
+                        <p className="crm-alert crm-alert--error mt-1">
+                          {bcExtractError} — le document est probablement scanné (image, pas de texte). Consultez-le avec
+                          « Voir le document » et remplissez Client / Site / Paiement à la main ci-dessous.
                         </p>
                       ) : null}
+                      {!showManualFields ? (
+                        <button
+                          type="button"
+                          className="cbtn cbtn-ghost cbtn-sm mt-1"
+                          onClick={() => setShowManualFields(true)}
+                        >
+                          Remplir Client / Site / Paiement manuellement
+                        </button>
+                      ) : null}
+                      {bcExtraction ? (
+                        <dl className="crm-hint" style={{ display: "grid", gridTemplateColumns: "100px 1fr", rowGap: 4, marginTop: 6 }}>
+                          <dt>N°</dt>
+                          <dd>{bcExtraction.numero ?? "—"}</dd>
+                          <dt>Adresse</dt>
+                          <dd>{bcExtraction.adresse ?? "—"}</dd>
+                          <dt>Fournisseur</dt>
+                          <dd>{bcExtraction.fournisseur ?? "—"}</dd>
+                          <dt>Client détecté</dt>
+                          <dd>{bcExtraction.client ?? "—"}</dd>
+                          <dt>Montant TTC</dt>
+                          <dd>{bcExtraction.montantTtc != null ? `${bcExtraction.montantTtc.toLocaleString("fr-FR")} €` : "—"} (à vérifier avant de saisir le Montant HT)</dd>
+                          <dt>Réf. devis</dt>
+                          <dd>{bcExtraction.referenceDevis ?? "—"}</dd>
+                        </dl>
+                      ) : null}
                     </div>
-                  ) : (
-                    <div className="crm-field crm-span-2">
-                      <span className="crm-label">Types de mission (sélection multiple)</span>
-                      <div className="crm-checkbox-grid mt-1">
-                        {LVO_MISSION_TYPES.map((t) => (
-                          <label key={t} className="crm-field-check">
-                            <input
-                              type="checkbox"
-                              checked={!!commandeMissionPick[t]}
-                              onChange={() => {
-                                setCommandeMissionPick((prev) => {
-                                  const next = { ...prev, [t]: !prev[t] };
-                                  const any = LVO_MISSION_TYPES.some((x) => next[x]);
-                                  if (!any) return { ...prev, [t]: true };
-                                  return next;
-                                });
-                              }}
-                            />
-                            {t}
+                  ) : null}
+                  {slug === "offre" ? (
+                    <div className="crm-stack crm-span-2">
+                      <p className="crm-stack-title">
+                        <span className="crm-stack-title__icon" aria-hidden>▤</span> Référence &amp; date
+                      </p>
+                      <div className="crm-form-grid crm-form-grid--tight">
+                        <div className="crm-field crm-span-2">
+                          <label htmlFor={`${fid}-ref-num`} className="crm-label">
+                            Référence offre
                           </label>
-                        ))}
+                          <input
+                            id={`${fid}-ref-num`}
+                            className="crm-input"
+                            value={form.numeroOffre}
+                            onChange={(e) => setField("numeroOffre", e.target.value)}
+                            placeholder="ex. LVO-MOE-26009"
+                          />
+                          <p className="crm-hint">
+                            {hints.offre} — le TYPE du n° doit être le type « principal » parmi les missions cochées (ordre LVO : A, ADC, MOE…).
+                          </p>
+                        </div>
+                        <label className="crm-field">
+                          <span className="crm-label">Date de l’offre</span>
+                          <input className="crm-input" type="date" value={form.dateOffre} onChange={(e) => setField("dateOffre", e.target.value)} />
+                        </label>
                       </div>
                     </div>
-                  )}
-                  {slug === "offre" ? (
-                    <label className="crm-field">
-                      <span className="crm-label">Statut</span>
-                      <select className="crm-select" value={form.statut} onChange={(e) => setField("statut", e.target.value)}>
-                        {CRM_OFFRE_STATUTS.map((o) => (
-                          <option key={o.value} value={o.value}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  ) : (
-                    <>
-                      <label className="crm-field">
-                        <span className="crm-label">Statut commande</span>
-                        <select className="crm-select" value={form.statut ?? "EN_ATTENTE"} onChange={(e) => setField("statut", e.target.value)}>
-                          {CRM_COMMANDE_STATUTS.map((o) => (
-                            <option key={o.value} value={o.value}>
-                              {o.label}
+                  ) : null}
+                  {slug === "offre" || showManualFields ? (
+                  <div className="crm-stack crm-span-2">
+                    <p className="crm-stack-title">
+                      <span className="crm-stack-title__icon" aria-hidden>◎</span> Client &amp; site
+                    </p>
+                    <div className="crm-form-grid crm-form-grid--tight">
+                      <div className="crm-field">
+                        <label htmlFor={`${fid}-cmd-client`} className="crm-label">
+                          Client <span className="crm-req">*</span>
+                        </label>
+                        <select id={`${fid}-cmd-client`} className="crm-select" value={form.clientNom} onChange={(e) => setField("clientNom", e.target.value)}>
+                          {slug === "offre" ? (
+                            <>
+                              {[
+                                ...new Map(
+                                  (offreParties?.options ?? clients.map((c) => ({ clientNom: c.raisonSociale, label: c.raisonSociale }))).map(
+                                    (o) => [o.clientNom, o] as const,
+                                  ),
+                                ).values(),
+                              ].map((o) => (
+                                <option key={o.clientNom} value={o.clientNom}>
+                                  {o.label}
+                                </option>
+                              ))}
+                            </>
+                          ) : (
+                            <>
+                              <option value="">Choisir un client…</option>
+                              {clients.map((c) => (
+                                <option key={c.id} value={c.raisonSociale}>
+                                  {c.raisonSociale}
+                                </option>
+                              ))}
+                            </>
+                          )}
+                        </select>
+                      </div>
+                      <div className="crm-field">
+                        <label htmlFor={`${fid}-cmd-site`} className="crm-label">
+                          Site <span className="crm-req">*</span>
+                        </label>
+                        <select id={`${fid}-cmd-site`} className="crm-select" value={form.siteNom} onChange={(e) => setField("siteNom", e.target.value)}>
+                          <option value="">Choisir un site…</option>
+                          {filteredSites.map((s) => (
+                            <option key={s.id} value={s.nom}>
+                              {s.nom}
                             </option>
                           ))}
                         </select>
-                      </label>
-                      <label className="crm-field">
-                        <span className="crm-label">
-                          Montant facturé (€) <span className="crm-req">*</span>
-                        </span>
-                        <input className="crm-input" inputMode="decimal" value={form.montantFacture} onChange={(e) => setField("montantFacture", e.target.value)} placeholder="0,00" />
-                      </label>
-                    </>
-                  )}
-                  <label className="crm-field crm-span-2">
-                    <span className="crm-label">
-                      Montant HT (€) <span className="crm-req">*</span>
-                    </span>
-                    <input className="crm-input" inputMode="decimal" value={form.montantHt} onChange={(e) => setField("montantHt", e.target.value)} placeholder="0,00" />
-                  </label>
-                  {slug === "offre" ? (
-                    <div className="crm-stack crm-span-2 space-y-3">
-                      <p className="crm-stack-title">Phases d’offre (référentiel)</p>
-                      <div className="crm-form-grid crm-form-grid--tight">
-                        <div className="crm-field">
-                          <label htmlFor={`${fid}-ph-mode`} className="crm-label">
-                            Mode de sélection
-                          </label>
-                          <select
-                            id={`${fid}-ph-mode`}
-                            className="crm-select"
-                            value={form.phasesMode}
-                            onChange={(e) => {
-                              const mode = e.target.value;
-                              if (mode === "ALL") {
-                                const pick: Record<string, boolean> = {};
-                                let sum = 0;
-                                for (const p of refPhases) {
-                                  pick[p.code] = true;
-                                  sum += p.prixIndicatifHt;
-                                }
-                                setPhasePick(pick);
-                                setForm((prev) => ({ ...prev, phasesMode: mode, montantHt: String(sum) }));
-                              } else {
-                                setForm((prev) => ({ ...prev, phasesMode: mode }));
-                              }
-                            }}
-                          >
-                            <option value="ALL">Tout le référentiel</option>
-                            <option value="SELECTION">Sélection</option>
-                            <option value="CUSTOM">Personnalisé (lignes)</option>
-                          </select>
-                        </div>
-                        <div className="crm-field">
-                          <span className="crm-label">Consultant</span>
-                          {consultants.length > 0 ? (
-                            <select className="crm-select" value={form.consultantEmail} onChange={(e) => setField("consultantEmail", e.target.value)}>
-                              {consultants.map((u) => (
-                                <option key={u.id} value={u.email}>
-                                  {u.email} ({u.role})
+                      </div>
+                      {slug === "offre" ? (
+                        <>
+                          <p className="crm-hint crm-span-2">
+                            Client destinataire : propriétaire du site et/ou gestionnaires actifs — défaut : gestionnaire principal si défini.
+                          </p>
+                          <div className="crm-field crm-span-2">
+                            <label htmlFor={`${fid}-offre-gest`} className="crm-label">
+                              Gestionnaire (syndic / prestataire / propriétaire)
+                            </label>
+                            <select
+                              id={`${fid}-offre-gest`}
+                              className="crm-select"
+                              value={form.gestionnaireNom}
+                              disabled={!offreParties?.options.length}
+                              onChange={(e) => {
+                                const nom = e.target.value;
+                                const opt = offreParties?.options.find((o) => o.clientNom === nom);
+                                setField("gestionnaireNom", nom);
+                                if (opt?.responsableContact) setField("gestionnaireContact", opt.responsableContact);
+                              }}
+                            >
+                              <option value="">Choisir…</option>
+                              {(offreParties?.options ?? []).map((o) => (
+                                <option key={`gest-${o.clientNom}`} value={o.clientNom}>
+                                  {o.label}
                                 </option>
                               ))}
                             </select>
-                          ) : (
-                            <input className="crm-input" value={form.consultantEmail} onChange={(e) => setField("consultantEmail", e.target.value)} placeholder="email@lvo-ing.fr" />
-                          )}
-                        </div>
-                        <div className="crm-field crm-span-2">
-                          <label htmlFor={`${fid}-offre-gest`} className="crm-label">
-                            Gestionnaire (syndic / prestataire / propriétaire)
+                            <p className="crm-hint">
+                              Aligné sur les gestionnaires du site (Phase 6) : syndic, prestataire ou propriétaire du site.
+                            </p>
+                          </div>
+                          <label className="crm-field crm-span-2">
+                            <span className="crm-label">Contact gestionnaire (personne)</span>
+                            <input
+                              className="crm-input"
+                              value={form.gestionnaireContact ?? ""}
+                              onChange={(e) => setField("gestionnaireContact", e.target.value)}
+                              placeholder="Nom, email ou téléphone du référent"
+                            />
+                            <p className="crm-hint">Prérempli avec le responsable client si renseigné sur la fiche client.</p>
                           </label>
-                          <select
-                            id={`${fid}-offre-gest`}
-                            className="crm-select"
-                            value={form.gestionnaireNom}
-                            disabled={!offreParties?.options.length}
-                            onChange={(e) => {
-                              const nom = e.target.value;
-                              const opt = offreParties?.options.find((o) => o.clientNom === nom);
-                              setField("gestionnaireNom", nom);
-                              if (opt?.responsableContact) setField("gestionnaireContact", opt.responsableContact);
-                            }}
-                          >
-                            <option value="">Choisir…</option>
-                            {(offreParties?.options ?? []).map((o) => (
-                              <option key={`gest-${o.clientNom}`} value={o.clientNom}>
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
+                  ) : null}
+                  {slug === "offre" ? (
+                    <div className="crm-stack crm-span-2">
+                      <p className="crm-stack-title">
+                        <span className="crm-stack-title__icon" aria-hidden>✓</span> Mission, statut &amp; montant
+                      </p>
+                      <div className="crm-form-grid crm-form-grid--tight">
+                        <div className="crm-field crm-span-2">
+                          <span className="crm-label">Types de mission (sélection multiple)</span>
+                          <div className="crm-checkbox-grid mt-1">
+                            {LVO_MISSION_TYPES.map((t) => (
+                              <label key={`offre-m-${t}`} className="crm-field-check">
+                                <input
+                                  type="checkbox"
+                                  checked={!!offreMissionPick[t]}
+                                  onChange={() => {
+                                    setOffreMissionPick((prev) => {
+                                      const next = { ...prev, [t]: !prev[t] };
+                                      const any = LVO_MISSION_TYPES.some((x) => next[x]);
+                                      if (!any) return { ...prev, [t]: true };
+                                      return next;
+                                    });
+                                  }}
+                                />
+                                {t}
+                              </label>
+                            ))}
+                          </div>
+                          {offreMissionsSelected.length > 1 ? (
+                            <p className="crm-hint mt-1">
+                              Type principal pour le n° d&apos;offre : <strong>{offrePrimaryMission}</strong>
+                            </p>
+                          ) : null}
+                        </div>
+                        <label className="crm-field">
+                          <span className="crm-label">Statut</span>
+                          <select className="crm-select" value={form.statut} onChange={(e) => setField("statut", e.target.value)}>
+                            {CRM_OFFRE_STATUTS.map((o) => (
+                              <option key={o.value} value={o.value}>
                                 {o.label}
                               </option>
                             ))}
                           </select>
-                          <p className="crm-hint">
-                            Aligné sur les gestionnaires du site (Phase 6) : syndic, prestataire ou propriétaire du site.
-                          </p>
-                        </div>
+                        </label>
                         <label className="crm-field crm-span-2">
-                          <span className="crm-label">Contact gestionnaire (personne)</span>
+                          <span className="crm-label">
+                            Montant HT (€) <span className="crm-req">*</span>
+                          </span>
+                          <input className="crm-input" inputMode="decimal" value={form.montantHt} onChange={(e) => setField("montantHt", e.target.value)} placeholder="0,00" />
+                        </label>
+                      </div>
+                    </div>
+                  ) : null}
+                  {slug === "commande" && showManualFields ? (
+                    <div className="crm-stack crm-span-2">
+                      <p className="crm-stack-title">
+                        <span className="crm-stack-title__icon" aria-hidden>€</span> Paiement <span className="crm-req">*</span>
+                      </p>
+                      <div style={{ display: "flex", gap: 16, marginBottom: 8 }}>
+                        <label className="crm-field-check">
                           <input
-                            className="crm-input"
-                            value={form.gestionnaireContact ?? ""}
-                            onChange={(e) => setField("gestionnaireContact", e.target.value)}
-                            placeholder="Nom, email ou téléphone du référent"
+                            type="radio"
+                            checked={paiementMode === "UNIQUE"}
+                            onChange={() => {
+                              setPaiementMode("UNIQUE");
+                              setEcheances((prev) => (prev.length > 1 ? prev.slice(0, 1) : prev.length === 0 ? [{ montant: "", date: "" }] : prev));
+                            }}
                           />
-                          <p className="crm-hint">Prérempli avec le responsable client si renseigné sur la fiche client.</p>
+                          Payée en une seule fois
                         </label>
-                        <label className="crm-field crm-span-2">
-                          <span className="crm-label">Missions composant l&apos;offre (JSON)</span>
-                          <textarea
-                            className="crm-textarea crm-textarea--mono min-h-24"
-                            value={form.missions}
-                            onChange={(e) => setField("missions", e.target.value)}
-                          />
-                          <p className="crm-hint">Tableau : code, libelle, montantHt optionnel — plusieurs missions pour une même offre.</p>
-                        </label>
-                        <label className="crm-field crm-span-2">
-                          <span className="crm-label">TVA (%)</span>
-                          <input className="crm-input" value={form.tauxTva} onChange={(e) => setField("tauxTva", e.target.value)} type="number" step="0.1" min="0" />
-                          <p className="crm-hint">Taux DOM 8,5 % appliqué automatiquement si le client est en Outre-mer.</p>
+                        <label className="crm-field-check">
+                          <input type="radio" checked={paiementMode === "ECHELONNE"} onChange={() => setPaiementMode("ECHELONNE")} />
+                          Payée en plusieurs fois (échéances)
                         </label>
                       </div>
-                      {form.phasesMode !== "CUSTOM" ? (
-                        <ul className="max-h-44 space-y-2 overflow-y-auto rounded-lg border border-[var(--g200)] bg-white p-3 text-sm">
-                          {refPhases.map((p) => (
-                            <li key={p.code} className="flex items-start gap-2">
-                              <input
-                                type="checkbox"
-                                className="mt-1 h-4 w-4 accent-[var(--orange)]"
-                                disabled={form.phasesMode === "ALL"}
-                                checked={!!phasePick[p.code]}
-                                onChange={(e) => {
-                                  const checked = e.target.checked;
-                                  setPhasePick((prev) => ({ ...prev, [p.code]: checked }));
-                                }}
-                              />
-                              <span>
-                                <span className="font-mono text-xs text-neutral-500">{p.code}</span> {p.libelle}{" "}
-                                <span className="text-neutral-500">({p.prixIndicatifHt} € HT indic.)</span>
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <label className="crm-field">
-                          <span className="crm-label">Phases personnalisées</span>
-                          <span className="crm-hint">Une ligne : CODE|Libellé|montant HT</span>
-                          <textarea
-                            className="crm-textarea crm-textarea--mono min-h-28"
-                            value={form.customPhases}
-                            onChange={(e) => setField("customPhases", e.target.value)}
-                            placeholder={"MS-REG|Mission réglementaire|3200\nMS-VP|Visites|2100"}
-                          />
-                        </label>
-                      )}
-                      <label className="crm-field">
-                        <span className="crm-label">Échéancier facturation (JSON)</span>
-                        <textarea className="crm-textarea crm-textarea--mono min-h-20" value={form.echeancierFacturation} onChange={(e) => setField("echeancierFacturation", e.target.value)} />
-                        <p className="crm-hint">
-                          Ajoutez <code className="text-xs">moisFacturation</code> au format AAAA-MM pour le regroupement
-                          mensuel (page Factures).
-                        </p>
-                      </label>
-                      <div>
-                        <PlanningExecutionEditor
-                          value={form.echeancierExecution}
-                          typeMission={offrePrimaryMission}
-                          onChange={(json) => setField("echeancierExecution", json)}
-                        />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {echeances.map((e, i) => (
+                          <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            <input
+                              className="crm-input"
+                              inputMode="decimal"
+                              style={{ flex: 1 }}
+                              value={e.montant}
+                              onChange={(ev) => updateEcheance(i, { montant: ev.target.value })}
+                              placeholder={paiementMode === "ECHELONNE" ? `Montant échéance ${i + 1} (€)` : "Montant (€)"}
+                            />
+                            <input
+                              className="crm-input"
+                              type="date"
+                              style={{ flex: 1 }}
+                              value={e.date}
+                              onChange={(ev) => updateEcheance(i, { date: ev.target.value })}
+                            />
+                            {paiementMode === "ECHELONNE" ? (
+                              <button
+                                type="button"
+                                className="cbtn cbtn-ghost cbtn-sm"
+                                disabled={echeances.length <= 1}
+                                onClick={() => removeEcheance(i)}
+                              >
+                                ✕
+                              </button>
+                            ) : null}
+                          </div>
+                        ))}
+                        {paiementMode === "ECHELONNE" ? (
+                          <button type="button" className="cbtn cbtn-ghost cbtn-sm" style={{ alignSelf: "flex-start" }} onClick={addEcheance}>
+                            + Ajouter une échéance
+                          </button>
+                        ) : null}
                       </div>
+                      <p className="crm-hint">
+                        {paiementMode === "ECHELONNE"
+                          ? "Indiquez le montant et la date de chaque échéance — leur somme constitue le Montant HT de la commande."
+                          : "Montant et date du paiement unique — devient le Montant HT de la commande."}
+                      </p>
                     </div>
                   ) : null}
                 </>
@@ -1150,6 +1373,34 @@ export function NouveauEntityForm({ slug, meta }: Props) {
           )}
         </div>
       </form>
+
+      {showBcPreview && bcPreviewUrl ? (
+        <div className="crm-modal-backdrop" onClick={() => setShowBcPreview(false)}>
+          <div
+            className="crm-modal-shell fcard crm-modal-shell--xl"
+            style={{ height: "85vh" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="fcard-hdr crm-modal-hdr">
+              <div className="min-w-0 flex-1">
+                <h2>Aperçu du bon de commande</h2>
+                <div className="fcard-hdr-sub">{bcFile?.name}</div>
+              </div>
+              {!showManualFields ? (
+                <button type="button" className="cbtn cbtn-orange cbtn-sm shrink-0" onClick={() => setShowManualFields(true)}>
+                  Remplir manuellement
+                </button>
+              ) : null}
+              <button type="button" className="cbtn cbtn-ghost cbtn-sm shrink-0" onClick={() => setShowBcPreview(false)}>
+                Fermer
+              </button>
+            </div>
+            <div className="fcard-body" style={{ flex: 1, padding: 0, display: "flex" }}>
+              <iframe src={bcPreviewUrl} title="Aperçu du bon de commande" style={{ width: "100%", height: "100%", border: "none" }} />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

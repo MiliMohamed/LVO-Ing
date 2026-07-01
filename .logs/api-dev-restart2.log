@@ -1,0 +1,16 @@
+
+> api:dev
+> npm run dev -w lvo-api-server
+
+
+> lvo-api-server@0.1.0 dev
+> tsx watch src/index.ts
+
+[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123
+[devis-extractor] Extraction OK — marque=RIVIERE_SCHINDLER n°=P16375 montant=78
+16:10:30 [tsx] change in ./src\routes\devis-groupement.ts Restarting...
+c[store] Données restaurées depuis postgresql (tables normalisées)
+LVO API listening on http://localhost:8080
+Comptes démo : admin@lvo-ing.fr / lvo123 (ADMIN), manager@lvo-ing.fr / lvo123 (MANAGER), consultant@ / viewer@ — mot de passe lvo123

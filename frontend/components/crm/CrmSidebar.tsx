@@ -18,6 +18,7 @@ type Props = {
   recouvrementRetard: number | null;
   counts: DashboardCounts | null;
   countsLoading?: boolean;
+  isOpen?: boolean;
 };
 
 function SidebarLink({
@@ -67,12 +68,12 @@ function SidebarLink({
   );
 }
 
-export function CrmSidebar({ role, recouvrementRetard, counts, countsLoading = false }: Props) {
+export function CrmSidebar({ role, recouvrementRetard, counts, countsLoading = false, isOpen = false }: Props) {
   const pathname = usePathname();
   const showNavCounts = canViewNavCounts(role);
 
   return (
-    <aside className="crm-sidebar" aria-label="Navigation CRM">
+    <aside className={`crm-sidebar${isOpen ? " sidebar-open" : ""}`} aria-label="Navigation CRM">
       <p className="sb-intro">
         Espace métier LVO — listes, outils et historique. Utilisez le bouton orange en haut de chaque page pour créer un
         enregistrement.

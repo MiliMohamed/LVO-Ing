@@ -7,6 +7,7 @@ import type { AuthedRequest } from "../middleware.js";
 import { requireRoles } from "../middleware.js";
 import {
   appendAuditLog,
+  ascensoristes,
   auditLog,
   avoirs,
   clients,
@@ -34,7 +35,9 @@ import {
 import {
   buildArborescenceTree,
   deleteArborescenceFile,
+  downloadAllAsZip,
   ensureSiteArborescence,
+  siteZipRootName,
   findArborescenceNode,
   listArborescenceChildren,
   provisionSiteArborescence,
@@ -42,10 +45,18 @@ import {
 } from "../site-arborescence.js";
 import type { EquipementType } from "../store.js";
 import type { ClientRow, CommandeRow, ContactRow, OffreRow, SiteRow } from "../store.js";
+import { generateDefaultPassword, hashPassword } from "../auth.js";
+import { getPrisma } from "../db.js";
+import { tryExtractBonCommande } from "./devis-groupement.js";
 
 const arborescenceUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const commandeExtractUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 30 * 1024 * 1024 },
 });
 
 function pdfStubLines(lines: string[]): Buffer {
@@ -116,24 +127,6 @@ function siteDeleteBlockReason(siteNom: string): { msg: string } | null {
   if (off) return { msg: "Une offre active ou en cours est liée à ce site. Annulez ou finalisez l’offre d’abord." };
   const cmd = commandes.some((c) => !c.numeroCommande.startsWith("X-") && c.siteNom === siteNom);
   if (cmd) return { msg: "Une commande active est liée à ce site. Annulez la commande ou changez de site." };
-  return null;
-}
-
-function clientDeleteBlockReason(cl: (typeof clients)[0]): { msg: string } | null {
-  const rs = cl.raisonSociale;
-  const t = isoToday();
-  if (siteGestionnaires.some((g) => g.clientNom === rs && (!g.dateFin || g.dateFin >= t))) {
-    return { msg: "Client encore gestionnaire actif d’au moins un site (Phase 6)." };
-  }
-  if (commandes.some((c) => !c.numeroCommande.startsWith("X-") && c.clientNom === rs)) {
-    return { msg: "Commandes actives pour ce client." };
-  }
-  if (factures.some((f) => f.clientNom === rs)) {
-    return { msg: "Factures existantes pour ce client." };
-  }
-  if (sites.some((s) => (s.statut ?? "ACTIF") !== "ARCHIVE" && s.clientNom === rs)) {
-    return { msg: "Sites encore rattachés à ce client." };
-  }
   return null;
 }
 
@@ -293,6 +286,24 @@ function activeGestionnairePair(siteId: number, clientNom: string): boolean {
   return siteGestionnaires.some(
     (g) => g.siteId === siteId && g.clientNom === clientNom && (!g.dateFin || g.dateFin >= t),
   );
+}
+
+/**
+ * Garde « Client propriétaire » du site synchronisé avec le gestionnaire principal actif :
+ * les deux notions représentaient jusqu'ici des données indépendantes, ce qui permettait
+ * d'avoir un propriétaire affiché différent du gestionnaire marqué « Principal ».
+ */
+function syncSiteOwnerFromPrincipal(site: SiteRow, clientNom: string, req: AuthedRequest): void {
+  if (site.clientNom === clientNom) return;
+  const before = site.clientNom;
+  site.clientNom = clientNom;
+  appendAuditLog({
+    entity_type: "SITE",
+    entity_id: site.id,
+    action: "CLIENT_OWNER_CHANGED",
+    changes: { before, after: clientNom, reason: "gestionnaire_principal" },
+    ...auditMeta(req),
+  });
 }
 
 export const crmRouter = express.Router();
@@ -547,7 +558,14 @@ crmRouter.delete("/tasks/:id", (req: AuthedRequest, res) => {
 
 /** Réponses liste — champs attendus par le front */
 crmRouter.get("/contacts", (_req, res) => {
-  res.json(contacts.filter((c) => c.statut === "ACTIF"));
+  res.json(
+    contacts
+      .filter((c) => c.statut === "ACTIF")
+      .map(({ clientPasswordHash, ...rest }) => ({
+        ...rest,
+        hasClientPassword: Boolean(clientPasswordHash),
+      })),
+  );
 });
 
 crmRouter.get("/clients", (_req, res) => {
@@ -712,6 +730,7 @@ crmRouter.post("/sites/:siteId/gestionnaires", (req: AuthedRequest, res) => {
     notes: body.notes != null && String(body.notes).trim() ? String(body.notes).trim() : null,
   };
   siteGestionnaires.push(row);
+  if (isPrincipal) syncSiteOwnerFromPrincipal(site, clientNom, req);
   appendAuditLog({
     entity_type: "SITE_GESTIONNAIRE",
     entity_id: id,
@@ -800,7 +819,7 @@ crmRouter.get("/sites/:siteId/arborescence", (req, res) => {
 crmRouter.post(
   "/sites/:siteId/arborescence/nodes/:folderId/files",
   arborescenceUpload.single("file"),
-  (req: AuthedRequest, res) => {
+  async (req: AuthedRequest, res) => {
     if (forbidViewer(req, res)) return;
     const siteId = Number(req.params.siteId);
     const folderId = Number(req.params.folderId);
@@ -814,7 +833,7 @@ crmRouter.post(
       return;
     }
     try {
-      const row = saveUploadedFile(
+      const row = await saveUploadedFile(
         siteId,
         folderId,
         file.originalname || "fichier",
@@ -839,6 +858,27 @@ crmRouter.post(
     }
   },
 );
+
+crmRouter.get("/sites/:siteId/arborescence/download-all", async (req, res) => {
+  const siteId = Number(req.params.siteId);
+  const site = findById(sites, siteId);
+  if (!site) {
+    res.status(404).json({ error: "Site introuvable" });
+    return;
+  }
+  try {
+    const zipBytes = await downloadAllAsZip(siteId, site.nom);
+    const filename = `${siteZipRootName(siteId, site.nom)}.zip`;
+    const encoded = encodeURIComponent(filename);
+    res
+      .setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encoded}`)
+      .setHeader("Content-Type", "application/zip")
+      .setHeader("Content-Length", String(zipBytes.length))
+      .send(zipBytes);
+  } catch {
+    res.status(500).json({ error: "Échec de la génération du ZIP" });
+  }
+});
 
 crmRouter.get("/sites/:siteId/arborescence/files/:fileId/download", (req, res) => {
   const siteId = Number(req.params.siteId);
@@ -1049,9 +1089,15 @@ crmRouter.post("/sites/:siteId/gestionnaires/:gestionnaireId/promouvoir", (req: 
     res.status(400).json({ error: "Ce gestionnaire n’est plus actif — rouvrez une ligne ou créez-en une nouvelle." });
     return;
   }
+  const site = findById(sites, siteId);
+  if (!site) {
+    res.status(404).json({ error: "Site introuvable" });
+    return;
+  }
   demoteSitePrincipals(siteId);
   g.isPrincipal = true;
   g.dateFin = null;
+  syncSiteOwnerFromPrincipal(site, g.clientNom, req);
   appendAuditLog({
     entity_type: "SITE_GESTIONNAIRE",
     entity_id: gid,
@@ -1253,10 +1299,12 @@ crmRouter.post("/ocr/bon-commande", (req, res) => {
   });
 });
 
-crmRouter.post("/contacts", (req: AuthedRequest, res) => {
+crmRouter.post("/contacts", async (req: AuthedRequest, res) => {
   if (forbidViewer(req, res)) return;
   const b = req.body as Record<string, string>;
   const id = Math.max(0, ...contacts.map((c) => c.id)) + 1;
+  const defaultPassword = generateDefaultPassword(b.nom || "");
+  const clientPasswordHash = await hashPassword(defaultPassword);
   contacts.push({
     id,
     civilite: b.civilite || "M.",
@@ -1269,6 +1317,7 @@ crmRouter.post("/contacts", (req: AuthedRequest, res) => {
     mobile: b.mobile || "",
     statut: "ACTIF",
     ownerUserId: req.auth?.userId ?? null,
+    clientPasswordHash,
   });
   appendAuditLog({
     entity_type: "CONTACT",
@@ -1277,7 +1326,107 @@ crmRouter.post("/contacts", (req: AuthedRequest, res) => {
     changes: { id },
     ...auditMeta(req),
   });
-  res.status(201).json({ id });
+  res.status(201).json({ id, defaultPassword });
+});
+
+// ─── Ascensoristes (comptes espace prestataire) ────────────────────────────
+
+crmRouter.get("/ascensoristes", (_req, res) => {
+  res.json(
+    ascensoristes
+      .filter((a) => a.statut === "ACTIF")
+      .map(({ ascensoristePasswordHash, ...rest }) => ({
+        ...rest,
+        hasPassword: Boolean(ascensoristePasswordHash),
+      })),
+  );
+});
+
+crmRouter.post("/ascensoristes", async (req: AuthedRequest, res) => {
+  if (forbidViewer(req, res)) return;
+  const b = req.body as Record<string, string>;
+  if (!b.entreprise?.trim() || !b.nom?.trim() || !b.email?.trim()) {
+    res.status(400).json({ error: "entreprise, nom et email sont obligatoires" });
+    return;
+  }
+  const id = Math.max(0, ...ascensoristes.map((a) => a.id)) + 1;
+  const defaultPassword = generateDefaultPassword(b.nom || "");
+  const ascensoristePasswordHash = await hashPassword(defaultPassword);
+  ascensoristes.push({
+    id,
+    entreprise: b.entreprise.trim(),
+    nom: b.nom.trim(),
+    prenom: b.prenom?.trim() || "",
+    email: b.email.trim(),
+    telephone: b.telephone?.trim() || null,
+    ascensoristePasswordHash,
+    statut: "ACTIF",
+    createdAt: new Date().toISOString(),
+  });
+  appendAuditLog({
+    entity_type: "ASCENSORISTE",
+    entity_id: id,
+    action: "CREATE",
+    changes: { id },
+    ...auditMeta(req),
+  });
+  res.status(201).json({ id, defaultPassword });
+});
+
+crmRouter.patch("/ascensoristes/:id", (req: AuthedRequest, res) => {
+  if (forbidViewer(req, res)) return;
+  const id = Number(req.params.id);
+  const a = findById(ascensoristes, id);
+  if (!a) { res.status(404).json({ error: "Ascensoriste introuvable" }); return; }
+  const b = req.body as Partial<{ entreprise: string; nom: string; prenom: string; email: string; telephone: string }>;
+  if (b.entreprise !== undefined) a.entreprise = b.entreprise.trim();
+  if (b.nom !== undefined) a.nom = b.nom.trim();
+  if (b.prenom !== undefined) a.prenom = b.prenom.trim();
+  if (b.email !== undefined) a.email = b.email.trim();
+  if (b.telephone !== undefined) a.telephone = b.telephone.trim() || null;
+  res.json(a);
+});
+
+crmRouter.post("/ascensoristes/:id/reset-password", async (req: AuthedRequest, res) => {
+  if (forbidViewer(req, res)) return;
+  const id = Number(req.params.id);
+  const a = findById(ascensoristes, id);
+  if (!a) { res.status(404).json({ error: "Ascensoriste introuvable" }); return; }
+  const newPassword = generateDefaultPassword(a.nom);
+  a.ascensoristePasswordHash = await hashPassword(newPassword);
+  appendAuditLog({
+    entity_type: "ASCENSORISTE",
+    entity_id: id,
+    action: "RESET_PASSWORD",
+    changes: { id },
+    ...auditMeta(req),
+  });
+  res.json({ ok: true, newPassword });
+});
+
+crmRouter.delete("/ascensoristes/:id", async (req: AuthedRequest, res) => {
+  if (forbidViewer(req, res)) return;
+  const id = Number(req.params.id);
+  const idx = ascensoristes.findIndex((a) => a.id === id);
+  if (idx === -1) { res.status(404).json({ error: "Ascensoriste introuvable" }); return; }
+  ascensoristes.splice(idx, 1);
+  // Suppression explicite en base : saveAllToDb() ne fait que des upserts, il ne supprime
+  // jamais les lignes qui ont disparu du tableau en mémoire.
+  if (process.env.DATABASE_URL) {
+    try {
+      await getPrisma().ascensoriste.delete({ where: { legacyId: id } });
+    } catch {
+      // ligne déjà absente en base (jamais persistée) — pas bloquant
+    }
+  }
+  appendAuditLog({
+    entity_type: "ASCENSORISTE",
+    entity_id: id,
+    action: "DELETE",
+    changes: { id },
+    ...auditMeta(req),
+  });
+  res.json({ ok: true });
 });
 
 crmRouter.post("/clients", (req: AuthedRequest, res) => {
@@ -1335,6 +1484,18 @@ crmRouter.post("/sites", (req: AuthedRequest, res) => {
   };
   sites.push(row);
   provisionSiteArborescence(id);
+  // Le client propriétaire saisi à la création devient automatiquement le gestionnaire
+  // principal du site, pour que « Client propriétaire » et « Gestionnaires du site »
+  // restent cohérents dès le départ plutôt que deux notions déconnectées.
+  siteGestionnaires.push({
+    id: Math.max(0, ...siteGestionnaires.map((g) => g.id)) + 1,
+    siteId: id,
+    clientNom,
+    isPrincipal: true,
+    dateDebut: isoToday(),
+    dateFin: null,
+    notes: null,
+  });
   appendAuditLog({
     entity_type: "SITE",
     entity_id: id,
@@ -1387,7 +1548,7 @@ crmRouter.post("/offres", (req: AuthedRequest, res) => {
     phasesLinesJson: jsonOrNull(b.phasesLines),
     echeancierFacturationJson: jsonOrNull(b.echeancierFacturation),
     echeancierExecutionJson: jsonOrNull(b.echeancierExecution),
-    tauxTva: Number.isFinite(Number(b.tauxTva)) ? Number(b.tauxTva) : crmAppSettings.tvaMetropolePercent,
+    tauxTva: Number.isFinite(Number(b.tauxTva)) ? Number(b.tauxTva) : crmAppSettings.tvaDomPercent,
     consultantEmail: b.consultantEmail ? String(b.consultantEmail) : crmAppSettings.defaultConsultantEmail,
     gestionnaireNom,
     gestionnaireContact,
@@ -1397,11 +1558,55 @@ crmRouter.post("/offres", (req: AuthedRequest, res) => {
   res.status(201).json({ id });
 });
 
+// POST /api/commandes/extract-bon-commande — lecture auto d'un bon de commande PDF déposé par l'admin,
+// pour pré-remplir le formulaire « Nouvelle commande » au lieu d'une saisie manuelle.
+crmRouter.post(
+  "/commandes/extract-bon-commande",
+  commandeExtractUpload.single("file"),
+  async (req: AuthedRequest, res) => {
+    if (forbidViewer(req, res)) return;
+    const file = (req as express.Request & { file?: Express.Multer.File }).file;
+    if (!file) {
+      res.status(400).json({ error: "Fichier PDF requis" });
+      return;
+    }
+    try {
+      const extraction = await tryExtractBonCommande(file.buffer);
+      if (!extraction) {
+        res.status(422).json({ error: "Extraction impossible — vérifiez que le PDF contient du texte exploitable." });
+        return;
+      }
+      res.json(extraction);
+    } catch (e) {
+      res.status(500).json({ error: "Erreur lors de l'extraction : " + (e as Error).message });
+    }
+  },
+);
+
 crmRouter.post("/commandes", (req: AuthedRequest, res) => {
   if (forbidViewer(req, res)) return;
   const b = req.body as Record<string, unknown>;
+
+  // Commande créée depuis une offre (bouton « Créer une commande ») : l'offre doit être
+  // au statut Acceptée, et passe automatiquement à Commandée une fois la commande créée.
+  const offreId = b.offreId != null ? Number(b.offreId) : null;
+  let offreLiee: OffreRow | undefined;
+  if (offreId != null && Number.isFinite(offreId)) {
+    offreLiee = findById(offres, offreId);
+    if (!offreLiee) {
+      res.status(400).json({ error: "Offre introuvable" });
+      return;
+    }
+    if (offreLiee.statut !== "ACCEPTEE") {
+      res.status(400).json({ error: "L'offre doit être au statut « Acceptée » avant de créer une commande." });
+      return;
+    }
+  }
+
   const id = Math.max(0, ...commandes.map((c) => c.id)) + 1;
   const nc = b.numeroClient != null && String(b.numeroClient).trim() ? String(b.numeroClient).trim() : null;
+  const modePaiementCommande = String(b.modePaiementCommande || "UNIQUE").toUpperCase() === "ECHELONNE" ? "ECHELONNE" : "UNIQUE";
+  const echeancierPaiementJson = modePaiementCommande === "ECHELONNE" ? jsonOrNull(b.echeancierPaiement) : null;
   let typeMissions: string[] = [];
   const arr = b.typeMissions;
   if (Array.isArray(arr)) {
@@ -1423,7 +1628,22 @@ crmRouter.post("/commandes", (req: AuthedRequest, res) => {
     siteNom: String(b.siteNom || ""),
     clientNom: String(b.clientNom || ""),
     numeroClient: nc,
+    modePaiementCommande,
+    echeancierPaiementJson,
   });
+
+  if (offreLiee) {
+    const before = offreLiee.statut;
+    offreLiee.statut = "COMMANDE";
+    appendAuditLog({
+      entity_type: "OFFRE",
+      entity_id: offreLiee.id,
+      action: "UPDATE",
+      changes: { statut: { before, after: "COMMANDE" } },
+      ...auditMeta(req),
+    });
+  }
+
   res.status(201).json({ id });
 });
 
@@ -1629,6 +1849,9 @@ function updateSite(req: AuthedRequest, res: express.Response) {
     const s = String(body.statut).toUpperCase();
     if (s === "ARCHIVE" || s === "ACTIF") next.statut = s as "ACTIF" | "ARCHIVE";
   }
+  if (body.imageDataUrl !== undefined) {
+    next.imageDataUrl = body.imageDataUrl === null ? null : String(body.imageDataUrl);
+  }
   if (next.clientNom !== cur.clientNom) {
     appendAuditLog({
       entity_type: "SITE",
@@ -1658,6 +1881,23 @@ function updateSite(req: AuthedRequest, res: express.Response) {
 crmRouter.patch("/contacts/:id", updateContact);
 crmRouter.put("/contacts/:id", updateContact);
 
+crmRouter.post("/contacts/:id/reset-client-password", async (req: AuthedRequest, res) => {
+  if (forbidViewer(req, res)) return;
+  const id = Number(req.params.id);
+  const ct = findById(contacts, id);
+  if (!ct) { res.status(404).json({ error: "Contact introuvable" }); return; }
+  const newPassword = generateDefaultPassword(ct.nom);
+  ct.clientPasswordHash = await hashPassword(newPassword);
+  appendAuditLog({
+    entity_type: "CONTACT",
+    entity_id: id,
+    action: "RESET_CLIENT_PASSWORD",
+    changes: { id },
+    ...auditMeta(req),
+  });
+  res.json({ newPassword });
+});
+
 crmRouter.delete("/contacts/:id", (req: AuthedRequest, res) => {
   if (forbidViewer(req, res)) return;
   const id = Number(req.params.id);
@@ -1672,7 +1912,7 @@ crmRouter.delete("/contacts/:id", (req: AuthedRequest, res) => {
     return;
   }
   const n = activeCommandesForEntreprise(ct.entreprise);
-  if (n > 0) {
+  if (n > 0 && role !== "ADMIN") {
     res.status(400).json({
       error: `Impossible de supprimer : ${n} commande(s) liée(s) au rattachement « ${ct.entreprise} ». Annulez les commandes ou utilisez l’annulation contact.`,
       linkedCommandesCount: n,
@@ -1707,14 +1947,6 @@ crmRouter.delete("/clients/:id", (req: AuthedRequest, res) => {
     res.status(404).json({ error: "Not found" });
     return;
   }
-  const br = clientDeleteBlockReason(cl);
-  if (br) {
-    res.status(400).json({
-      error: `Impossible de supprimer ce client. ${br.msg}`,
-      suggestCancel: false,
-    });
-    return;
-  }
   const idx = clients.findIndex((c) => c.id === id);
   clients.splice(idx, 1);
   appendAuditLog({
@@ -1743,7 +1975,7 @@ crmRouter.delete("/sites/:id", (req: AuthedRequest, res) => {
     res.status(404).json({ error: "Not found" });
     return;
   }
-  const br = siteDeleteBlockReason(site.nom);
+  const br = role === "ADMIN" ? null : siteDeleteBlockReason(site.nom);
   if (br) {
     res.status(400).json({
       error: `${br.msg} Vous pouvez archiver le site (champ statut = ARCHIVE).`,
@@ -1953,10 +2185,28 @@ crmRouter.post("/factures/:id/supprimer", (req: AuthedRequest, res) => {
   res.json({ ok: true, avoirCree: body.creerAvoir === true });
 });
 
-crmRouter.delete("/factures/:id", (_req, res) => {
-  res.status(400).json({
-    error: "Suppression directe désactivée. Utilisez POST /api/factures/:id/supprimer avec { motif, creerAvoir? }.",
+crmRouter.delete("/factures/:id", (req: AuthedRequest, res) => {
+  // Suppression directe réservée ADMIN (force, sans motif ni avoir) — les autres rôles
+  // doivent passer par POST /factures/:id/supprimer pour garder la traçabilité.
+  if (req.auth?.role !== "ADMIN") {
+    res.status(400).json({
+      error: "Suppression directe désactivée. Utilisez POST /api/factures/:id/supprimer avec { motif, creerAvoir? }.",
+    });
+    return;
+  }
+  const id = Number(req.params.id);
+  const idx = factures.findIndex((x) => x.id === id);
+  if (idx < 0) { res.status(404).json({ error: "Facture introuvable" }); return; }
+  const f = factures[idx]!;
+  factures.splice(idx, 1);
+  appendAuditLog({
+    entity_type: "FACTURE",
+    entity_id: id,
+    action: "DELETE",
+    changes: { numeroFacture: f.numeroFacture, force: true },
+    ...auditMeta(req),
   });
+  res.status(204).end();
 });
 
 crmRouter.post("/offres/:id/duplicate", (req, res) => {
@@ -2354,7 +2604,7 @@ crmRouter.post("/documents/offre/generate", (req, res) => {
   const o = offres.find((x) => x.numeroOffre === ref);
   const lines: string[] = [`Document: Offre ${ref}`, String(b.content || "").slice(0, 2000)];
   if (o) {
-    lines.push(`Client: ${o.clientNom} | Site: ${o.siteNom} | TVA ${o.tauxTva ?? 20}%`);
+    lines.push(`Client: ${o.clientNom} | Site: ${o.siteNom} | TVA ${o.tauxTva ?? crmAppSettings.tvaDomPercent}%`);
     if (o.phasesLinesJson) lines.push(`Phases: ${o.phasesLinesJson.slice(0, 800)}`);
     if (o.echeancierFacturationJson) lines.push(`Échéancier facturation: ${o.echeancierFacturationJson.slice(0, 400)}`);
   }

@@ -21,15 +21,6 @@ const GUARDS: Guard[] = [
   { test: (p) => p.startsWith("/crm/recouvrement"), roles: ["ADMIN", "MANAGER"] },
   { test: (p) => p.startsWith("/crm/outils/rgpd"), roles: ["ADMIN", "MANAGER"] },
   { test: (p) => p.startsWith("/crm/nouveau"), roles: ["ADMIN", "MANAGER", "CONSULTANT"] },
-  {
-    test: (p) =>
-      p.startsWith("/crm/outils/assistants") ||
-      p.startsWith("/crm/outils/documents") ||
-      p.startsWith("/crm/outils/upload") ||
-      p.startsWith("/crm/outils/emails") ||
-      p.startsWith("/crm/outils/maintenance-mms"),
-    roles: ["ADMIN", "MANAGER", "CONSULTANT"],
-  },
   { test: (p) => p.startsWith("/crm/nouveau/phases"), roles: ["ADMIN", "MANAGER", "CONSULTANT"] },
 ];
 

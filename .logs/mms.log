@@ -1,0 +1,145 @@
+
+> mms:api
+> cd mms-analyzer && .venv\Scripts\python -m uvicorn api_server:app --host 127.0.0.1 --port 8765 --reload --reload-dir .
+
+INFO:     Will watch for changes in these directories: ['C:\\Users\\Mili\\OneDrive\\Bureau\\lvo-web\\mms-analyzer']
+INFO:     Uvicorn running on http://127.0.0.1:8765 (Press CTRL+C to quit)
+INFO:     Started reloader process [8080] using StatReload
+INFO:     Started server process [20956]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-06-15 15:01:15,904 | INFO | mms.api | [faaae431] -> GET /hypotheses-marche
+2026-06-15 15:01:15,908 | INFO | mms.api | [469c4df5] -> GET /health
+2026-06-15 15:01:15,955 | INFO | mms.api | [469c4df5] <- GET /health status=200 elapsed=46.8ms
+INFO:     127.0.0.1:4952 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:01:15,964 | INFO | mms.api | [faaae431] <- GET /hypotheses-marche status=200 elapsed=61.6ms
+INFO:     127.0.0.1:9924 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:01:15,965 | INFO | mms.api | [3efea73b] -> GET /hypotheses-marche
+2026-06-15 15:01:15,965 | INFO | mms.api | [67b57684] -> GET /health
+2026-06-15 15:01:15,970 | INFO | mms.api | [67b57684] <- GET /health status=200 elapsed=5.1ms
+INFO:     127.0.0.1:6291 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:01:15,972 | INFO | mms.api | [3efea73b] <- GET /hypotheses-marche status=200 elapsed=6.7ms
+INFO:     127.0.0.1:4952 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:03:50,393 | INFO | mms.api | [a4092f9c] -> GET /hypotheses-marche
+2026-06-15 15:03:50,395 | INFO | mms.api | [263787ea] -> GET /health
+2026-06-15 15:03:50,400 | INFO | mms.api | [a4092f9c] <- GET /hypotheses-marche status=200 elapsed=7.5ms
+INFO:     127.0.0.1:16817 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:03:50,400 | INFO | mms.api | [263787ea] <- GET /health status=200 elapsed=5.4ms
+INFO:     127.0.0.1:5042 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:03:50,402 | INFO | mms.api | [3ee2b43e] -> GET /hypotheses-marche
+2026-06-15 15:03:50,402 | INFO | mms.api | [acc3b4f4] -> GET /health
+2026-06-15 15:03:50,406 | INFO | mms.api | [3ee2b43e] <- GET /hypotheses-marche status=200 elapsed=4.0ms
+INFO:     127.0.0.1:43008 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:03:50,408 | INFO | mms.api | [acc3b4f4] <- GET /health status=200 elapsed=4.9ms
+INFO:     127.0.0.1:16817 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:04:40,973 | INFO | mms.api | [6c08064d] -> POST /analyze
+2026-06-15 15:04:41,004 | INFO | mms.api | analyze payload fichier_brut=Donnes CEGELEC T1-2026 - GHER.xlsx fichier_parc=None fichier_dernieres_visites=None fichier_cumul_pannes=None params={'integrer_graphiques': True, 'prestataire': 'OTIS', 'trimestre': 'T1', 'annee': 2026, 'seuil_maintenance_jours': 42, 'seuil_pannes_an': 2, 'seuil_immo_h': 48, 'seuil_delai_h': 2, 'seuil_desincarc_min': 45, 'seuil_parachute_mois': 12, 'seuil_cables_mois': 6, 'tarif_jour': 50, 'tarif_panne': 150, 'tarif_heure_immo': 50, 'tarif_heure_delai': 50, 'filtre_client': 'Tous', 'filtre_prestataire': 'Tous', 'filtre_adresse': 'Tous', 'prorata_immo_trimestriel': False, 'prorata_pannes_trimestriel': False, 'dernieres_visites': {}, 'client_manuel': False, 'prestataire_manuel': False, 'chemin_source': 'Donnes CEGELEC T1-2026 - GHER.xlsx'}
+2026-06-15 15:04:41,587 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_lozthb8e\GHER\CEGELEC\T1\figures\penalites_par_type.png
+2026-06-15 15:04:41,741 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_lozthb8e\GHER\CEGELEC\T1\figures\top10_penalites_appareil.png
+2026-06-15 15:04:41,982 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_lozthb8e\GHER\CEGELEC\T1\figures\pannes_par_appareil.png
+2026-06-15 15:04:41,986 | WARNING | core.service | Génération des graphiques échouée : Column 'delta_jours' has dtype object, cannot use method 'nlargest' with this dtype
+Traceback (most recent call last):
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\core\service.py", line 322, in executer_analyse
+    figure_paths = generer_figures(resultats, params, pen, base_fig)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\core\figures.py", line 204, in generer_figures
+    m = m.nlargest(20, "delta_jours")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\.venv\Lib\site-packages\pandas\core\frame.py", line 8844, in nlargest
+    return selectn.SelectNFrame(self, n=n, keep=keep, columns=columns).nlargest()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\.venv\Lib\site-packages\pandas\core\methods\selectn.py", line 73, in nlargest
+    return self.compute("nlargest")
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\.venv\Lib\site-packages\pandas\core\methods\selectn.py", line 232, in compute
+    raise TypeError(
+TypeError: Column 'delta_jours' has dtype object, cannot use method 'nlargest' with this dtype
+2026-06-15 15:04:42,409 | INFO | core.export_pdf | docx2pdf indisponible : No module named 'docx2pdf'
+2026-06-15 15:04:42,476 | INFO | mms.api | analyze ok fichier_brut=Donnes CEGELEC T1-2026 - GHER.xlsx client=GHER prestataire=CEGELEC penalite_totale=17950.0
+2026-06-15 15:04:42,483 | INFO | mms.api | [6c08064d] <- POST /analyze status=200 elapsed=1511.1ms
+INFO:     127.0.0.1:30863 - "POST /analyze HTTP/1.1" 200 OK
+2026-06-15 15:05:25,689 | INFO | mms.api | [7f2ec243] -> GET /hypotheses-marche
+2026-06-15 15:05:25,692 | INFO | mms.api | [38a3b201] -> GET /health
+2026-06-15 15:05:25,693 | INFO | mms.api | [7f2ec243] <- GET /hypotheses-marche status=200 elapsed=4.2ms
+INFO:     127.0.0.1:55305 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:05:25,694 | INFO | mms.api | [38a3b201] <- GET /health status=200 elapsed=2.6ms
+INFO:     127.0.0.1:3230 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:05:25,695 | INFO | mms.api | [2ca3deb3] -> GET /hypotheses-marche
+2026-06-15 15:05:25,697 | INFO | mms.api | [cd60389b] -> GET /health
+2026-06-15 15:05:25,699 | INFO | mms.api | [2ca3deb3] <- GET /hypotheses-marche status=200 elapsed=2.8ms
+INFO:     127.0.0.1:2218 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:05:25,699 | INFO | mms.api | [cd60389b] <- GET /health status=200 elapsed=2.3ms
+INFO:     127.0.0.1:49885 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:05:45,343 | INFO | mms.api | [635c9beb] -> POST /analyze
+2026-06-15 15:05:45,346 | INFO | mms.api | analyze payload fichier_brut=donnees Prestataires - rendu Trimestriel Q1.xlsx fichier_parc=None fichier_dernieres_visites=None fichier_cumul_pannes=None params={'integrer_graphiques': True, 'prestataire': 'OTIS', 'trimestre': 'T1', 'annee': 2026, 'seuil_maintenance_jours': 42, 'seuil_pannes_an': 2, 'seuil_immo_h': 48, 'seuil_delai_h': 2, 'seuil_desincarc_min': 45, 'seuil_parachute_mois': 12, 'seuil_cables_mois': 6, 'tarif_jour': 50, 'tarif_panne': 150, 'tarif_heure_immo': 50, 'tarif_heure_delai': 50, 'filtre_client': 'Tous', 'filtre_prestataire': 'Tous', 'filtre_adresse': 'Tous', 'prorata_immo_trimestriel': False, 'prorata_pannes_trimestriel': False, 'dernieres_visites': {}, 'client_manuel': False, 'prestataire_manuel': False, 'chemin_source': 'donnees Prestataires - rendu Trimestriel Q1.xlsx'}
+2026-06-15 15:05:46,334 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_yr6yon47\GHER\OTIS\T1\figures\penalites_par_type.png
+2026-06-15 15:05:46,502 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_yr6yon47\GHER\OTIS\T1\figures\top10_penalites_appareil.png
+2026-06-15 15:05:46,708 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_yr6yon47\GHER\OTIS\T1\figures\pannes_par_appareil.png
+2026-06-15 15:05:46,778 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_yr6yon47\GHER\OTIS\T1\figures\tranches_delai.png
+2026-06-15 15:05:46,892 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_yr6yon47\GHER\OTIS\T1\figures\interventions_journalieres.png
+2026-06-15 15:05:46,904 | INFO | matplotlib.category | Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-06-15 15:05:46,905 | INFO | matplotlib.category | Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-06-15 15:05:47,037 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_yr6yon47\GHER\OTIS\T1\figures\pannes_cumul_periode.png
+2026-06-15 15:06:50,266 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_yr6yon47\GHER\OTIS\T1\figures\carte_penalites.png
+2026-06-15 15:06:51,791 | INFO | core.export_pdf | docx2pdf indisponible : No module named 'docx2pdf'
+2026-06-15 15:06:51,868 | INFO | mms.api | analyze ok fichier_brut=donnees Prestataires - rendu Trimestriel Q1.xlsx client=None prestataire=OTIS penalite_totale=42971.0
+2026-06-15 15:06:51,908 | INFO | mms.api | [635c9beb] <- POST /analyze status=200 elapsed=66564.9ms
+INFO:     127.0.0.1:44758 - "POST /analyze HTTP/1.1" 200 OK
+2026-06-15 15:06:51,909 | INFO | mms.api | [9d355b22] -> GET /hypotheses-marche
+2026-06-15 15:06:51,909 | INFO | mms.api | [304ca135] -> GET /hypotheses-marche
+2026-06-15 15:06:51,910 | INFO | mms.api | [f9eae251] -> GET /health
+2026-06-15 15:06:51,910 | INFO | mms.api | [c0483885] -> GET /health
+2026-06-15 15:06:51,913 | INFO | mms.api | [9d355b22] <- GET /hypotheses-marche status=200 elapsed=3.3ms
+INFO:     127.0.0.1:29238 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:06:51,913 | INFO | mms.api | [304ca135] <- GET /hypotheses-marche status=200 elapsed=3.4ms
+INFO:     127.0.0.1:12260 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:06:51,913 | INFO | mms.api | [f9eae251] <- GET /health status=200 elapsed=3.4ms
+INFO:     127.0.0.1:23171 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:06:51,914 | INFO | mms.api | [c0483885] <- GET /health status=200 elapsed=3.5ms
+INFO:     127.0.0.1:49669 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:07:28,619 | INFO | mms.api | [2fca0a10] -> POST /analyze
+2026-06-15 15:07:28,620 | INFO | mms.api | analyze payload fichier_brut=Donnes CEGELEC T1-2026 - GHER.xlsx fichier_parc=None fichier_dernieres_visites=None fichier_cumul_pannes=None params={'integrer_graphiques': True, 'prestataire': 'OTIS', 'trimestre': 'T1', 'annee': 2026, 'seuil_maintenance_jours': 42, 'seuil_pannes_an': 2, 'seuil_immo_h': 48, 'seuil_delai_h': 2, 'seuil_desincarc_min': 45, 'seuil_parachute_mois': 12, 'seuil_cables_mois': 6, 'tarif_jour': 50, 'tarif_panne': 150, 'tarif_heure_immo': 50, 'tarif_heure_delai': 50, 'filtre_client': 'Tous', 'filtre_prestataire': 'Tous', 'filtre_adresse': 'Tous', 'prorata_immo_trimestriel': False, 'prorata_pannes_trimestriel': False, 'dernieres_visites': {}, 'client_manuel': False, 'prestataire_manuel': False, 'chemin_source': 'Donnes CEGELEC T1-2026 - GHER.xlsx'}
+2026-06-15 15:07:28,811 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_atsnrv5m\GHER\CEGELEC\T1\figures\penalites_par_type.png
+2026-06-15 15:07:28,924 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_atsnrv5m\GHER\CEGELEC\T1\figures\top10_penalites_appareil.png
+2026-06-15 15:07:29,049 | INFO | core.figures | Figure enregistrée : C:\Users\Mili\AppData\Local\Temp\lvo_mms_fig_atsnrv5m\GHER\CEGELEC\T1\figures\pannes_par_appareil.png
+2026-06-15 15:07:29,052 | WARNING | core.service | Génération des graphiques échouée : Column 'delta_jours' has dtype object, cannot use method 'nlargest' with this dtype
+Traceback (most recent call last):
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\core\service.py", line 322, in executer_analyse
+    figure_paths = generer_figures(resultats, params, pen, base_fig)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\core\figures.py", line 204, in generer_figures
+    m = m.nlargest(20, "delta_jours")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\.venv\Lib\site-packages\pandas\core\frame.py", line 8844, in nlargest
+    return selectn.SelectNFrame(self, n=n, keep=keep, columns=columns).nlargest()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\.venv\Lib\site-packages\pandas\core\methods\selectn.py", line 73, in nlargest
+    return self.compute("nlargest")
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mili\OneDrive\Bureau\lvo-web\mms-analyzer\.venv\Lib\site-packages\pandas\core\methods\selectn.py", line 232, in compute
+    raise TypeError(
+TypeError: Column 'delta_jours' has dtype object, cannot use method 'nlargest' with this dtype
+2026-06-15 15:07:29,408 | INFO | core.export_pdf | docx2pdf indisponible : No module named 'docx2pdf'
+2026-06-15 15:07:29,471 | INFO | mms.api | analyze ok fichier_brut=Donnes CEGELEC T1-2026 - GHER.xlsx client=GHER prestataire=CEGELEC penalite_totale=17950.0
+2026-06-15 15:07:29,478 | INFO | mms.api | [2fca0a10] <- POST /analyze status=200 elapsed=859.3ms
+INFO:     127.0.0.1:39422 - "POST /analyze HTTP/1.1" 200 OK
+2026-06-15 15:08:29,406 | INFO | mms.api | [e03ab1da] -> GET /hypotheses-marche
+2026-06-15 15:08:29,410 | INFO | mms.api | [bbe65a62] -> GET /health
+2026-06-15 15:08:29,438 | INFO | mms.api | [e03ab1da] <- GET /hypotheses-marche status=200 elapsed=31.5ms
+INFO:     127.0.0.1:15611 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+2026-06-15 15:08:29,439 | INFO | mms.api | [bbe65a62] <- GET /health status=200 elapsed=28.3ms
+INFO:     127.0.0.1:57629 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:08:29,441 | INFO | mms.api | [acd2765f] -> GET /health
+2026-06-15 15:08:29,442 | INFO | mms.api | [c438c881] -> GET /hypotheses-marche
+2026-06-15 15:08:29,448 | INFO | mms.api | [acd2765f] <- GET /health status=200 elapsed=6.7ms
+INFO:     127.0.0.1:15611 - "GET /health HTTP/1.1" 200 OK
+2026-06-15 15:08:29,451 | INFO | mms.api | [c438c881] <- GET /hypotheses-marche status=200 elapsed=9.1ms
+INFO:     127.0.0.1:23571 - "GET /hypotheses-marche HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'devis_extractor.py'. Reloading...
+ INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [20956]
+Terminer le programme de commandes (O/N)ÿ? INFO:     Started server process [25588]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

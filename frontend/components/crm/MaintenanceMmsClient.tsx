@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { exploitationApiFetch as apiFetch } from "@/lib/exploitation-api";
+import { readExploitationToken as readToken } from "@/lib/token-storage";
+
 import { MaintenanceMmsCharts } from "@/components/crm/MaintenanceMmsCharts";
 import { MaintenanceMmsBatchPanel } from "@/components/crm/MaintenanceMmsBatchPanel";
 import { MaintenanceMmsHypothesesPanel } from "@/components/crm/MaintenanceMmsHypothesesPanel";
@@ -53,6 +56,9 @@ export function MaintenanceMmsClient() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MmsAnalyzeResponse | null>(null);
   const [apiOk, setApiOk] = useState<boolean | null>(null);
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [saveOk, setSaveOk] = useState(false);
+  const [saveErr, setSaveErr] = useState<string | null>(null);
   const lastBrutRef = useRef<File | null>(null);
   const [parcMeta, setParcMeta] = useState<MmsParcCouplesResponse | null>(null);
   const [detection, setDetection] = useState<MmsDetectionMetadata | null>(null);
@@ -117,6 +123,8 @@ export function MaintenanceMmsClient() {
       try {
         const data = await analyzeMmsFiles(fichierBrut, parc, p, dernieres, cumul);
         setResult(data);
+        setSaveOk(false);
+        setSaveErr(null);
         if (data.detection_auto) {
           setDetection(data.detection_auto);
           setParams((prev) => appliquerDetection(data.detection_auto!, prev));
@@ -174,6 +182,32 @@ export function MaintenanceMmsClient() {
   const relancer = () => {
     if (lastBrutRef.current) void lancerAnalyse(lastBrutRef.current, parcFile, dernieresVisitesFile, cumulPannesFile, params);
   };
+
+  async function sauvegarderAnalyse() {
+    if (!result) return;
+    setSaveBusy(true);
+    setSaveErr(null);
+    setSaveOk(false);
+    try {
+      await apiFetch("/api/mms/rapports", {
+        token: readToken(),
+        method: "POST",
+        body: JSON.stringify({
+          prestataire: params.prestataire ?? "",
+          client: params.filtre_client ?? params.hypotheses_client ?? "",
+          trimestre: params.trimestre ?? "T1",
+          annee: params.annee ?? new Date().getFullYear(),
+          indicateurs: result.indicateurs,
+          fichiers: result.fichiers,
+        }),
+      });
+      setSaveOk(true);
+    } catch (e) {
+      setSaveErr(e instanceof Error ? e.message : "Erreur lors de la sauvegarde");
+    } finally {
+      setSaveBusy(false);
+    }
+  }
 
   const relancerAfterPatch = (part: Partial<MmsParams>) => {
     if (!lastBrutRef.current) return;
@@ -606,7 +640,21 @@ export function MaintenanceMmsClient() {
             ) : result.fichiers.pdf_erreur ? (
               <span className="self-center text-xs text-amber-800">{result.fichiers.pdf_erreur}</span>
             ) : null}
+            <button
+              type="button"
+              className="cbtn cbtn-primary"
+              disabled={saveBusy || saveOk}
+              onClick={() => void sauvegarderAnalyse()}
+            >
+              {saveBusy ? "Sauvegarde…" : saveOk ? "✓ Archivé" : "Archiver l'analyse"}
+            </button>
           </div>
+          {saveErr ? <p className="text-xs text-red-700">{saveErr}</p> : null}
+          {saveOk ? (
+            <p className="text-xs text-green-700">
+              Analyse archivée — retrouvez-la dans la bibliothèque ci-dessous.
+            </p>
+          ) : null}
 
           {result.graphiques ? (
             <MaintenanceMmsCharts

@@ -32,6 +32,7 @@ mms-analyzer/.venv/
 
 # Server build
 server/dist/
+server/data/
 
 # Prisma
 prisma/migrations/*.sql.bak

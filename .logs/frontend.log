@@ -1,0 +1,551 @@
+
+> frontend:dev
+> npm run dev -w lvo-web-frontend
+
+
+> lvo-web-frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 1245ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET / 200 in 9.6s (next.js: 1163ms, application-code: 8.5s)
+ GET /login 200 in 1232ms (next.js: 190ms, application-code: 1041ms)
+ GET / 200 in 1465ms (next.js: 20ms, application-code: 1445ms)
+ GET /flutter_service_worker.js?v=null 404 in 629ms (next.js: 221ms, application-code: 408ms)
+ GET / 200 in 1694ms (next.js: 44ms, application-code: 1650ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 890ms (next.js: 211ms, proxy.ts: 38ms, application-code: 641ms)
+ GET /crm/dashboard 200 in 2.5s (next.js: 714ms, proxy.ts: 371ms, application-code: 1393ms)
+ GET /flutter_service_worker.js?v=null 404 in 876ms (next.js: 61ms, application-code: 815ms)
+ GET /crm/dashboard 200 in 1826ms (next.js: 96ms, proxy.ts: 145ms, application-code: 1586ms)
+ GET /espace-client/devis 200 in 2.0s (next.js: 195ms, proxy.ts: 142ms, application-code: 1682ms)
+ GET /espace-client/dashboard 200 in 1266ms (next.js: 449ms, proxy.ts: 35ms, application-code: 782ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /flutter_service_worker.js?v=null 404 in 359ms (next.js: 45ms, application-code: 314ms)
+ GET /espace-client/devis 200 in 327ms (next.js: 47ms, proxy.ts: 34ms, application-code: 246ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/devis-groupement 200 in 544ms (next.js: 200ms, proxy.ts: 22ms, application-code: 322ms)
+ GET /crm/devis-groupement/1 200 in 1691ms (next.js: 1356ms, proxy.ts: 20ms, application-code: 315ms)
+ GET /espace-client/devis 200 in 565ms (next.js: 31ms, proxy.ts: 23ms, application-code: 510ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 321ms (next.js: 25ms, application-code: 296ms)
+ GET /crm/devis-groupement/1 200 in 751ms (next.js: 86ms, proxy.ts: 32ms, application-code: 633ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 298ms (next.js: 27ms, application-code: 271ms)
+ GET /espace-client/devis 200 in 478ms (next.js: 48ms, proxy.ts: 36ms, application-code: 394ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 344ms (next.js: 23ms, application-code: 321ms)
+ GET /crm/devis-groupement/1 200 in 497ms (next.js: 74ms, proxy.ts: 22ms, application-code: 400ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 318ms (next.js: 25ms, application-code: 294ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 1153ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /espace-client/devis 200 in 3.4s (next.js: 1858ms, proxy.ts: 384ms, application-code: 1153ms)
+ GET /crm/devis-groupement/1 200 in 4.7s (next.js: 3.8s, proxy.ts: 434ms, application-code: 526ms)
+ GET /flutter_service_worker.js?v=null 404 in 700ms (next.js: 268ms, application-code: 431ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /crm/devis-groupement/1 200 in 960ms (next.js: 209ms, proxy.ts: 83ms, application-code: 668ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 356ms (next.js: 32ms, proxy.ts: 21ms, application-code: 303ms)
+ GET /flutter_service_worker.js?v=null 404 in 460ms (next.js: 25ms, application-code: 435ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 373ms (next.js: 36ms, application-code: 337ms)
+ GET /crm/devis-groupement/1 200 in 12.9s (next.js: 117ms, proxy.ts: 44ms, application-code: 12.7s)
+ GET /crm/devis-groupement 200 in 941ms (next.js: 201ms, proxy.ts: 25ms, application-code: 715ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 277ms (next.js: 24ms, application-code: 253ms)
+ GET /crm/dashboard 200 in 1120ms (next.js: 192ms, proxy.ts: 13ms, application-code: 914ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 297ms (next.js: 26ms, application-code: 271ms)
+ GET /crm/devis-groupement 200 in 301ms (next.js: 44ms, proxy.ts: 30ms, application-code: 226ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/devis-groupement/1 200 in 298ms (next.js: 80ms, proxy.ts: 17ms, application-code: 201ms)
+ GET /espace-client/appareils 200 in 520ms (next.js: 162ms, proxy.ts: 14ms, application-code: 344ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /espace-client/appareils 200 in 238ms (next.js: 21ms, proxy.ts: 13ms, application-code: 204ms)
+ GET /espace-client/devis 200 in 239ms (next.js: 39ms, proxy.ts: 16ms, application-code: 184ms)
+ GET /espace-client/devis 200 in 504ms (next.js: 40ms, proxy.ts: 11ms, application-code: 454ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 279ms (next.js: 30ms, application-code: 250ms)
+ GET /crm/suivi-devis 200 in 1353ms (next.js: 319ms, proxy.ts: 719ms, application-code: 314ms)
+ GET /login 200 in 855ms (next.js: 163ms, application-code: 692ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 378ms (next.js: 43ms, application-code: 335ms)
+ GET /crm/dashboard 200 in 651ms (next.js: 49ms, proxy.ts: 33ms, application-code: 569ms)
+ GET /crm/dashboard 200 in 381ms (next.js: 50ms, proxy.ts: 19ms, application-code: 312ms)
+ GET / 200 in 2.1s (next.js: 195ms, application-code: 1955ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/suivi-devis 200 in 253ms (next.js: 21ms, proxy.ts: 19ms, application-code: 212ms)
+ GET /login 200 in 407ms (next.js: 13ms, application-code: 394ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 537ms (next.js: 57ms, application-code: 480ms)
+ GET /crm/dashboard 200 in 1183ms (next.js: 211ms, proxy.ts: 67ms, application-code: 905ms)
+ GET /crm/dashboard 200 in 622ms (next.js: 144ms, proxy.ts: 104ms, application-code: 374ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/suivi-devis 200 in 472ms (next.js: 245ms, proxy.ts: 27ms, application-code: 200ms)
+ GET /crm/devis-groupement 200 in 259ms (next.js: 21ms, proxy.ts: 14ms, application-code: 224ms)
+ GET /crm/suivi-devis 200 in 224ms (next.js: 28ms, proxy.ts: 12ms, application-code: 185ms)
+Failed to proxy http://127.0.0.1:8080/api/notifications Error: connect ECONNREFUSED 127.0.0.1:8080
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8080) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8080
+}
+Error: connect ECONNREFUSED 127.0.0.1:8080
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8080) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8080
+}
+Failed to proxy http://127.0.0.1:8080/api/client/notifications Error: connect ECONNREFUSED 127.0.0.1:8080
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8080) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8080
+}
+Error: connect ECONNREFUSED 127.0.0.1:8080
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8080) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8080
+}
+ GET /crm/suivi-devis 200 in 2.5s (next.js: 512ms, proxy.ts: 293ms, application-code: 1698ms)
+ GET /espace-client/devis 200 in 2.5s (next.js: 1048ms, proxy.ts: 295ms, application-code: 1156ms)
+ GET /espace-client/devis 200 in 2.0s (next.js: 1066ms, proxy.ts: 114ms, application-code: 836ms)
+ GET /crm/suivi-devis 200 in 2.1s (next.js: 451ms, proxy.ts: 95ms, application-code: 1572ms)
+ GET /crm/suivi-devis 200 in 16.5s (next.js: 474ms, proxy.ts: 539ms, application-code: 15.5s)
+ GET /espace-client/devis 200 in 17.0s (next.js: 1014ms, proxy.ts: 540ms, application-code: 15.4s)
+ GET /espace-client/devis 200 in 2.6s (next.js: 857ms, proxy.ts: 236ms, application-code: 1464ms)
+ GET /crm/suivi-devis 200 in 2.6s (next.js: 403ms, proxy.ts: 238ms, application-code: 1914ms)
+ GET /crm/devis-groupement/1 200 in 1344ms (next.js: 305ms, proxy.ts: 102ms, application-code: 937ms)
+ GET /espace-client/devis 200 in 2.0s (next.js: 52ms, proxy.ts: 11ms, application-code: 1944ms)
+[browser] Uncaught ChunkLoadError: Failed to load chunk /_next/static/chunks/frontend_app_espace-client_(portal)_layout_tsx_00u7ia8._.js from module [project]/node_modules/next/dist/compiled/react-server-dom-turbopack/cjs/react-server-dom-turbopack-client.browser.development.js [app-client] (ecmascript)
+ GET /flutter_service_worker.js?v=null 404 in 408ms (next.js: 109ms, application-code: 300ms)
+✓ Compiled in 2236.3s
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 1129ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /espace-client/devis 200 in 2.6s (next.js: 1047ms, proxy.ts: 228ms, application-code: 1312ms)
+ GET /flutter_service_worker.js?v=null 404 in 2.4s (next.js: 2.1s, application-code: 298ms)
+ GET /flutter_service_worker.js?v=null 404 in 496ms (next.js: 174ms, application-code: 321ms)
+ GET /espace-client/devis 200 in 676ms (next.js: 209ms, proxy.ts: 137ms, application-code: 329ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /crm/devis-groupement/1 200 in 992ms (proxy.ts: 41ms)
+ GET /flutter_service_worker.js?v=null 404 in 413ms (next.js: 158ms, application-code: 255ms)
+ GET /flutter_service_worker.js?v=null 404 in 315ms (next.js: 27ms, application-code: 288ms)
+ GET /crm/suivi-devis 200 in 743ms (next.js: 160ms, proxy.ts: 13ms, application-code: 571ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 790ms (next.js: 159ms, application-code: 631ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 413ms (next.js: 29ms, application-code: 384ms)
+ GET /crm/dashboard 200 in 1106ms (next.js: 223ms, proxy.ts: 25ms, application-code: 858ms)
+ GET /crm/dashboard 200 in 296ms (next.js: 43ms, proxy.ts: 19ms, application-code: 234ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/suivi-devis 200 in 214ms (next.js: 31ms, proxy.ts: 22ms, application-code: 162ms)
+ GET /login 200 in 392ms (next.js: 15ms, application-code: 378ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 340ms (next.js: 37ms, application-code: 303ms)
+ GET /crm/dashboard 200 in 490ms (next.js: 59ms, proxy.ts: 36ms, application-code: 396ms)
+ GET /crm/dashboard 200 in 321ms (next.js: 44ms, proxy.ts: 18ms, application-code: 259ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/suivi-devis 200 in 237ms (next.js: 36ms, proxy.ts: 22ms, application-code: 179ms)
+ GET /login 200 in 359ms (next.js: 16ms, application-code: 343ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 590ms (next.js: 48ms, application-code: 542ms)
+ GET /crm/dashboard 200 in 926ms (next.js: 22ms, proxy.ts: 16ms, application-code: 888ms)
+ GET /crm/dashboard 200 in 578ms (next.js: 194ms, proxy.ts: 81ms, application-code: 303ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/devis-groupement 200 in 607ms (next.js: 149ms, proxy.ts: 12ms, application-code: 446ms)
+ GET /crm/devis-groupement/1 200 in 237ms (next.js: 83ms, proxy.ts: 15ms, application-code: 140ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 327ms (next.js: 98ms, proxy.ts: 20ms, application-code: 209ms)
+ GET /crm/suivi-devis 200 in 329ms (next.js: 26ms, proxy.ts: 23ms, application-code: 280ms)
+ GET /crm/devis-groupement/1 200 in 289ms (next.js: 60ms, proxy.ts: 21ms, application-code: 209ms)
+ GET /crm/suivi-devis 200 in 160ms (next.js: 23ms, proxy.ts: 18ms, application-code: 119ms)
+ GET /login 200 in 410ms (next.js: 12ms, application-code: 397ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /crm/dashboard 200 in 545ms (next.js: 39ms, proxy.ts: 16ms, application-code: 490ms)
+ GET /crm/dashboard 200 in 743ms (next.js: 38ms, proxy.ts: 17ms, application-code: 689ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /flutter_service_worker.js?v=null 404 in 728ms (next.js: 75ms, application-code: 653ms)
+ GET /crm/suivi-devis 200 in 250ms (next.js: 34ms, proxy.ts: 16ms, application-code: 201ms)
+ GET /crm/suivi-devis 200 in 1415ms (next.js: 407ms, proxy.ts: 197ms, application-code: 811ms)
+ GET /espace-client/devis 200 in 1115ms (next.js: 834ms, proxy.ts: 39ms, application-code: 243ms)
+ GET /crm/suivi-devis 200 in 2.1s (next.js: 694ms, proxy.ts: 70ms, application-code: 1335ms)
+ GET /espace-client/devis 200 in 3.4s (next.js: 915ms, proxy.ts: 1316ms, application-code: 1127ms)
+ GET /crm/suivi-devis 200 in 656ms (next.js: 176ms, proxy.ts: 45ms, application-code: 435ms)
+ GET /espace-client/devis 200 in 651ms (next.js: 288ms, proxy.ts: 45ms, application-code: 318ms)
+ GET /crm/suivi-devis 200 in 1425ms (next.js: 308ms, proxy.ts: 223ms, application-code: 893ms)
+ GET /espace-client/devis 200 in 1387ms (next.js: 723ms, proxy.ts: 191ms, application-code: 472ms)
+ GET /crm/suivi-devis 200 in 700ms (next.js: 268ms, proxy.ts: 70ms, application-code: 362ms)
+ GET /espace-client/devis 200 in 698ms (next.js: 379ms, proxy.ts: 70ms, application-code: 250ms)
+ GET /crm/suivi-devis 200 in 845ms (next.js: 150ms, proxy.ts: 84ms, application-code: 611ms)
+ GET /espace-client/devis 200 in 843ms (next.js: 354ms, proxy.ts: 83ms, application-code: 406ms)
+ GET /crm/suivi-devis 200 in 850ms (next.js: 168ms, proxy.ts: 93ms, application-code: 589ms)
+ GET /espace-client/devis 200 in 849ms (next.js: 292ms, proxy.ts: 93ms, application-code: 464ms)
+ GET /crm/suivi-devis 200 in 5.3s (next.js: 3.1s, proxy.ts: 113ms, application-code: 2.1s)
+ GET /espace-client/devis 200 in 5.2s (next.js: 3.2s, proxy.ts: 36ms, application-code: 2.0s)
+Failed to proxy http://127.0.0.1:8080/api/client/notifications Error: connect ECONNREFUSED 127.0.0.1:8080
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8080) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8080
+}
+Error: connect ECONNREFUSED 127.0.0.1:8080
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8080) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8080
+}
+ GET /crm/suivi-devis 200 in 1367ms (next.js: 397ms, proxy.ts: 94ms, application-code: 876ms)
+ GET /espace-client/devis 200 in 1345ms (next.js: 707ms, proxy.ts: 151ms, application-code: 487ms)
+ GET /crm/suivi-devis 200 in 1278ms (next.js: 252ms, proxy.ts: 79ms, application-code: 948ms)
+ GET /espace-client/devis 200 in 1278ms (next.js: 588ms, proxy.ts: 79ms, application-code: 611ms)
+ GET /crm/suivi-devis 200 in 1069ms (next.js: 309ms, proxy.ts: 188ms, application-code: 573ms)
+ GET /espace-client/devis 200 in 1071ms (next.js: 388ms, proxy.ts: 190ms, application-code: 493ms)
+ GET /crm/suivi-devis 200 in 1052ms (next.js: 270ms, proxy.ts: 201ms, application-code: 581ms)
+ GET /espace-client/devis 200 in 1037ms (next.js: 377ms, proxy.ts: 187ms, application-code: 473ms)
+✓ Compiled in 123.1s
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 768ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /espace-client/devis 200 in 1059ms (next.js: 385ms, proxy.ts: 7ms, application-code: 667ms)
+ GET /crm/suivi-devis 200 in 1186ms (next.js: 773ms, proxy.ts: 109ms, application-code: 304ms)
+ GET /login 200 in 321ms (next.js: 112ms, application-code: 209ms)
+ GET /flutter_service_worker.js?v=null 404 in 227ms (next.js: 79ms, application-code: 148ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 653ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 1109ms (next.js: 926ms, application-code: 183ms)
+ GET /espace-client/devis 200 in 1240ms (next.js: 471ms, proxy.ts: 126ms, application-code: 643ms)
+ GET /flutter_service_worker.js?v=null 404 in 401ms (next.js: 96ms, application-code: 306ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 655ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 809ms (next.js: 399ms, application-code: 410ms)
+ GET /espace-client/devis 200 in 918ms (next.js: 683ms, proxy.ts: 106ms, application-code: 130ms)
+ GET /flutter_service_worker.js?v=null 404 in 393ms (next.js: 112ms, application-code: 281ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 871ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 1038ms (next.js: 445ms, proxy.ts: 178ms, application-code: 414ms)
+ GET /login 200 in 864ms (next.js: 724ms, application-code: 139ms)
+ GET /flutter_service_worker.js?v=null 404 in 334ms (next.js: 91ms, application-code: 243ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 689ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 746ms (next.js: 335ms, application-code: 411ms)
+ GET /espace-client/devis 200 in 996ms (next.js: 667ms, proxy.ts: 182ms, application-code: 147ms)
+ GET /flutter_service_worker.js?v=null 404 in 338ms (next.js: 83ms, application-code: 254ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 640ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 972ms (next.js: 423ms, proxy.ts: 135ms, application-code: 414ms)
+ GET /login 200 in 839ms (next.js: 708ms, application-code: 131ms)
+ GET /flutter_service_worker.js?v=null 404 in 247ms (next.js: 90ms, application-code: 157ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 655ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 832ms (next.js: 383ms, application-code: 448ms)
+ GET /espace-client/devis 200 in 955ms (next.js: 705ms, proxy.ts: 102ms, application-code: 147ms)
+ GET /flutter_service_worker.js?v=null 404 in 276ms (next.js: 78ms, application-code: 198ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 670ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 733ms (next.js: 301ms, application-code: 432ms)
+ GET /espace-client/devis 200 in 902ms (next.js: 624ms, proxy.ts: 106ms, application-code: 172ms)
+ GET /flutter_service_worker.js?v=null 404 in 231ms (next.js: 75ms, application-code: 156ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 673ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 965ms (next.js: 447ms, proxy.ts: 130ms, application-code: 389ms)
+ GET /login 200 in 814ms (next.js: 690ms, application-code: 123ms)
+ GET /flutter_service_worker.js?v=null 404 in 279ms (next.js: 97ms, application-code: 182ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 592ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 983ms (next.js: 463ms, proxy.ts: 97ms, application-code: 423ms)
+ GET /login 200 in 886ms (next.js: 733ms, application-code: 153ms)
+ GET /flutter_service_worker.js?v=null 404 in 243ms (next.js: 81ms, application-code: 162ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 705ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 978ms (next.js: 556ms, application-code: 422ms)
+ GET /espace-client/devis 200 in 1122ms (next.js: 860ms, proxy.ts: 136ms, application-code: 126ms)
+ GET /flutter_service_worker.js?v=null 404 in 254ms (next.js: 82ms, application-code: 172ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 699ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 1115ms (next.js: 532ms, proxy.ts: 101ms, application-code: 483ms)
+ GET /login 200 in 1012ms (next.js: 870ms, application-code: 143ms)
+ GET /flutter_service_worker.js?v=null 404 in 294ms (next.js: 94ms, application-code: 200ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 721ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 1008ms (next.js: 364ms, proxy.ts: 169ms, application-code: 476ms)
+ GET /login 200 in 827ms (next.js: 670ms, application-code: 157ms)
+ GET /flutter_service_worker.js?v=null 404 in 308ms (next.js: 91ms, application-code: 217ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 655ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /login 200 in 862ms (next.js: 490ms, application-code: 372ms)
+ GET /espace-client/devis 200 in 976ms (next.js: 735ms, proxy.ts: 111ms, application-code: 130ms)
+ GET /flutter_service_worker.js?v=null 404 in 232ms (next.js: 85ms, application-code: 147ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 722ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 1078ms (next.js: 522ms, proxy.ts: 128ms, application-code: 429ms)
+ GET /login 200 in 837ms (next.js: 716ms, application-code: 121ms)
+ GET /flutter_service_worker.js?v=null 404 in 225ms (next.js: 81ms, application-code: 144ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 621ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/devis 200 in 1076ms (next.js: 475ms, proxy.ts: 160ms, application-code: 442ms)
+ GET /login 200 in 918ms (next.js: 740ms, application-code: 178ms)
+ GET /flutter_service_worker.js?v=null 404 in 230ms (next.js: 81ms, application-code: 148ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /crm/dashboard 200 in 625ms (next.js: 97ms, proxy.ts: 22ms, application-code: 506ms)
+ GET /crm/dashboard 200 in 203ms (next.js: 41ms, proxy.ts: 31ms, application-code: 131ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/devis-groupement 200 in 209ms (next.js: 65ms, proxy.ts: 6ms, application-code: 138ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 90ms (next.js: 12ms, proxy.ts: 11ms, application-code: 67ms)
+ GET /crm/suivi-devis 200 in 235ms (next.js: 74ms, proxy.ts: 5ms, application-code: 155ms)
+ GET /login 200 in 390ms (next.js: 8ms, application-code: 382ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 145ms (next.js: 14ms, application-code: 131ms)
+ GET /crm/dashboard 200 in 156ms (next.js: 20ms, proxy.ts: 9ms, application-code: 127ms)
+ GET /crm/dashboard 200 in 115ms (next.js: 18ms, proxy.ts: 7ms, application-code: 90ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/suivi-devis 200 in 108ms (next.js: 13ms, proxy.ts: 10ms, application-code: 85ms)
+ GET /login 200 in 128ms (next.js: 8ms, application-code: 121ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 210ms (next.js: 25ms, application-code: 185ms)
+ GET /crm/dashboard 200 in 166ms (next.js: 13ms, proxy.ts: 9ms, application-code: 144ms)
+ GET /crm/dashboard 200 in 138ms (next.js: 11ms, proxy.ts: 11ms, application-code: 115ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/offres 200 in 267ms (next.js: 94ms, proxy.ts: 7ms, application-code: 165ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 760ms (next.js: 196ms, proxy.ts: 463ms, application-code: 101ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 141ms (next.js: 63ms, proxy.ts: 5ms, application-code: 73ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 82ms (next.js: 9ms, proxy.ts: 7ms, application-code: 67ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/appareils 200 in 244ms (next.js: 73ms, proxy.ts: 11ms, application-code: 160ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /espace-client/appareils 200 in 1017ms (next.js: 603ms, proxy.ts: 223ms, application-code: 190ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 996ms (next.js: 438ms, proxy.ts: 268ms, application-code: 290ms)
+ GET /espace-client/devis 200 in 1283ms (next.js: 565ms, proxy.ts: 72ms, application-code: 646ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 1383ms (next.js: 281ms, proxy.ts: 118ms, application-code: 984ms)
+ GET /espace-client/appareils 200 in 1306ms (next.js: 697ms, proxy.ts: 42ms, application-code: 568ms)
+ GET /espace-client/devis 200 in 254ms (next.js: 75ms, proxy.ts: 71ms, application-code: 107ms)
+ GET /espace-client/devis 200 in 113ms (next.js: 23ms, proxy.ts: 8ms, application-code: 83ms)
+ GET /espace-client/appareils 200 in 129ms (next.js: 27ms, proxy.ts: 7ms, application-code: 96ms)
+ GET /espace-client/devis 200 in 170ms (next.js: 24ms, proxy.ts: 13ms, application-code: 133ms)
+ GET /espace-client/appareils 200 in 147ms (next.js: 27ms, proxy.ts: 14ms, application-code: 107ms)
+ GET /espace-client/devis 200 in 116ms (next.js: 17ms, proxy.ts: 6ms, application-code: 94ms)
+ GET /crm/devis-groupement 200 in 944ms (next.js: 104ms, proxy.ts: 373ms, application-code: 466ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 1038ms (next.js: 114ms, proxy.ts: 375ms, application-code: 549ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 170ms (next.js: 33ms, application-code: 137ms)
+ GET /crm/devis-groupement/2 200 in 1233ms (next.js: 1071ms, proxy.ts: 18ms, application-code: 144ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /espace-client/devis 200 in 312ms (next.js: 19ms, proxy.ts: 7ms, application-code: 287ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 249ms (next.js: 18ms, application-code: 232ms)
+ GET /crm/suivi-devis 200 in 5.8s (next.js: 1837ms, proxy.ts: 3.4s, application-code: 612ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 250ms (next.js: 20ms, proxy.ts: 11ms, application-code: 219ms)
+ GET /crm/devis-groupement/2 200 in 981ms (next.js: 197ms, proxy.ts: 573ms, application-code: 211ms)
+ GET /espace-client/devis 200 in 57ms (next.js: 19ms, proxy.ts: 6ms, application-code: 32ms)
+ GET /espace-client/devis 200 in 128ms (next.js: 16ms, proxy.ts: 9ms, application-code: 103ms)
+ GET /espace-client/appareils 200 in 195ms (next.js: 54ms, proxy.ts: 19ms, application-code: 122ms)
+ GET /espace-client/devis 200 in 141ms (next.js: 31ms, proxy.ts: 11ms, application-code: 99ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/devis-groupement?filtre=arret 200 in 313ms (next.js: 23ms, proxy.ts: 19ms, application-code: 271ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /crm/devis-groupement/3 200 in 141ms (next.js: 41ms, proxy.ts: 7ms, application-code: 93ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /flutter_service_worker.js?v=null 404 in 251ms (next.js: 20ms, application-code: 232ms)
+ GET /espace-client/devis 200 in 4.2s (next.js: 1408ms, proxy.ts: 2.4s, application-code: 332ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 631ms (next.js: 24ms, application-code: 607ms)
+✓ Compiled in 512s
+ GET /espace-client/appareils 200 in 3.8min (next.js: 40s, proxy.ts: 4.4s, application-code: 3.0min)
+ GET /crm/devis-groupement/3 200 in 3.5min (next.js: 2.6min, proxy.ts: 5.3s, application-code: 53s)
+ GET /espace-client/devis 200 in 2.6min (next.js: 57s, proxy.ts: 4.0s, application-code: 96s)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 969ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /flutter_service_worker.js?v=null 404 in 1151ms (next.js: 826ms, application-code: 325ms)
+ GET /espace-client/devis 200 in 1393ms (next.js: 632ms, proxy.ts: 192ms, application-code: 568ms)
+⚠ Server is approaching the used memory threshold, restarting...
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.27.176.1:3000
+- Environments: .env.development.local
+✓ Ready in 657ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET /espace-client/devis 200 in 1230ms (next.js: 681ms, proxy.ts: 176ms, application-code: 373ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /crm/devis-groupement/3 200 in 872ms (proxy.ts: 142ms)
+ GET /crm/devis-groupement?filtre=arret 200 in 660ms (next.js: 141ms, proxy.ts: 12ms, application-code: 507ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 554ms (next.js: 185ms, application-code: 369ms)
+ GET /crm/devis-groupement 200 in 108ms (next.js: 31ms, proxy.ts: 20ms, application-code: 57ms)
+ GET /crm/devis-groupement 200 in 136ms (next.js: 21ms, proxy.ts: 20ms, application-code: 95ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /crm/suivi-devis 200 in 486ms (next.js: 244ms, proxy.ts: 11ms, application-code: 231ms)
+✓ Finished filesystem cache database compaction in 10.7s
+ GET /crm/suivi-devis 200 in 2.1s (next.js: 706ms, proxy.ts: 392ms, application-code: 982ms)
+ GET /crm/suivi-devis 200 in 6.0s (next.js: 722ms, proxy.ts: 244ms, application-code: 5.0s)
+✓ Compiled in 69.6s
+ GET /crm/contacts 200 in 6.3s (next.js: 3.2s, proxy.ts: 2.2s, application-code: 844ms)
+ GET /crm/suivi-devis 200 in 25.9s (next.js: 11.4s, proxy.ts: 11.1s, application-code: 3.4s)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 751ms (next.js: 169ms, application-code: 581ms)
+ GET /crm/devis-groupement 200 in 501ms (next.js: 97ms, proxy.ts: 12ms, application-code: 392ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Uncaught Error: Internal Next.js error: Router action dispatched before initialization.
+[browser] Uncaught Error: Internal Next.js error: Router action dispatched before initialization.
+ GET /espace-client/devis 200 in 1201ms (next.js: 137ms, proxy.ts: 17ms, application-code: 1047ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /espace-client/login 200 in 1323ms (next.js: 200ms, proxy.ts: 53ms, application-code: 1069ms)
+[browser] Image with src "http://localhost:3000/logo-lvo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+ GET /flutter_service_worker.js?v=null 404 in 358ms (next.js: 35ms, application-code: 323ms)
+ GET /espace-client/dashboard 200 in 1042ms (next.js: 213ms, proxy.ts: 17ms, application-code: 812ms)
+ GET /espace-client/dashboard 200 in 506ms (next.js: 102ms, proxy.ts: 75ms, application-code: 330ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /espace-client/devis 200 in 4.5s (next.js: 1222ms, proxy.ts: 2.4s, application-code: 863ms)
+ GET /espace-client/devis 200 in 644ms (next.js: 211ms, proxy.ts: 56ms, application-code: 377ms)
+ GET /espace-client/devis 200 in 970ms (next.js: 53ms, proxy.ts: 24ms, application-code: 892ms)
+^C^C^C

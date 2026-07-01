@@ -16,6 +16,7 @@ export function CrmShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [recouvrementRetard, setRecouvrementRetard] = useState<number | null>(null);
   const [session, setSession] = useState<{ ready: boolean; hasToken: boolean }>({ ready: false, hasToken: false });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const hasToken = !!readToken();
@@ -58,10 +59,25 @@ export function CrmShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="lvo-crm-root">
-      <CrmTopNav role={role} counts={counts} countsLoading={countsLoading} />
+      <CrmTopNav role={role} counts={counts} countsLoading={countsLoading} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
       <div className="crm-layout">
-        <CrmSidebar role={role} recouvrementRetard={recouvrementRetard} counts={counts} countsLoading={countsLoading} />
-        <main className="crm-main">{children}</main>
+        {sidebarOpen && (
+          <div
+            className="crm-sidebar-overlay crm-sidebar-overlay--visible"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+        <CrmSidebar
+          role={role}
+          recouvrementRetard={recouvrementRetard}
+          counts={counts}
+          countsLoading={countsLoading}
+          isOpen={sidebarOpen}
+        />
+        <main className="crm-main" onClick={() => sidebarOpen && setSidebarOpen(false)}>
+          {children}
+        </main>
       </div>
     </div>
   );

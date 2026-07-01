@@ -84,6 +84,7 @@ export function SiteArborescencePanel({ siteId, siteNom }: { siteId: number; sit
   const [tree, setTree] = useState<SiteArborescenceTreeNode[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
@@ -157,6 +158,35 @@ export function SiteArborescencePanel({ siteId, siteNom }: { siteId: number; sit
     });
   }
 
+  async function downloadAll() {
+    setDownloading(true);
+    setErr(null);
+    try {
+      const token = readToken();
+      const res = await fetch(`${getApiBaseUrl()}/api/sites/${siteId}/arborescence/download-all`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Téléchargement échoué");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const disp = res.headers.get("Content-Disposition");
+      const match = disp?.match(/filename\*=UTF-8''([^;]+)/i);
+      a.download = match
+        ? decodeURIComponent(match[1])
+        : siteNom
+          ? `${siteNom.replace(/[\\/:*?"<>|]/g, "-")}.zip`
+          : `site-${siteId}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Erreur téléchargement");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   async function onUpload(file: File) {
     if (!selectedFolderId) return;
     setBusy(true);
@@ -215,28 +245,40 @@ export function SiteArborescencePanel({ siteId, siteNom }: { siteId: number; sit
             Arborescence interne{siteNom ? ` — ${siteNom}` : ""} (20 dossiers standard LVO).
           </p>
         </div>
-        {canEdit && selectedFolderId ? (
-          <>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="sr-only"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void onUpload(f);
-                e.target.value = "";
-              }}
-            />
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          {tree && tree.length > 0 ? (
             <button
               type="button"
-              className="cbtn cbtn-primary cbtn-sm"
-              disabled={busy}
-              onClick={() => fileInputRef.current?.click()}
+              className="cbtn cbtn-ghost cbtn-sm"
+              disabled={downloading}
+              onClick={() => void downloadAll()}
             >
-              Ajouter un fichier
+              {downloading ? "Téléchargement…" : "⬇ Télécharger tout"}
             </button>
-          </>
-        ) : null}
+          ) : null}
+          {canEdit && selectedFolderId ? (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="sr-only"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void onUpload(f);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                className="cbtn cbtn-primary cbtn-sm"
+                disabled={busy}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Ajouter un fichier
+              </button>
+            </>
+          ) : null}
+        </div>
       </div>
 
       {err ? <p className="crm-field-error">{err}</p> : null}

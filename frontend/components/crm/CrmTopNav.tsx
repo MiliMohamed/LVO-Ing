@@ -28,9 +28,10 @@ type Props = {
   role: AppRole | null;
   counts: DashboardCounts | null;
   countsLoading?: boolean;
+  onToggleSidebar?: () => void;
 };
 
-export function CrmTopNav({ role, counts, countsLoading = false }: Props) {
+export function CrmTopNav({ role, counts, countsLoading = false, onToggleSidebar }: Props) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -55,6 +56,9 @@ export function CrmTopNav({ role, counts, countsLoading = false }: Props) {
 
   return (
     <header className="crm-topbar" id="crm-nav">
+      <button type="button" className="ctb-hamburger" onClick={onToggleSidebar} aria-label="Menu navigation">
+        <span /><span /><span />
+      </button>
       <Link href={getCrmHomeHref(role)} className="ctb-logo shrink-0">
         <Image src={LVO_LOGO_SRC} alt={LVO_LOGO_ALT} width={32} height={32} className="object-contain" />
         LVO CRM

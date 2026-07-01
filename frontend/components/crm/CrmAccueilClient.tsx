@@ -50,10 +50,10 @@ const SHORTCUTS: Shortcut[] = [
     hint: "Jalons & Gantt",
   },
   {
-    href: "/crm/outils/documents",
+    href: "/exploitation/documents",
     icon: "DOC",
     label: "Documents",
-    hint: "PDF / Word",
+    hint: "PDF / Word (Admin Exploitation)",
     roles: ["ADMIN", "MANAGER", "CONSULTANT"],
   },
 ];
@@ -130,8 +130,8 @@ export function CrmAccueilClient() {
                 : "Mode lecture seule : parcourez les listes sans modifier les données."}
             </p>
             {canUsePhase2Tools(role) ? (
-              <Link href="/crm/outils/assistants" className="cbtn cbtn-ghost cbtn-sm mt-3 inline-flex">
-                Assistants OCR / IA →
+              <Link href="/exploitation/assistants" className="cbtn cbtn-ghost cbtn-sm mt-3 inline-flex">
+                Assistants OCR / IA (Admin Exploitation) →
               </Link>
             ) : null}
             {canAccessRecouvrement(role) ? (

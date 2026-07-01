@@ -118,37 +118,37 @@ def generer_figures(
     if not isinstance(maintenance, pd.DataFrame):
         maintenance = pd.DataFrame()
 
-    # Pénalités — donut
-    fig, ax = _nouvelle_figure(6.5, 5)
-    postes = [
-        ("Maintenance", float(penalites.get("penalite_maintenance", 0))),
-        ("Pannes", float(penalites.get("penalite_pannes", 0))),
-        ("Immobilisation", float(penalites.get("penalite_immobilisation", 0))),
-        ("Délai", float(penalites.get("penalite_delai_intervention", 0))),
-    ]
-    labels = [p[0] for p in postes if p[1] > 0]
-    vals = [p[1] for p in postes if p[1] > 0]
-    if not vals:
-        labels, vals = ["Aucune pénalité"], [1.0]
-    total_pen = sum(vals)
-    wedges, texts, autotexts = ax.pie(
-        vals,
-        labels=labels,
-        autopct=lambda pct: f"{pct:.0f}%\n({pct/100*total_pen:,.0f} €)" if total_pen else "",
-        colors=CHARTE["palette"][: len(vals)],
-        startangle=90,
-        pctdistance=0.75,
-        wedgeprops=dict(width=0.45, edgecolor="white", linewidth=2),
-    )
-    for t in autotexts:
-        t.set_fontsize(7)
-        t.set_color("#1F3A5F")
-    ax.set_title(titre_ctx("Répartition des pénalités (€)"), pad=12)
-    p = out_dir / "penalites_par_type.png"
-    _savefig(p, fig)
-    paths["penalites_par_type"] = str(p)
+    def _penalites_donut() -> Optional[tuple[str, Path]]:
+        fig, ax = _nouvelle_figure(6.5, 5)
+        postes = [
+            ("Maintenance", float(penalites.get("penalite_maintenance", 0))),
+            ("Pannes", float(penalites.get("penalite_pannes", 0))),
+            ("Immobilisation", float(penalites.get("penalite_immobilisation", 0))),
+            ("Délai", float(penalites.get("penalite_delai_intervention", 0))),
+        ]
+        labels = [p[0] for p in postes if p[1] > 0]
+        vals = [p[1] for p in postes if p[1] > 0]
+        if not vals:
+            labels, vals = ["Aucune pénalité"], [1.0]
+        total_pen = sum(vals)
+        _, _, autotexts = ax.pie(
+            vals,
+            labels=labels,
+            autopct=lambda pct: f"{pct:.0f}%\n({pct/100*total_pen:,.0f} €)" if total_pen else "",
+            colors=CHARTE["palette"][: len(vals)],
+            startangle=90,
+            pctdistance=0.75,
+            wedgeprops=dict(width=0.45, edgecolor="white", linewidth=2),
+        )
+        for t in autotexts:
+            t.set_fontsize(7)
+            t.set_color("#1F3A5F")
+        ax.set_title(titre_ctx("Répartition des pénalités (€)"), pad=12)
+        return "penalites_par_type", out_dir / "penalites_par_type.png"
 
-    if not synthese.empty and "ascenseur" in synthese.columns:
+    def _top10_exposition() -> Optional[tuple[str, Path]]:
+        if synthese.empty or "ascenseur" not in synthese.columns:
+            return None
         syn = synthese.copy()
         syn["_score"] = syn.get("cumul_indisponibilite_h", 0).fillna(0) + syn.get(
             "nb_pannes_retenues", 0
@@ -176,11 +176,11 @@ def generer_figures(
                 fontsize=7,
                 color=CHARTE["navy"],
             )
-        p = out_dir / "top10_penalites_appareil.png"
-        _savefig(p, fig)
-        paths["top10_penalites"] = str(p)
+        return "top10_penalites", out_dir / "top10_penalites_appareil.png"
 
-    if not synthese.empty and "nb_pannes_retenues" in synthese.columns:
+    def _pannes_par_appareil() -> Optional[tuple[str, Path]]:
+        if synthese.empty or "nb_pannes_retenues" not in synthese.columns:
+            return None
         syn = synthese.nlargest(18, "nb_pannes_retenues")
         fig, ax = _nouvelle_figure(7.5, 4.8)
         ax.bar(
@@ -194,133 +194,162 @@ def generer_figures(
         ax.set_ylabel("Pannes retenues")
         ax.set_title(titre_ctx("Pannes par appareil"), pad=10)
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=40, ha="right")
-        p = out_dir / "pannes_par_appareil.png"
-        _savefig(p, fig)
-        paths["pannes_par_appareil"] = str(p)
+        return "pannes_par_appareil", out_dir / "pannes_par_appareil.png"
 
-    if not maintenance.empty and "delta_jours" in maintenance.columns:
-        m = maintenance.dropna(subset=["delta_jours"]).copy()
-        if not m.empty and "ascenseur" in m.columns:
-            m = m.nlargest(20, "delta_jours")
-            fig, ax = _nouvelle_figure(7.5, 4.8)
-            colors = [
-                CHARTE["rouge"] if bool(r.get("ecart_signale")) else CHARTE["vert"]
-                if str(r.get("statut_delta")) == "evalue"
-                else CHARTE["gris"]
-                for _, r in m.iterrows()
-            ]
-            ax.bar(
-                m["ascenseur"].astype(str),
-                m["delta_jours"],
-                color=colors,
-                edgecolor="white",
-                linewidth=0.5,
-                zorder=3,
-            )
-            seuil = float(params.get("seuil_maintenance_jours", 42))
-            ax.axhline(y=seuil, color=CHARTE["navy"], linestyle="--", linewidth=1.5, label=f"Seuil {seuil} j")
-            ax.set_ylabel("Δ jours")
-            ax.set_title(titre_ctx("Écart entre visites maintenance"), pad=10)
-            ax.legend(loc="upper right", fontsize=7, framealpha=0.9)
-            plt.setp(ax.xaxis.get_majorticklabels(), rotation=40, ha="right")
-            p = out_dir / "delta_maintenance.png"
-            _savefig(p, fig)
-            paths["delta_maintenance"] = str(p)
+    def _delta_maintenance() -> Optional[tuple[str, Path]]:
+        if maintenance.empty or "delta_jours" not in maintenance.columns:
+            return None
+        m = maintenance.copy()
+        m["delta_jours"] = pd.to_numeric(m["delta_jours"], errors="coerce")
+        m = m.dropna(subset=["delta_jours"])
+        if m.empty or "ascenseur" not in m.columns:
+            return None
+        m = m.nlargest(20, "delta_jours")
+        fig, ax = _nouvelle_figure(7.5, 4.8)
+        colors = [
+            CHARTE["rouge"] if bool(r.get("ecart_signale")) else CHARTE["vert"]
+            if str(r.get("statut_delta")) == "evalue"
+            else CHARTE["gris"]
+            for _, r in m.iterrows()
+        ]
+        ax.bar(
+            m["ascenseur"].astype(str),
+            m["delta_jours"],
+            color=colors,
+            edgecolor="white",
+            linewidth=0.5,
+            zorder=3,
+        )
+        seuil = float(params.get("seuil_maintenance_jours", 42))
+        ax.axhline(y=seuil, color=CHARTE["navy"], linestyle="--", linewidth=1.5, label=f"Seuil {seuil} j")
+        ax.set_ylabel("Δ jours")
+        ax.set_title(titre_ctx("Écart entre visites maintenance"), pad=10)
+        ax.legend(loc="upper right", fontsize=7, framealpha=0.9)
+        plt.setp(ax.xaxis.get_majorticklabels(), rotation=40, ha="right")
+        return "delta_maintenance", out_dir / "delta_maintenance.png"
 
-    if not interventions.empty and "tranche_delai" in interventions.columns:
+    def _tranches_delai() -> Optional[tuple[str, Path]]:
+        if interventions.empty or "tranche_delai" not in interventions.columns:
+            return None
         vc = interventions["tranche_delai"].value_counts()
         ordre = ["< 1h", "1 à 2h", "2 à 4h", "> 4h", "inconnu"]
         labels = [k for k in ordre if k in vc.index] + [k for k in vc.index if k not in ordre]
         vals = [int(vc.get(l, 0)) for l in labels]
-        if sum(vals) > 0:
-            fig, ax = _nouvelle_figure(6.5, 4.5)
-            bars = ax.bar(labels, vals, color=_couleurs_tranches(labels), edgecolor="white", linewidth=0.8, zorder=3)
-            ax.set_ylabel("Interventions")
-            ax.set_title(titre_ctx("Délais d'intervention"), pad=10)
-            for bar, v in zip(bars, vals):
-                ax.text(
-                    bar.get_x() + bar.get_width() / 2,
-                    bar.get_height() + 0.3,
-                    str(v),
-                    ha="center",
-                    fontsize=8,
-                    color=CHARTE["navy"],
-                )
-            plt.setp(ax.xaxis.get_majorticklabels(), rotation=25, ha="right")
-            p = out_dir / "tranches_delai.png"
-            _savefig(p, fig)
-            paths["tranches_delai"] = str(p)
+        if sum(vals) == 0:
+            return None
+        fig, ax = _nouvelle_figure(6.5, 4.5)
+        bars = ax.bar(labels, vals, color=_couleurs_tranches(labels), edgecolor="white", linewidth=0.8, zorder=3)
+        ax.set_ylabel("Interventions")
+        ax.set_title(titre_ctx("Délais d'intervention"), pad=10)
+        for bar, v in zip(bars, vals):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 0.3,
+                str(v),
+                ha="center",
+                fontsize=8,
+                color=CHARTE["navy"],
+            )
+        plt.setp(ax.xaxis.get_majorticklabels(), rotation=25, ha="right")
+        return "tranches_delai", out_dir / "tranches_delai.png"
 
-    if not interventions.empty and "datetime_appel" in interventions.columns:
+    def _activite_quotidienne() -> Optional[tuple[str, Path]]:
+        if interventions.empty or "datetime_appel" not in interventions.columns:
+            return None
         inter = interventions.copy()
         inter["datetime_appel"] = pd.to_datetime(inter["datetime_appel"], errors="coerce")
         inter = inter.dropna(subset=["datetime_appel"])
-        if not inter.empty:
-            par_jour = inter.groupby(inter["datetime_appel"].dt.date).size()
-            fig, ax = _nouvelle_figure(7.5, 4.2)
-            x = list(range(len(par_jour)))
-            ax.fill_between(x, par_jour.values, alpha=0.2, color=CHARTE["orange"])
-            ax.plot(
-                x,
-                par_jour.values,
-                color=CHARTE["navy"],
-                marker="o",
-                markersize=5,
-                markerfacecolor=CHARTE["orange"],
-                markeredgecolor="white",
-                markeredgewidth=1,
-                linewidth=2,
-                zorder=3,
-            )
-            ax.set_xticks(x[:: max(1, len(x) // 8)])
-            ax.set_xticklabels([str(d) for d in par_jour.index][:: max(1, len(x) // 8)], rotation=35, ha="right")
-            ax.set_ylabel("Interventions / jour")
-            ax.set_title(titre_ctx("Activité quotidienne"), pad=10)
-            ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
-            p = out_dir / "interventions_journalieres.png"
-            _savefig(p, fig)
-            paths["interventions_journalieres"] = str(p)
+        if inter.empty:
+            return None
+        par_jour = inter.groupby(inter["datetime_appel"].dt.date).size()
+        fig, ax = _nouvelle_figure(7.5, 4.2)
+        x = list(range(len(par_jour)))
+        ax.fill_between(x, par_jour.values, alpha=0.2, color=CHARTE["orange"])
+        ax.plot(
+            x,
+            par_jour.values,
+            color=CHARTE["navy"],
+            marker="o",
+            markersize=5,
+            markerfacecolor=CHARTE["orange"],
+            markeredgecolor="white",
+            markeredgewidth=1,
+            linewidth=2,
+            zorder=3,
+        )
+        ax.set_xticks(x[:: max(1, len(x) // 8)])
+        ax.set_xticklabels([str(d) for d in par_jour.index][:: max(1, len(x) // 8)], rotation=35, ha="right")
+        ax.set_ylabel("Interventions / jour")
+        ax.set_title(titre_ctx("Activité quotidienne"), pad=10)
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+        return "interventions_journalieres", out_dir / "interventions_journalieres.png"
 
-    matrice = resultats.get("matrice_pannes", pd.DataFrame())
-    if isinstance(matrice, pd.DataFrame) and not matrice.empty and "ascenseur" in matrice.columns:
+    def _exces_pannes_periode() -> Optional[tuple[str, Path]]:
+        matrice = resultats.get("matrice_pannes", pd.DataFrame())
+        if not isinstance(matrice, pd.DataFrame) or matrice.empty or "ascenseur" not in matrice.columns:
+            return None
         mois_cols = [c for c in matrice.columns if c not in ("cle_appareil", "ascenseur", "client", "adresse")]
-        if mois_cols:
-            totaux = matrice[mois_cols].sum(axis=1).sort_values(ascending=False).head(18)
-            fig, ax = _nouvelle_figure(7.5, 4.8)
-            ax.bar(
-                totaux.index.astype(str),
-                totaux.values,
-                color=CHARTE["rouge"],
-                edgecolor="white",
-                linewidth=0.6,
-                zorder=3,
-            )
-            ax.set_ylabel("Pannes (cumul période)")
-            ax.set_title(titre_ctx("Excès de pannes par appareil"), pad=10)
-            plt.setp(ax.xaxis.get_majorticklabels(), rotation=40, ha="right")
-            p = out_dir / "pannes_cumul_periode.png"
-            _savefig(p, fig)
-            paths["pannes_cumul_periode"] = str(p)
+        if not mois_cols:
+            return None
+        totaux = matrice[mois_cols].sum(axis=1).sort_values(ascending=False).head(18)
+        fig, ax = _nouvelle_figure(7.5, 4.8)
+        ax.bar(
+            totaux.index.astype(str),
+            totaux.values,
+            color=CHARTE["rouge"],
+            edgecolor="white",
+            linewidth=0.6,
+            zorder=3,
+        )
+        ax.set_ylabel("Pannes (cumul période)")
+        ax.set_title(titre_ctx("Excès de pannes par appareil"), pad=10)
+        plt.setp(ax.xaxis.get_majorticklabels(), rotation=40, ha="right")
+        return "pannes_cumul_periode", out_dir / "pannes_cumul_periode.png"
 
-    if not maintenance.empty and "datetime_visite" in maintenance.columns:
+    def _heatmap_maintenance() -> Optional[tuple[str, Path]]:
+        if maintenance.empty or "datetime_visite" not in maintenance.columns:
+            return None
         m = maintenance.dropna(subset=["datetime_visite"]).copy()
-        if not m.empty and "ascenseur" in m.columns:
-            m["semaine"] = pd.to_datetime(m["datetime_visite"]).dt.isocalendar().week.astype(int)
-            pivot = m.groupby(["ascenseur", "semaine"]).size().unstack(fill_value=0)
-            if not pivot.empty:
-                pivot = pivot.iloc[:25]
-                fig, ax = _nouvelle_figure(8, max(4.5, len(pivot) * 0.22))
-                im = ax.imshow(pivot.values, aspect="auto", cmap="YlGn", vmin=0, vmax=max(1, pivot.values.max()))
-                ax.set_yticks(range(len(pivot.index)))
-                ax.set_yticklabels(pivot.index.astype(str), fontsize=7)
-                ax.set_xticks(range(len(pivot.columns)))
-                ax.set_xticklabels([f"S{c}" for c in pivot.columns], rotation=45, ha="right", fontsize=7)
-                ax.set_title(titre_ctx("Calendrier maintenance"), pad=10)
-                cbar = fig.colorbar(im, ax=ax, fraction=0.02, pad=0.02)
-                cbar.set_label("Visite", fontsize=8)
-                p = out_dir / "heatmap_maintenance.png"
-                _savefig(p, fig)
-                paths["heatmap_maintenance"] = str(p)
+        if m.empty or "ascenseur" not in m.columns:
+            return None
+        m["semaine"] = pd.to_datetime(m["datetime_visite"]).dt.isocalendar().week.astype(int)
+        pivot = m.groupby(["ascenseur", "semaine"]).size().unstack(fill_value=0)
+        if pivot.empty:
+            return None
+        pivot = pivot.iloc[:25]
+        fig, ax = _nouvelle_figure(8, max(4.5, len(pivot) * 0.22))
+        im = ax.imshow(pivot.values, aspect="auto", cmap="YlGn", vmin=0, vmax=max(1, pivot.values.max()))
+        ax.set_yticks(range(len(pivot.index)))
+        ax.set_yticklabels(pivot.index.astype(str), fontsize=7)
+        ax.set_xticks(range(len(pivot.columns)))
+        ax.set_xticklabels([f"S{c}" for c in pivot.columns], rotation=45, ha="right", fontsize=7)
+        ax.set_title(titre_ctx("Calendrier maintenance"), pad=10)
+        cbar = fig.colorbar(im, ax=ax, fraction=0.02, pad=0.02)
+        cbar.set_label("Visite", fontsize=8)
+        return "heatmap_maintenance", out_dir / "heatmap_maintenance.png"
+
+    generateurs = (
+        _penalites_donut,
+        _top10_exposition,
+        _pannes_par_appareil,
+        _delta_maintenance,
+        _tranches_delai,
+        _activite_quotidienne,
+        _exces_pannes_periode,
+        _heatmap_maintenance,
+    )
+    for generer in generateurs:
+        try:
+            resultat = generer()
+        except Exception as exc:
+            logger.warning("Figure %s non générée : %s", generer.__name__, exc, exc_info=True)
+            plt.close("all")
+            continue
+        if resultat is None:
+            continue
+        cle, chemin = resultat
+        _savefig(chemin, plt.gcf())
+        paths[cle] = str(chemin)
 
     try:
         from core.geocarte import generer_carte_penalites

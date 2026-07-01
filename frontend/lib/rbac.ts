@@ -169,6 +169,12 @@ export const SIDEBAR_PHASE2: SidebarSection[] = [
         quickCreate: { href: "/crm/nouveau/site", shortLabel: "Site" },
         visibleFor: ["ADMIN", "MANAGER", "CONSULTANT", "VIEWER"],
       },
+      {
+        href: "/crm/messagerie-clients",
+        label: "Messagerie clients",
+        icon: "💬",
+        visibleFor: ["ADMIN", "MANAGER", "CONSULTANT"],
+      },
     ],
   },
   {
@@ -223,36 +229,12 @@ export const SIDEBAR_PHASE2: SidebarSection[] = [
     ],
   },
   {
-    title: "Documents & flux",
+    title: "Ascensoristes",
     items: [
       {
-        href: "/crm/outils/assistants",
-        label: "Assistants (OCR / IA)",
-        icon: "AI",
-        visibleFor: ["ADMIN", "MANAGER", "CONSULTANT"],
-      },
-      {
-        href: "/crm/outils/documents",
-        label: "PDF / Word",
-        icon: "DOC",
-        visibleFor: ["ADMIN", "MANAGER", "CONSULTANT"],
-      },
-      {
-        href: "/crm/outils/upload",
-        label: "Upload & stockage",
-        icon: "↑",
-        visibleFor: ["ADMIN", "MANAGER", "CONSULTANT"],
-      },
-      {
-        href: "/crm/outils/maintenance-mms",
-        label: "Maintenance ascenseurs (MMS)",
-        icon: "🛗",
-        visibleFor: ["ADMIN", "MANAGER", "CONSULTANT"],
-      },
-      {
-        href: "/crm/outils/emails",
-        label: "Messagerie",
-        icon: "@",
+        href: "/crm/ascensoristes",
+        label: "Ascensoristes",
+        icon: "👤",
         visibleFor: ["ADMIN", "MANAGER", "CONSULTANT"],
       },
     ],

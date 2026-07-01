@@ -14,6 +14,7 @@ export const CRM_NAV_ICONS: Record<string, string> = {
   "/crm/outils/documents": "pi pi-file-pdf",
   "/crm/outils/upload": "pi pi-upload",
   "/crm/outils/maintenance-mms": "pi pi-wrench",
+  "/crm/outils/appareils-arret": "pi pi-ban",
   "/crm/outils/emails": "pi pi-envelope",
   "/crm/outils/planning": "pi pi-calendar",
   "/crm/outils/rgpd": "pi pi-shield",

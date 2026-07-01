@@ -200,6 +200,14 @@ def _colonnes_normalisees(cols: list) -> dict[str, str]:
     return {_normaliser_texte(c): str(c) for c in cols}
 
 
+def _colonne_serie(df: pd.DataFrame, col: str) -> "pd.Series":
+    """Retourne df[col] en tant que Series — prend la 1ère colonne si doublon."""
+    s = df[col]
+    if isinstance(s, pd.DataFrame):
+        s = s.iloc[:, 0]
+    return s
+
+
 def _trouver_colonne(
     cols_map: dict[str, str],
     *mots_cles: str,
@@ -298,27 +306,14 @@ def combiner_date_heure(
     return datetime.combine(d, h)
 
 
-def _charger_feuille_normalisee(
+def _traiter_feuille(
     data: bytes,
-    sheet_names: list[str],
-    motifs_feuille: tuple[str, ...],
+    nom: str,
     mapping_colonnes: dict[str, tuple[str, ...]],
     moteur: str,
     exclusions_colonnes: Optional[dict[str, tuple[str, ...]]] = None,
-    exclure_feuilles: tuple[str, ...] = (),
 ) -> pd.DataFrame:
-    """
-    Charge une feuille, détecte l'en-tête, renomme les colonnes selon mapping_colonnes.
-    mapping_colonnes : clé cible → mots-clés pour retrouver la colonne source.
-    """
-    nom = _feuille_correspondante(
-        sheet_names,
-        motifs_feuille,
-        exclure_dans_nom=exclure_feuilles,
-    )
-    if nom is None:
-        return pd.DataFrame()
-
+    """Détecte l'en-tête d'une feuille déjà identifiée et renomme les colonnes selon mapping_colonnes."""
     brut = _lire_feuille_brute_bytes(data, nom, moteur)
     if brut.empty:
         return pd.DataFrame()
@@ -341,13 +336,52 @@ def _charger_feuille_normalisee(
         )
         if col:
             rename[col] = cible
-    df = df.rename(columns=rename)
-    return df
+    return df.rename(columns=rename)
+
+
+def _charger_feuille_normalisee(
+    data: bytes,
+    sheet_names: list[str],
+    motifs_feuille: tuple[str, ...],
+    mapping_colonnes: dict[str, tuple[str, ...]],
+    moteur: str,
+    exclusions_colonnes: Optional[dict[str, tuple[str, ...]]] = None,
+    exclure_feuilles: tuple[str, ...] = (),
+) -> pd.DataFrame:
+    """
+    Charge une feuille, détecte l'en-tête, renomme les colonnes selon mapping_colonnes.
+    mapping_colonnes : clé cible → mots-clés pour retrouver la colonne source.
+    """
+    nom = _feuille_correspondante(
+        sheet_names,
+        motifs_feuille,
+        exclure_dans_nom=exclure_feuilles,
+    )
+    if nom is None:
+        return pd.DataFrame()
+    return _traiter_feuille(data, nom, mapping_colonnes, moteur, exclusions_colonnes)
+
+
+def _feuille_ressemble_intervention(data: bytes, nom: str, moteur: str) -> bool:
+    """
+    Détecte par le contenu de l'en-tête une feuille d'historique d'intervention dont le nom
+    ne contient pas « intervention » (ex. « Historique OTIS » au lieu de « Historique Intervention »).
+    """
+    try:
+        brut = _lire_feuille_brute_bytes(data, nom, moteur)
+    except Exception:
+        return False
+    if brut.empty:
+        return False
+    idx = _trouver_ligne_entete(brut)
+    zone = brut.iloc[idx : idx + 2]
+    texte = " ".join(_normaliser_texte(v) for v in zone.to_numpy().flatten() if pd.notna(v))
+    return "appel" in texte and ("intervention" in texte or "panne" in texte or "technicien" in texte)
 
 
 # Mappings colonnes par type de feuille
 # Exclusions pour éviter les faux positifs sur exports OTIS SCI mal routés
-_EXCL_COL_CLIENT = ("description", "diagnostique", "origine", "appelant")
+_EXCL_COL_CLIENT = ("description", "diagnostique", "origine", "appelant", "appel", "date", "heure")
 _EXCL_COL_TECH = ("diagnostique", "description")
 
 _MAP_INTERVENTION = {
@@ -383,19 +417,19 @@ def _ajuster_colonnes_dates(df: pd.DataFrame) -> pd.DataFrame:
     cols = _colonnes_normalisees(df.columns.tolist())
     for cle_norm, orig in cols.items():
         if cle_norm.startswith("date") and "deb" in cle_norm:
-            df["date_debut"] = df[orig]
+            df["date_debut"] = _colonne_serie(df, orig)
         elif cle_norm.startswith("date") and "fin" in cle_norm:
-            df["date_fin"] = df[orig]
+            df["date_fin"] = _colonne_serie(df, orig)
         elif "date" in cle_norm and "heure" in cle_norm:
             if "deb" in cle_norm:
-                df["date_debut"] = df[orig]
+                df["date_debut"] = _colonne_serie(df, orig)
             elif "fin" in cle_norm:
-                df["date_fin"] = df[orig]
+                df["date_fin"] = _colonne_serie(df, orig)
         elif cle_norm.startswith("heure") and "deb" in cle_norm:
-            df["heure_debut"] = df[orig]
+            df["heure_debut"] = _colonne_serie(df, orig)
         elif cle_norm == "heure" or (cle_norm.startswith("heure") and "fin" not in cle_norm and "deb" not in cle_norm):
             if "heure_fin" not in df.columns:
-                df["heure_fin"] = df[orig]
+                df["heure_fin"] = _colonne_serie(df, orig)
     return df
 
 _MAP_TEST = {
@@ -425,34 +459,34 @@ def _mapper_dates_heures_intervention(df: pd.DataFrame) -> None:
             heures.append(orig)
         elif "date" in cle_norm and "heure" in cle_norm:
             if "deb" in cle_norm or "debut" in cle_norm:
-                df["date_debut"] = df[orig]
+                df["date_debut"] = _colonne_serie(df, orig)
             elif "fin" in cle_norm:
-                df["date_fin"] = df[orig]
+                df["date_fin"] = _colonne_serie(df, orig)
             elif "date_appel" not in df.columns:
-                df["date_appel"] = df[orig]
+                df["date_appel"] = _colonne_serie(df, orig)
         elif "appel" in cle_norm and "date" in cle_norm:
-            df["date_appel"] = df[orig]
+            df["date_appel"] = _colonne_serie(df, orig)
         elif "appel" in cle_norm and "heure" in cle_norm:
-            df["heure_appel"] = df[orig]
+            df["heure_appel"] = _colonne_serie(df, orig)
         elif ("deb" in cle_norm or "debut" in cle_norm) and "date" in cle_norm:
-            df["date_debut"] = df[orig]
+            df["date_debut"] = _colonne_serie(df, orig)
         elif ("deb" in cle_norm or "debut" in cle_norm) and "heure" in cle_norm:
-            df["heure_debut"] = df[orig]
+            df["heure_debut"] = _colonne_serie(df, orig)
         elif "fin" in cle_norm and "date" in cle_norm:
-            df["date_fin"] = df[orig]
+            df["date_fin"] = _colonne_serie(df, orig)
         elif "fin" in cle_norm and "heure" in cle_norm:
-            df["heure_fin"] = df[orig]
+            df["heure_fin"] = _colonne_serie(df, orig)
 
     paires = list(zip(dates, heures))
     if paires and "date_appel" not in df.columns:
-        df["date_appel"] = df[paires[0][0]]
-        df["heure_appel"] = df[paires[0][1]]
+        df["date_appel"] = _colonne_serie(df, paires[0][0])
+        df["heure_appel"] = _colonne_serie(df, paires[0][1])
     if len(paires) > 1 and "date_debut" not in df.columns:
-        df["date_debut"] = df[paires[1][0]]
-        df["heure_debut"] = df[paires[1][1]]
+        df["date_debut"] = _colonne_serie(df, paires[1][0])
+        df["heure_debut"] = _colonne_serie(df, paires[1][1])
     if len(paires) > 2 and "date_fin" not in df.columns:
-        df["date_fin"] = df[paires[2][0]]
-        df["heure_fin"] = df[paires[2][1]]
+        df["date_fin"] = _colonne_serie(df, paires[2][0])
+        df["heure_fin"] = _colonne_serie(df, paires[2][1])
 
 
 def _ajuster_colonnes_intervention(df: pd.DataFrame) -> pd.DataFrame:
@@ -467,7 +501,7 @@ def _ajuster_colonnes_intervention(df: pd.DataFrame) -> pd.DataFrame:
 
     def _assign(cible: str, orig: str) -> None:
         if orig in df.columns:
-            df[cible] = df[orig]
+            df[cible] = _colonne_serie(df, orig)
 
     _mapper_dates_heures_intervention(df)
 
@@ -541,6 +575,25 @@ def charger_fichier_prestataire(
         data, noms, cfg.FEUILLES_CABLES, _MAP_TEST, moteur
     )
     cables = _ajuster_colonnes_dates(cables)
+
+    if interventions.empty:
+        nom_maintenance = _feuille_correspondante(noms, cfg.FEUILLES_MAINTENANCE)
+        nom_parachute = _feuille_correspondante(noms, cfg.FEUILLES_PARACHUTE)
+        nom_cables = _feuille_correspondante(noms, cfg.FEUILLES_CABLES)
+        deja_assignees = {n for n in (nom_maintenance, nom_parachute, nom_cables) if n}
+        for nom_candidat in noms:
+            if nom_candidat in deja_assignees:
+                continue
+            if _feuille_ressemble_intervention(data, nom_candidat, moteur):
+                interventions = _traiter_feuille(
+                    data,
+                    nom_candidat,
+                    _MAP_INTERVENTION,
+                    moteur,
+                    exclusions_colonnes=_EXCLUSIONS_COLONNES_INTERVENTION,
+                )
+                interventions = _ajuster_colonnes_intervention(interventions)
+                break
 
     if (
         interventions.empty

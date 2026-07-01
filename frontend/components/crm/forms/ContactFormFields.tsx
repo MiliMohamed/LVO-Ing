@@ -19,19 +19,22 @@ export type ContactFormValues = {
   mobile: string;
 };
 
-type Props = {
+type Props = Readonly<{
   idPrefix: string;
   values: ContactFormValues;
   onChange: (patch: Partial<ContactFormValues>) => void;
   fieldErrors?: Partial<Record<keyof ContactFormValues, string>>;
-};
+}>;
 
 export function ContactFormFields({ idPrefix, values, onChange, fieldErrors }: Props) {
   const f = (key: keyof ContactFormValues) => `${idPrefix}-${key}`;
 
   return (
     <>
-      <CrmFormSection title="Identité" description="Coordonnées principales du contact.">
+      <CrmFormSection
+        title="Identité"
+        description="Informations d'identification du contact au sein de l'entreprise."
+      >
         <CrmFormField
           select
           label="Civilité"
@@ -57,21 +60,26 @@ export function ContactFormFields({ idPrefix, values, onChange, fieldErrors }: P
           error={fieldErrors?.nom}
         />
         <CrmFormField
-          label="Entreprise"
-          htmlFor={f("entreprise")}
-          value={values.entreprise}
-          onChange={(entreprise) => onChange({ entreprise })}
-          hint="Raison sociale ou groupe d'appartenance"
-        />
-        <CrmFormField
-          label="Fonction"
+          label="Fonction / Poste"
           htmlFor={f("fonction")}
           value={values.fonction}
           onChange={(fonction) => onChange({ fonction })}
+          placeholder="Ex : Directeur technique, Gestionnaire…"
+        />
+        <CrmFormField
+          label="Entreprise / Rattachement"
+          htmlFor={f("entreprise")}
+          value={values.entreprise}
+          onChange={(entreprise) => onChange({ entreprise })}
+          hint="Raison sociale ou groupe — détermine les sites et commandes associés au contact."
+          className="col-span-2"
         />
       </CrmFormSection>
 
-      <CrmFormSection title="Coordonnées">
+      <CrmFormSection
+        title="Coordonnées"
+        description="L'email sert d'identifiant de connexion à l'Espace Client."
+      >
         <CrmFormField
           label="Email"
           htmlFor={f("email")}
@@ -79,6 +87,8 @@ export function ContactFormFields({ idPrefix, values, onChange, fieldErrors }: P
           value={values.email}
           onChange={(email) => onChange({ email })}
           error={fieldErrors?.email}
+          hint="Identifiant de connexion à l'Espace Client — un mot de passe provisoire sera généré automatiquement."
+          className="col-span-2"
         />
         <CrmFormField
           label="Téléphone fixe"
@@ -86,6 +96,7 @@ export function ContactFormFields({ idPrefix, values, onChange, fieldErrors }: P
           type="tel"
           value={values.telephone}
           onChange={(telephone) => onChange({ telephone })}
+          placeholder="+33 1 23 45 67 89"
         />
         <CrmFormField
           label="Mobile"
@@ -93,9 +104,9 @@ export function ContactFormFields({ idPrefix, values, onChange, fieldErrors }: P
           type="tel"
           value={values.mobile}
           onChange={(mobile) => onChange({ mobile })}
+          placeholder="+33 6 12 34 56 78"
         />
       </CrmFormSection>
     </>
   );
 }
-

@@ -39,6 +39,8 @@ export type ContactRow = {
   telephone: string;
   mobile: string;
   ownerUserId?: number | null;
+  /** Indique si un mot de passe espace client est défini (jamais le hash) */
+  hasClientPassword?: boolean;
 };
 
 export type ClientRow = {
@@ -67,6 +69,8 @@ export type SiteRow = {
   gestionnairesActifs?: string[];
   /** Registre équipements — nombre actifs + hors service */
   equipementsCount?: number;
+  /** Image du site (base64 data URL) */
+  imageDataUrl?: string | null;
 };
 
 export type EquipementType = "ASCENSEUR" | "MONTE_CHARGE" | "MONTE_VOITURE" | "PLATEFORME" | "DAE";
@@ -164,6 +168,8 @@ export type OffreRow = {
   /** @deprecated — lecture seule si anciennes données */
   gestionnaireEmail?: string | null;
   missionsJson?: string | null;
+  /** Décision client depuis espace client : { decision, decidedAt, decidedBy, commentaire? } */
+  clientDecisionJson?: string | null;
   /** Présent côté API liste (nombre de lignes missionsJson) */
   missionsCount?: number;
   /** Présent côté API liste — libellé affichage gestionnaire */
@@ -222,15 +228,42 @@ export type FactureRow = {
   id: number;
   numeroFacture: string;
   dateFacture: string | null;
+  dateEcheance?: string | null;
   numeroCommande: string;
   numeroCommandeClient?: string | null;
   clientNom: string;
   montantHt: number;
   frais: number;
   modeReglement: string;
+  montantPaye?: number;
   commandeId?: number;
   statutFacturation?: StatutFacturation;
   statutPaiement?: string;
+};
+
+/** Bibliothèque MMS — métadonnées d'une analyse archivée */
+export type MmsRapportMeta = {
+  id: number;
+  prestataire: string;
+  client: string;
+  trimestre: string;
+  annee: number;
+  createdAt: string;
+  createdByUserId: number;
+  nbAppareils: number;
+  nbInterventions: number;
+  nbPannes: number;
+  nbVisites: number;
+  penaliteTotale: number;
+  excelNom: string;
+  wordNom: string;
+  pdfNom: string | null;
+  excelSizeBytes: number;
+  wordSizeBytes: number;
+  pdfSizeBytes: number | null;
+  hasExcel: boolean;
+  hasWord: boolean;
+  hasPdf: boolean;
 };
 
 /** Phase 3 — GET /api/recouvrement/kpis */
@@ -255,6 +288,61 @@ export type FactureImpayeeRow = {
   joursRetard: number;
   niveauRelance: number;
   statutPaiement?: string;
+};
+
+// ── Espace Client — Contrats ────────────────────────────────────────────────
+export type ClientContratStatut = "ACTIF" | "EXPIRE" | "RESILIE" | "EN_RENOUVELLEMENT";
+
+export type ClientContratRow = {
+  id: number;
+  entreprise: string;
+  reference: string;
+  intitule: string;
+  siteId: number | null;
+  siteNom: string;
+  typeContrat: string;
+  dateDebut: string;
+  dateFin: string;
+  montantAnnuelHt: number;
+  prestataire: string;
+  statut: ClientContratStatut;
+  conditionsRenouvellement: string | null;
+  clauseRevisionTarifaire: string | null;
+  avenantsJson: string | null;
+  demandeRenouvellementAt: string | null;
+};
+
+// ── Espace Client — Interventions & Pannes ──────────────────────────────────
+export type ClientInterventionStatut = "CREEE" | "ASSIGNEE" | "EN_COURS" | "RESOLUE" | "A_VALIDER";
+export type ClientInterventionPriorite = "NORMALE" | "URGENTE" | "CRITIQUE";
+export type ClientInterventionType = "PANNE" | "MAINTENANCE_PREVENTIVE" | "VISITE_REGLEMENTAIRE" | "MISE_EN_CONFORMITE" | "AUTRE";
+
+export type ClientInterventionRow = {
+  id: number;
+  entreprise: string;
+  reference: string;
+  siteId: number | null;
+  siteNom: string;
+  equipementId: number | null;
+  equipementLibelle: string | null;
+  type: ClientInterventionType;
+  priorite: ClientInterventionPriorite;
+  statut: ClientInterventionStatut;
+  description: string;
+  prestataire: string | null;
+  declaredAt: string;
+  assignedAt: string | null;
+  resolvedAt: string | null;
+  compteRendu: string | null;
+  declaredByContactId: number;
+  declaredByName: string;
+};
+
+export type ClientEquipementOption = {
+  id: number;
+  libelle: string;
+  type: string;
+  statut: string;
 };
 
 /** Phase 3 — GET /api/recouvrement/transactions-en-attente (Quonto, score 60–89) */
