@@ -55,7 +55,7 @@ import { buildMoeMissionBody, expectedPhaseCount, getMissionBody, MISSION_LABELS
 import { htmlToBlocks } from "../documents/offre-html-blocks.js";
 import { computeOffreFromMissionCalc } from "../documents/offre-mission-calc.js";
 import { convertDocxToPdf } from "../documents/gotenberg.js";
-import { saveNewOffreDocxVersion, saveOffrePdfVersion } from "../documents/offre-versioning.js";
+import { isSameAsCurrentOffreDocx, saveNewOffreDocxVersion, saveOffrePdfVersion } from "../documents/offre-versioning.js";
 import { createEditSession, getEditSession, deleteEditSession, buildEditorConfig } from "../documents/offre-editor.js";
 
 const arborescenceUpload = multer({
@@ -3025,16 +3025,26 @@ function buildOffreRenderData(o: OffreRow): OffreRenderData {
   };
 }
 
-/** Génère et enregistre une nouvelle version DOCX de l'offre — factorisé pour être appelé aussi
- * bien depuis le bouton « Générer l'offre (Word) » que juste après la création d'une offre. */
+/**
+ * Génère le DOCX de l'offre — appelé par le bouton « Générer l'offre (Word) » comme juste après
+ * la création d'une offre.
+ *
+ * Une nouvelle version n'est créée QUE si le document produit diffère réellement de la version
+ * courante : recliquer sur « Générer » sans avoir rien modifié entre-temps renvoie la version
+ * existante (`unchanged: true`) au lieu d'empiler des versions identiques. La comparaison porte
+ * sur le contenu décompressé du .docx, car les octets de l'archive ZIP changent à chaque
+ * génération même à contenu constant (cf. offre-versioning.ts).
+ */
 async function generateOffreDocx(
   o: OffreRow,
   userId: number | null,
-): Promise<{ row: FichierVersionRow; data: OffreRenderData }> {
+): Promise<{ row: FichierVersionRow; data: OffreRenderData; unchanged: boolean }> {
   const data = buildOffreRenderData(o);
   const docx = await renderOffreDocx(data);
+  const identique = await isSameAsCurrentOffreDocx(o.numeroOffre, docx);
+  if (identique) return { row: identique, data, unchanged: true };
   const row = await saveNewOffreDocxVersion(o, docx, userId);
-  return { row, data };
+  return { row, data, unchanged: false };
 }
 
 crmRouter.post("/offres/:id/documents", async (req: AuthedRequest, res) => {
@@ -3045,14 +3055,15 @@ crmRouter.post("/offres/:id/documents", async (req: AuthedRequest, res) => {
     return;
   }
   try {
-    const { row, data } = await generateOffreDocx(o, req.auth?.userId ?? null);
+    const { row, data, unchanged } = await generateOffreDocx(o, req.auth?.userId ?? null);
     const nbPhasesAttendues = expectedPhaseCount(data.missionBody);
     const warning =
       nbPhasesAttendues > 0 && data.honoraires.length !== nbPhasesAttendues
         ? `Le tableau des honoraires contient ${data.honoraires.length} ligne(s) mais le corps de mission ` +
           `(${data.missionLabel}) décrit ${nbPhasesAttendues} phase(s) — vérifier la correspondance.`
         : undefined;
-    res.status(201).json(warning ? { ...row, warning } : row);
+    // 200 (et non 201) quand aucune version n'a été créée : le document était déjà à jour.
+    res.status(unchanged ? 200 : 201).json({ ...row, unchanged, ...(warning ? { warning } : {}) });
   } catch (e) {
     res.status(500).json({ error: "Échec de la génération du document : " + (e as Error).message });
   }
