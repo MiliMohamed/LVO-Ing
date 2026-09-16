@@ -1,0 +1,961 @@
+// Schéma PostgreSQL complet — toutes les entités du store en tables normalisées
+// IDs legacy (INT) coexistent avec UUIDs pour compatibilité API existante
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum ReferenceEntityType {
+  OFFRE
+  COMMANDE
+  FACTURE
+
+  @@map("reference_entity_type")
+}
+
+enum StatutPaiementFacture {
+  NON_PAYE
+  PARTIELLEMENT_PAYE
+  PAYE
+  EN_RETARD
+
+  @@map("statut_paiement_facture")
+}
+
+enum PaiementSource {
+  QUONTO_AUTO
+  MANUEL
+  IMPORT_CSV
+
+  @@map("paiement_source")
+}
+
+enum RelanceNiveau {
+  RAPPEL
+  PREMIERE_RELANCE
+  DEUXIEME_RELANCE
+  MISE_EN_DEMEURE
+
+  @@map("relance_niveau")
+}
+
+enum RelanceCanal {
+  EMAIL
+  COURRIER
+  TELEPHONE
+
+  @@map("relance_canal")
+}
+
+enum ContactClientStatut {
+  ACTIF
+  ANNULE
+  ARCHIVE
+
+  @@map("contact_client_statut")
+}
+
+// ─── Utilisateurs ────────────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  legacyId      Int?     @unique @map("legacy_id")
+  email         String   @unique
+  passwordHash  String?  @map("password_hash") @db.Text
+  role          String   @default("CONSULTANT")
+  prenom        String?  @db.VarChar(100)
+  nom           String?  @db.VarChar(100)
+  telephone     String?  @db.VarChar(50)
+  avatarDataUrl String?  @map("avatar_data_url") @db.Text
+  agenceId      Int?     @map("agence_id")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  cancelledContacts          Contact[]        @relation("ContactCancelledBy")
+  cancelledClients           Client[]         @relation("ClientCancelledBy")
+  avoirsCrees                Avoir[]          @relation("AvoirCreatedBy")
+  paiementsRapproches        Paiement[]       @relation("PaiementRapprocheBy")
+  relancesEnvoyees           Relance[]        @relation("RelanceEnvoyeePar")
+  fichiersVersionsUpload     FichierVersion[] @relation("FichierVersionUploadedBy")
+  offresConsultantParDefaut  Offre[]          @relation("OffreConsultantDefaut")
+  crmTasks                   CrmTask[]
+  crmNotifications           CrmNotification[]
+  mmsRapports                MmsRapport[]
+  refreshTokens              RefreshToken[]
+
+  @@map("users")
+}
+
+// ─── Clients ─────────────────────────────────────────────────────────────────
+
+model Client {
+  id                  String              @id @default(uuid()) @db.Uuid
+  legacyId            Int?                @unique @map("legacy_id")
+  raisonSociale       String              @map("raison_sociale")
+  entite              String?
+  email               String?
+  telephone           String?
+  siret               String?             @db.VarChar(20)
+  codePostal          String?             @map("code_postal") @db.VarChar(10)
+  responsableEmail    String?             @map("responsable_email")
+  statut              ContactClientStatut @default(ACTIF)
+  cancelledAt         DateTime?           @map("cancelled_at") @db.Timestamptz(6)
+  cancelledById       String?             @map("cancelled_by") @db.Uuid
+  cancellationReason  String?             @map("cancellation_reason") @db.VarChar(200)
+  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  cancelledBy       User?              @relation("ClientCancelledBy", fields: [cancelledById], references: [id])
+  sites             Site[]
+  siteGestionnaires SiteGestionnaire[]
+  offres            Offre[]
+  commandes         Commande[]
+  appareils         Appareil[]
+  devisGroupement   DevisGroupement[]
+
+  @@map("clients")
+}
+
+// ─── Contacts ─────────────────────────────────────────────────────────────────
+
+model Contact {
+  id                 String              @id @default(uuid()) @db.Uuid
+  legacyId           Int?                @unique @map("legacy_id")
+  civilite           String?             @db.VarChar(10)
+  nom                String
+  prenom             String
+  entreprise         String?
+  fonction           String?
+  email              String?
+  telephone          String?
+  mobile             String?
+  ownerUserId        Int?                @map("owner_user_id")
+  clientPasswordHash String?             @map("client_password_hash") @db.Text
+  statut             ContactClientStatut @default(ACTIF)
+  cancelledAt        DateTime?           @map("cancelled_at") @db.Timestamptz(6)
+  cancelledById      String?             @map("cancelled_by") @db.Uuid
+  cancellationReason String?             @map("cancellation_reason") @db.VarChar(200)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  cancelledBy           User?                  @relation("ContactCancelledBy", fields: [cancelledById], references: [id])
+  portalDocuments       ClientPortalDocument[]
+  portalInterventions   ClientIntervention[]   @relation("InterventionDeclaredBy")
+  clientRefreshTokens   ClientRefreshToken[]
+  siteGestionnaires     SiteGestionnaire[]
+
+  @@map("contacts")
+}
+
+// ─── Ascensoristes (espace prestataire — dépôt de devis) ──────────────────────
+
+model Ascensoriste {
+  id                        String              @id @default(uuid()) @db.Uuid
+  legacyId                  Int?                @unique @map("legacy_id")
+  entreprise                String
+  nom                       String
+  prenom                    String
+  email                     String              @unique
+  telephone                 String?             @db.VarChar(50)
+  ascensoristePasswordHash  String?             @map("ascensoriste_password_hash") @db.Text
+  statut                    ContactClientStatut @default(ACTIF)
+  createdAt                 DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("ascensoristes")
+}
+
+// ─── Sites ────────────────────────────────────────────────────────────────────
+
+model Site {
+  id        String   @id @default(uuid()) @db.Uuid
+  legacyId  Int?     @unique @map("legacy_id")
+  clientId  String   @map("client_id") @db.Uuid
+  nom       String
+  typeSite  String?  @map("type_site")
+  adresse   String?
+  statut    String   @default("ACTIF") @db.VarChar(20)
+  imageDataUrl String? @map("image_data_url") @db.Text
+  clientNom String?  @map("client_nom") @db.VarChar(200)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  client            Client              @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  offres            Offre[]
+  commandes         Commande[]
+  siteGestionnaires SiteGestionnaire[]
+  equipements       SiteEquipement[]
+  equipementsQte    SiteEquipementQte[]
+  arborescenceNodes SiteArborescenceNode[]
+  portalDocuments   ClientPortalDocument[]
+  contrats          ClientContrat[]
+  interventions     ClientIntervention[]
+  mmsRapports       MmsRapport[]
+  appareils         Appareil[]
+
+  @@map("sites")
+}
+
+// ─── Équipements par site ────────────────────────────────────────────────────
+
+model SiteEquipement {
+  id                  String   @id @default(uuid()) @db.Uuid
+  legacyId            Int?     @unique @map("legacy_id")
+  siteId              String   @map("site_id") @db.Uuid
+  type                String   @db.VarChar(30)
+  marque              String?  @db.VarChar(100)
+  modele              String?  @db.VarChar(100)
+  numeroSerie         String?  @map("numero_serie") @db.VarChar(100)
+  anneeInstallation   Int?     @map("annee_installation")
+  capaciteKg          Int?     @map("capacite_kg")
+  etages              String?  @db.VarChar(200)
+  statut              String   @default("ACTIF") @db.VarChar(20)
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  site          Site                 @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  interventions ClientIntervention[] @relation("InterventionEquipement")
+
+  @@map("site_equipements")
+}
+
+// ─── Équipements du site — inventaire quantitatif (type + nombre) ────────────
+
+model TypeEquipement {
+  id        String   @id @default(uuid()) @db.Uuid
+  legacyId  Int?     @unique @map("legacy_id")
+  libelle   String   @db.VarChar(100)
+  actif     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  siteEquipementsQte SiteEquipementQte[]
+
+  @@unique([libelle])
+  @@map("type_equipement")
+}
+
+model SiteEquipementQte {
+  id               String @id @default(uuid()) @db.Uuid
+  legacyId         Int?   @unique @map("legacy_id")
+  siteId           String @map("site_id") @db.Uuid
+  typeEquipementId String @map("type_equipement_id") @db.Uuid
+  quantite         Int    @default(0)
+
+  site           Site           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  typeEquipement TypeEquipement @relation(fields: [typeEquipementId], references: [id], onDelete: Restrict)
+
+  @@unique([siteId, typeEquipementId])
+  @@map("site_equipement")
+}
+
+// ─── Arborescence documentaire par site ──────────────────────────────────────
+
+model SiteArborescenceNode {
+  id                String    @id @default(uuid()) @db.Uuid
+  legacyId          Int?      @unique @map("legacy_id")
+  siteId            String    @map("site_id") @db.Uuid
+  parentId          String?   @map("parent_id") @db.Uuid
+  legacyParentId    Int?      @map("legacy_parent_id")
+  nodeType          String    @map("node_type") @db.VarChar(10)
+  nom               String    @db.VarChar(500)
+  sortOrder         Int       @default(0) @map("sort_order")
+  storedPath        String?   @map("stored_path") @db.Text
+  minioKey          String?   @map("minio_key") @db.Text
+  contentType       String?   @map("content_type") @db.VarChar(200)
+  sizeBytes         BigInt?   @map("size_bytes")
+  uploadedByUserId  Int?      @map("uploaded_by_user_id")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  site   Site                  @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  parent SiteArborescenceNode? @relation("NodeParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children SiteArborescenceNode[] @relation("NodeParent")
+
+  @@map("site_arborescence_nodes")
+}
+
+// ─── Offres ───────────────────────────────────────────────────────────────────
+
+model Offre {
+  id                        String    @id @default(uuid()) @db.Uuid
+  legacyId                  Int?      @unique @map("legacy_id")
+  numeroOffre               String    @unique @map("numero_offre") @db.VarChar(50)
+  typeMission               String    @map("type_mission") @db.VarChar(10)
+  typeMissionsJson          String?   @map("type_missions_json") @db.Text
+  statut                    String    @db.VarChar(30)
+  montantHt                 Decimal   @map("montant_ht") @db.Decimal(12, 2)
+  dateOffre                 DateTime? @map("date_offre") @db.Date
+  clientId                  String    @map("client_id") @db.Uuid
+  siteId                    String    @map("site_id") @db.Uuid
+  clientNom                 String?   @map("client_nom") @db.VarChar(200)
+  siteNom                   String?   @map("site_nom") @db.VarChar(200)
+  phasesMode                String?   @map("phases_mode") @db.VarChar(20)
+  phasesLinesJson           String?   @map("phases_lines_json") @db.Text
+  delaisLignesJson          String?   @map("delais_lignes_json") @db.Text
+  tauxTva                   Decimal?  @map("taux_tva") @db.Decimal(5, 2)
+  consultantEmail           String?   @map("consultant_email")
+  gestionnaireNom           String?   @map("gestionnaire_nom")
+  gestionnaireContact       String?   @map("gestionnaire_contact") @db.Text
+  gestionnaireEmail         String?   @map("gestionnaire_email")
+  clientDecisionJson        String?   @map("client_decision_json") @db.Text
+  missionsJson              String?   @map("missions_json") @db.Text
+  legacyReference           String?   @map("legacy_reference") @db.VarChar(50)
+  echeancierFacturationJson Json?     @map("echeancier_facturation_json")
+  echeancierExecutionJson   Json?     @map("echeancier_execution_json")
+  /// Paramètres de saisie bruts du calcul auto par type de mission (Audit/MM/MOE/MS) — JSON, cf. offre-mission-calc.ts
+  missionCalcJson           String?   @map("mission_calc_json") @db.Text
+  /// Lignes d'échéancier finales déjà calculées, prêtes pour le rendu Word — { phase, montant, modalite }[]
+  echeancierRowsJson        String?   @map("echeancier_rows_json") @db.Text
+  consultantParDefautId     String?   @map("consultant_par_defaut_id") @db.Uuid
+  createdAt                 DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  client              Client      @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  site                Site        @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  consultantParDefaut User?       @relation("OffreConsultantDefaut", fields: [consultantParDefautId], references: [id])
+  phases              PhaseOffre[]
+  commandes           Commande[]
+  fichiers            Fichier[]
+  portalDocuments     ClientPortalDocument[]
+
+  @@map("offres")
+}
+
+// ─── Commandes ────────────────────────────────────────────────────────────────
+
+model Commande {
+  id               String    @id @default(uuid()) @db.Uuid
+  legacyId         Int?      @unique @map("legacy_id")
+  numeroCommande   String    @unique @map("numero_commande") @db.VarChar(50)
+  dateCommande     DateTime? @map("date_commande") @db.Date
+  typeMission      String    @map("type_mission") @db.VarChar(10)
+  typeMissionsJson String?   @map("type_missions_json") @db.Text
+  statut           String?   @db.VarChar(30)
+  montantHt        Decimal   @map("montant_ht") @db.Decimal(12, 2)
+  montantFacture   Decimal   @map("montant_facture") @db.Decimal(12, 2)
+  clientId         String    @map("client_id") @db.Uuid
+  siteId           String    @map("site_id") @db.Uuid
+  offreId          String?   @map("offre_id") @db.Uuid
+  clientNom        String?   @map("client_nom") @db.VarChar(200)
+  siteNom          String?   @map("site_nom") @db.VarChar(200)
+  legacyReference  String?   @map("legacy_reference") @db.VarChar(50)
+  numeroClient     String?   @map("numero_client") @db.VarChar(100)
+  gestionnaireNom     String? @map("gestionnaire_nom") @db.VarChar(200)
+  gestionnaireContact String? @map("gestionnaire_contact") @db.VarChar(300)
+  modePaiementCommande   String? @map("mode_paiement_commande") @db.VarChar(20)
+  echeancierPaiementJson String? @map("echeancier_paiement_json") @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  client            Client             @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  site              Site               @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  offre             Offre?             @relation(fields: [offreId], references: [id])
+  factures          Facture[]
+  avoirs            Avoir[]
+  portalDocuments   ClientPortalDocument[]
+  echeancesPaiement EcheancePaiement[]
+
+  @@map("commandes")
+}
+
+// ─── Factures ─────────────────────────────────────────────────────────────────
+
+model Facture {
+  id                     String                @id @default(uuid()) @db.Uuid
+  legacyId               Int?                  @unique @map("legacy_id")
+  numeroFacture          String                @unique @map("numero_facture") @db.VarChar(50)
+  commandeId             String                @map("commande_id") @db.Uuid
+  dateFacture            DateTime?             @map("date_facture") @db.Date
+  dateEcheance           DateTime?             @map("date_echeance") @db.Date
+  montantHt              Decimal               @map("montant_ht") @db.Decimal(12, 2)
+  frais                  Decimal               @default(0) @db.Decimal(12, 2)
+  modeReglement          String                @map("mode_reglement") @db.VarChar(30)
+  numeroCommandeClient   String?               @map("numero_commande_client") @db.VarChar(100)
+  numeroCommandeDisplay  String?               @map("numero_commande_display") @db.VarChar(50)
+  clientNom              String?               @map("client_nom") @db.VarChar(200)
+  statutPaiement         StatutPaiementFacture @default(NON_PAYE) @map("statut_paiement")
+  statutFacturation      String?               @map("statut_facturation") @db.VarChar(20)
+  montantPaye            Decimal               @default(0) @map("montant_paye") @db.Decimal(12, 2)
+  derniereRelanceAt      DateTime?             @map("derniere_relance_at") @db.Timestamptz(6)
+  niveauRelance          Int                   @default(0) @map("niveau_relance")
+  createdAt              DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  commande          Commande           @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  paiements         Paiement[]
+  relances          Relance[]
+  avoirs            Avoir[]            @relation("AvoirFactureOrigine")
+  echeancesPaiement EcheancePaiement[]
+
+  @@index([statutPaiement], map: "idx_factures_statut_paiement")
+  @@map("factures")
+}
+
+// ─── Échéancier de paiement ─────────────────────────────────────────────────
+// Distinct de Commande.echeancierPaiementJson (simple note JSON du mode de
+// paiement, saisie manuelle) — modèle relationnel avec statut par ligne et
+// lien vers la Facture générée, pilotant le Gantt de trésorerie et la
+// facturation automatique.
+
+model EcheancePaiement {
+  id           String                 @id @default(uuid()) @db.Uuid
+  legacyId     Int?                   @unique @map("legacy_id")
+  commandeId   String                 @map("commande_id") @db.Uuid
+  ordre        Int
+  libelle      String                 @db.VarChar(200)
+  pourcentage  Decimal?               @db.Decimal(5, 2)
+  montantHt    Decimal                @map("montant_ht") @db.Decimal(12, 2)
+  dateEcheance DateTime               @map("date_echeance") @db.Date
+  statut       StatutEcheancePaiement @default(A_VENIR)
+  factureId    String?                @map("facture_id") @db.Uuid
+  createdAt    DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  commande Commande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
+  facture  Facture? @relation(fields: [factureId], references: [id])
+
+  @@index([commandeId], map: "idx_echeances_paiement_commande")
+  @@map("echeances_paiement")
+}
+
+enum StatutEcheancePaiement {
+  A_VENIR
+  FACTUREE
+  PAYEE
+  ANNULEE
+}
+
+// ─── Avoirs ───────────────────────────────────────────────────────────────────
+
+model Avoir {
+  id               String   @id @default(uuid()) @db.Uuid
+  legacyId         Int?     @unique @map("legacy_id")
+  numero           String   @unique @db.VarChar(30)
+  factureOrigineId String   @map("facture_origine_id") @db.Uuid
+  commandeId       String   @map("commande_id") @db.Uuid
+  motif            String   @db.VarChar(200)
+  montantHt        Decimal  @map("montant_ht") @db.Decimal(12, 2)
+  tauxTva          Decimal  @map("taux_tva") @db.Decimal(5, 2)
+  montantTtc       Decimal  @map("montant_ttc") @db.Decimal(12, 2)
+  dateEmission     DateTime @map("date_emission") @db.Date
+  pdfPath          String?  @map("pdf_path")
+  createdById      String?  @map("created_by") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  factureOrigine Facture  @relation("AvoirFactureOrigine", fields: [factureOrigineId], references: [id], onDelete: Restrict)
+  commande       Commande @relation(fields: [commandeId], references: [id], onDelete: Restrict)
+  createdBy      User?    @relation("AvoirCreatedBy", fields: [createdById], references: [id])
+
+  @@index([factureOrigineId], map: "idx_avoirs_facture")
+  @@map("avoirs")
+}
+
+// ─── Paiements ────────────────────────────────────────────────────────────────
+
+model Paiement {
+  id                  String         @id @default(uuid()) @db.Uuid
+  factureId           String         @map("facture_id") @db.Uuid
+  montant             Decimal        @db.Decimal(12, 2)
+  datePaiement        DateTime       @map("date_paiement") @db.Date
+  source              PaiementSource
+  referenceExterne    String?        @map("reference_externe") @db.VarChar(100)
+  quontoTransactionId String?        @map("quonto_transaction_id") @db.VarChar(100)
+  rapprocheAt         DateTime       @default(now()) @map("rapproche_at") @db.Timestamptz(6)
+  rapprocheById       String?        @map("rapproche_by") @db.Uuid
+  notes               String?
+
+  facture     Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  rapprocheBy User?   @relation("PaiementRapprocheBy", fields: [rapprocheById], references: [id])
+
+  @@index([factureId], map: "idx_paiements_facture")
+  @@map("paiements")
+}
+
+// ─── Relances ─────────────────────────────────────────────────────────────────
+
+model Relance {
+  id             String        @id @default(uuid()) @db.Uuid
+  factureId      String        @map("facture_id") @db.Uuid
+  niveau         RelanceNiveau
+  dateEnvoi      DateTime      @map("date_envoi") @db.Timestamptz(6)
+  canal          RelanceCanal
+  contenu        String?
+  envoyeParId    String?       @map("envoye_par") @db.Uuid
+  reponseRecueAt DateTime?     @map("reponse_recue_at") @db.Timestamptz(6)
+
+  facture   Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  envoyePar User?   @relation("RelanceEnvoyeePar", fields: [envoyeParId], references: [id])
+
+  @@index([factureId], map: "idx_relances_facture")
+  @@map("relances")
+}
+
+// ─── Gestionnaires de site ────────────────────────────────────────────────────
+
+model SiteGestionnaire {
+  id          String    @id @default(uuid()) @db.Uuid
+  legacyId    Int?      @unique @map("legacy_id")
+  siteId      String    @map("site_id") @db.Uuid
+  clientId    String?   @map("client_id") @db.Uuid
+  clientNom   String?   @map("client_nom") @db.VarChar(200)
+  contactId   String?   @map("contact_id") @db.Uuid
+  contactNom  String?   @map("contact_nom") @db.VarChar(200)
+  isPrincipal Boolean   @default(false) @map("is_principal")
+  dateDebut   DateTime? @map("date_debut") @db.Date
+  dateFin     DateTime? @map("date_fin") @db.Date
+  notes       String?
+
+  site    Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  client  Client?  @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  contact Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@map("site_gestionnaires")
+}
+
+// ─── Phases d'offre ───────────────────────────────────────────────────────────
+
+model PhaseOffre {
+  id               String   @id @default(uuid()) @db.Uuid
+  offreId          String   @map("offre_id") @db.Uuid
+  codePhase        String   @map("code_phase") @db.VarChar(20)
+  libelle          String?  @db.VarChar(200)
+  montantHt        Decimal? @map("montant_ht") @db.Decimal(12, 2)
+  ordre            Int      @default(0)
+  estInclus        Boolean  @default(true) @map("est_inclus")
+  commentairePhase String?  @map("commentaire_phase")
+
+  offre Offre @relation(fields: [offreId], references: [id], onDelete: Cascade)
+
+  @@map("phases_offre")
+}
+
+// ─── Fichiers & versions ──────────────────────────────────────────────────────
+
+model Fichier {
+  id        String   @id @default(uuid()) @db.Uuid
+  offreId   String?  @map("offre_id") @db.Uuid
+  chemin    String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  offre    Offre?           @relation(fields: [offreId], references: [id])
+  versions FichierVersion[]
+
+  @@map("fichiers")
+}
+
+model FichierVersion {
+  id                   String    @id @default(uuid()) @db.Uuid
+  legacyId             Int?      @unique @map("legacy_id")
+  fichierId            String    @map("fichier_id") @db.Uuid
+  versionNum           Int       @map("version_num")
+  reference            String?   @db.VarChar(100)
+  docType              String?   @map("doc_type") @db.VarChar(20)
+  format               String?   @db.VarChar(20)
+  storage              String?   @db.VarChar(30)
+  s3Path               String?   @map("s3_path")
+  minioKey             String?   @map("minio_key") @db.Text
+  onedrivePath         String?   @map("onedrive_path")
+  onedriveItemId       String?   @map("onedrive_item_id") @db.VarChar(100)
+  tailleOctets         BigInt?   @map("taille_octets")
+  checksumSha256       String?   @map("checksum_sha256") @db.VarChar(64)
+  uploadedById         String?   @map("uploaded_by") @db.Uuid
+  uploadedAt           DateTime  @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+  archivedToOnedriveAt DateTime? @map("archived_to_onedrive_at") @db.Timestamptz(6)
+
+  fichier    Fichier @relation(fields: [fichierId], references: [id], onDelete: Cascade)
+  uploadedBy User?   @relation("FichierVersionUploadedBy", fields: [uploadedById], references: [id])
+
+  @@map("fichiers_versions")
+}
+
+// ─── Compteurs de référence ───────────────────────────────────────────────────
+
+model ReferenceCounter {
+  id          String              @id @default(uuid()) @db.Uuid
+  entityType  ReferenceEntityType @map("entity_type")
+  year        Int
+  typeMission String              @default("") @map("type_mission") @db.VarChar(10)
+  lastValue   Int                 @default(0) @map("last_value")
+  updatedAt   DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([entityType, year, typeMission], map: "reference_counters_entity_year_type_key")
+  @@map("reference_counters")
+}
+
+// ─── Tâches CRM ───────────────────────────────────────────────────────────────
+
+model CrmTask {
+  id         String    @id @default(uuid()) @db.Uuid
+  legacyId   Int?      @unique @map("legacy_id")
+  userId     String    @map("user_id") @db.Uuid
+  title      String    @db.Text
+  dueDate    DateTime? @map("due_date") @db.Date
+  dueHour    Int?      @map("due_hour")
+  dueMinute  Int?      @map("due_minute")
+  done       Boolean   @default(false)
+  entityType String?   @map("entity_type") @db.VarChar(50)
+  entityId   Int?      @map("entity_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("crm_tasks")
+}
+
+// ─── Notifications CRM ────────────────────────────────────────────────────────
+
+model CrmNotification {
+  id         String   @id @default(uuid()) @db.Uuid
+  legacyId   Int?     @unique @map("legacy_id")
+  userId     String   @map("user_id") @db.Uuid
+  kind       String   @db.VarChar(30)
+  title      String   @db.Text
+  message    String   @db.Text
+  href       String?  @db.Text
+  entityType String?  @map("entity_type") @db.VarChar(50)
+  entityId   Int?     @map("entity_id")
+  read       Boolean  @default(false)
+  source     String?  @db.VarChar(20)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("crm_notifications")
+}
+
+// ─── Messagerie espace client ─────────────────────────────────────────────────
+
+model ClientPortalMessage {
+  id          String   @id @default(uuid()) @db.Uuid
+  legacyId    Int?     @unique @map("legacy_id")
+  threadId    String   @map("thread_id") @db.VarChar(100)
+  entreprise  String   @db.VarChar(200)
+  subject     String   @db.Text
+  body        String   @db.Text
+  senderType  String   @map("sender_type") @db.VarChar(10)
+  senderName  String?  @map("sender_name") @db.VarChar(200)
+  senderEmail String?  @map("sender_email") @db.VarChar(200)
+  readByClient Boolean @default(false) @map("read_by_client")
+  readByCrm   Boolean  @default(false) @map("read_by_crm")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([entreprise], map: "idx_client_messages_entreprise")
+  @@map("client_portal_messages")
+}
+
+// ─── Documents espace client ──────────────────────────────────────────────────
+
+model ClientPortalDocument {
+  id          String    @id @default(uuid()) @db.Uuid
+  legacyId    Int?      @unique @map("legacy_id")
+  entreprise  String    @db.VarChar(200)
+  contactId   String?   @map("contact_id") @db.Uuid
+  siteId      String?   @map("site_id") @db.Uuid
+  nom         String    @db.VarChar(500)
+  type        String    @db.VarChar(30)
+  fileName    String    @map("file_name") @db.VarChar(500)
+  storedPath  String?   @map("stored_path") @db.Text
+  minioKey    String?   @map("minio_key") @db.Text
+  sizeBytes   BigInt?   @map("size_bytes")
+  contentType String?   @map("content_type") @db.VarChar(200)
+  statut      String    @default("EN_ATTENTE") @db.VarChar(20)
+  motifRejet  String?   @map("motif_rejet") @db.Text
+  validatedAt DateTime? @map("validated_at") @db.Timestamptz(6)
+  offreId     String?   @map("offre_id") @db.Uuid
+  commandeId  String?   @map("commande_id") @db.Uuid
+  notes       String?   @db.Text
+  uploadedAt  DateTime  @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+
+  contact  Contact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  site     Site?     @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  offre    Offre?    @relation(fields: [offreId], references: [id], onDelete: SetNull)
+  commande Commande? @relation(fields: [commandeId], references: [id], onDelete: SetNull)
+
+  @@index([entreprise], map: "idx_client_docs_entreprise")
+  @@map("client_portal_documents")
+}
+
+// ─── Notifications espace client ──────────────────────────────────────────────
+
+model ClientPortalNotification {
+  id         String   @id @default(uuid()) @db.Uuid
+  legacyId   Int?     @unique @map("legacy_id")
+  entreprise String   @db.VarChar(200)
+  title      String   @db.Text
+  message    String   @db.Text
+  kind       String   @db.VarChar(30)
+  href       String?  @db.Text
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("client_portal_notifications")
+}
+
+// ─── Contrats clients ─────────────────────────────────────────────────────────
+
+model ClientContrat {
+  id                           String    @id @default(uuid()) @db.Uuid
+  legacyId                     Int?      @unique @map("legacy_id")
+  entreprise                   String    @db.VarChar(200)
+  reference                    String    @db.VarChar(100)
+  intitule                     String    @db.Text
+  siteId                       String?   @map("site_id") @db.Uuid
+  siteNom                      String?   @map("site_nom") @db.VarChar(200)
+  typeContrat                  String?   @map("type_contrat") @db.VarChar(100)
+  dateDebut                    DateTime  @map("date_debut") @db.Date
+  dateFin                      DateTime  @map("date_fin") @db.Date
+  montantAnnuelHt              Decimal?  @map("montant_annuel_ht") @db.Decimal(12, 2)
+  prestataire                  String?   @db.VarChar(200)
+  statut                       String    @default("ACTIF") @db.VarChar(30)
+  conditionsRenouvellement     String?   @map("conditions_renouvellement") @db.Text
+  clauseRevisionTarifaire      String?   @map("clause_revision_tarifaire") @db.Text
+  avenantsJson                 String?   @map("avenants_json") @db.Text
+  demandeRenouvellementAt      DateTime? @map("demande_renouvellement_at") @db.Timestamptz(6)
+  createdAt                    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  site Site? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@map("client_contrats")
+}
+
+// ─── Interventions & pannes ───────────────────────────────────────────────────
+
+model ClientIntervention {
+  id                    String    @id @default(uuid()) @db.Uuid
+  legacyId              Int?      @unique @map("legacy_id")
+  entreprise            String    @db.VarChar(200)
+  reference             String    @db.VarChar(100)
+  siteId                String?   @map("site_id") @db.Uuid
+  siteNom               String?   @map("site_nom") @db.VarChar(200)
+  equipementId          String?   @map("equipement_id") @db.Uuid
+  equipementLibelle     String?   @map("equipement_libelle") @db.VarChar(200)
+  type                  String    @db.VarChar(50)
+  priorite              String    @default("NORMALE") @db.VarChar(20)
+  statut                String    @default("CREEE") @db.VarChar(20)
+  description           String    @db.Text
+  prestataire           String?   @db.VarChar(200)
+  declaredAt            DateTime  @default(now()) @map("declared_at") @db.Timestamptz(6)
+  assignedAt            DateTime? @map("assigned_at") @db.Timestamptz(6)
+  resolvedAt            DateTime? @map("resolved_at") @db.Timestamptz(6)
+  compteRendu           String?   @map("compte_rendu") @db.Text
+  declaredByContactId   String?   @map("declared_by_contact_id") @db.Uuid
+  declaredByName        String?   @map("declared_by_name") @db.VarChar(200)
+
+  site          Site?           @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  equipement    SiteEquipement? @relation("InterventionEquipement", fields: [equipementId], references: [id], onDelete: SetNull)
+  declaredBy    Contact?        @relation("InterventionDeclaredBy", fields: [declaredByContactId], references: [id], onDelete: SetNull)
+
+  @@map("client_interventions")
+}
+
+// ─── Configuration alertes client ────────────────────────────────────────────
+
+model ClientAlertesConfig {
+  id                       String   @id @default(uuid()) @db.Uuid
+  entreprise               String   @unique @db.VarChar(200)
+  factureImpayee           Boolean  @default(true) @map("facture_impayee")
+  factureImpayeeDelaiJours Int      @default(30) @map("facture_impayee_delai_jours")
+  contratExpirant          Boolean  @default(true) @map("contrat_expirant")
+  panneSignalee            Boolean  @default(true) @map("panne_signalee")
+  mmsSousSeuil             Boolean  @default(false) @map("mms_sous_seuil")
+  mmsSeuil                 Decimal  @default(5.0) @map("mms_seuil") @db.Decimal(5, 2)
+  offreExpirant            Boolean  @default(true) @map("offre_expirant")
+  visiteReglementaire      Boolean  @default(true) @map("visite_reglementaire")
+  updatedAt                DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("client_alertes_configs")
+}
+
+// ─── Rapports MMS ─────────────────────────────────────────────────────────────
+
+model MmsRapport {
+  id                  String    @id @default(uuid()) @db.Uuid
+  legacyId            Int?      @unique @map("legacy_id")
+  prestataire         String    @db.VarChar(200)
+  client              String    @db.VarChar(200)
+  trimestre           String    @db.VarChar(10)
+  annee               Int
+  createdByUserId     String?   @map("created_by_user_id") @db.Uuid
+  nbAppareils         Int       @default(0) @map("nb_appareils")
+  nbInterventions     Int       @default(0) @map("nb_interventions")
+  nbPannes            Int       @default(0) @map("nb_pannes")
+  nbVisites           Int       @default(0) @map("nb_visites")
+  penaliteTotale      Decimal   @default(0) @map("penalite_totale") @db.Decimal(12, 2)
+  excelNom            String?   @map("excel_nom") @db.VarChar(500)
+  wordNom             String?   @map("word_nom") @db.VarChar(500)
+  pdfNom              String?   @map("pdf_nom") @db.VarChar(500)
+  excelMinioKey       String?   @map("excel_minio_key") @db.Text
+  wordMinioKey        String?   @map("word_minio_key") @db.Text
+  pdfMinioKey         String?   @map("pdf_minio_key") @db.Text
+  excelSizeBytes      BigInt?   @map("excel_size_bytes")
+  wordSizeBytes       BigInt?   @map("word_size_bytes")
+  pdfSizeBytes        BigInt?   @map("pdf_size_bytes")
+  siteId              String?   @map("site_id") @db.Uuid
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  createdBy User? @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  site      Site? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@map("mms_rapports")
+}
+
+// ─── Transactions Quonto en attente ──────────────────────────────────────────
+
+model PendingQuontoTransaction {
+  id                  String   @id @default(uuid()) @db.Uuid
+  legacyId            Int?     @unique @map("legacy_id")
+  libelle             String   @db.Text
+  montant             Decimal  @db.Decimal(12, 2)
+  dateOperation       DateTime @map("date_operation") @db.Date
+  score               Decimal  @default(0) @db.Decimal(5, 2)
+  quontoTransactionId String   @unique @map("quonto_transaction_id") @db.VarChar(200)
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("pending_quonto_transactions")
+}
+
+// ─── Journal d'audit ──────────────────────────────────────────────────────────
+
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  legacyId    Int?     @unique @map("legacy_id")
+  entityType  String   @map("entity_type") @db.VarChar(50)
+  entityId    Int?     @map("entity_id")
+  action      String   @db.VarChar(100)
+  changes     Json?
+  performedBy String?  @map("performed_by") @db.VarChar(200)
+  performedAt DateTime @default(now()) @map("performed_at") @db.Timestamptz(6)
+  ipAddress   String?  @map("ip_address") @db.VarChar(50)
+  userAgent   String?  @map("user_agent") @db.Text
+
+  @@index([entityType, entityId], map: "idx_audit_log_entity")
+  @@map("audit_logs")
+}
+
+// ─── Historique annulations ───────────────────────────────────────────────────
+
+model HistoriqueAnnulation {
+  id          String   @id @default(uuid()) @db.Uuid
+  legacyId    Int?     @unique @map("legacy_id")
+  entityType  String   @map("entity_type") @db.VarChar(50)
+  entityId    Int      @map("entity_id")
+  reference   String   @db.VarChar(100)
+  motif       String   @db.Text
+  commentaire String?  @db.Text
+  montantHt   Decimal? @map("montant_ht") @db.Decimal(12, 2)
+  clientNom   String?  @map("client_nom") @db.VarChar(200)
+  cancelledAt DateTime @default(now()) @map("cancelled_at") @db.Timestamptz(6)
+
+  @@map("historique_annulations")
+}
+
+// ─── Tokens d'authentification ────────────────────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique @db.Text
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model ClientRefreshToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  token      String    @unique @db.Text
+  contactId  String    @map("contact_id") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt  DateTime? @map("expires_at") @db.Timestamptz(6)
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@map("client_refresh_tokens")
+}
+
+// ─── Snapshot (conservé pour migration progressive) ───────────────────────────
+
+model AppSnapshot {
+  id      Int      @id @default(1)
+  data    Json
+  savedAt DateTime @default(now()) @updatedAt @map("saved_at") @db.Timestamptz(6)
+
+  @@map("app_snapshot")
+}
+
+// ─── Devis Groupement — Appareils ─────────────────────────────────────────────
+
+model Appareil {
+  id         String   @id @default(uuid()) @db.Uuid
+  numero     String   @db.VarChar(50)
+  label      String?  @db.VarChar(200)
+  clientId   String?  @map("client_id") @db.Uuid
+  clientNom  String?  @map("client_nom") @db.VarChar(200)
+  siteId     String?  @map("site_id") @db.Uuid
+  siteNom    String?  @map("site_nom") @db.VarChar(200)
+  entreprise String?  @db.VarChar(100)
+  enArret    Boolean  @default(false) @map("en_arret")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  client Client?           @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  site   Site?             @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  devis  DevisGroupement[]
+
+  @@map("appareils")
+}
+
+// ─── Devis Groupement — Devis prestataires ascenseurs ────────────────────────
+
+model DevisGroupement {
+  id                  String    @id @default(uuid()) @db.Uuid
+  numeroDevis         String    @map("numero_devis") @db.VarChar(100)
+  clientNom           String?   @map("client_nom") @db.VarChar(200)
+  clientId            String?   @map("client_id") @db.Uuid
+  appareilId          String?   @map("appareil_id") @db.Uuid
+  numeroAppareil      String?   @map("numero_appareil") @db.VarChar(50)
+  entreprise          String?   @db.VarChar(100)
+  dateDevis           DateTime? @map("date_devis") @db.Date
+  objet               String?   @db.Text
+  montantHt           Decimal?  @map("montant_ht") @db.Decimal(12, 2)
+  tauxTva             Decimal   @default(2.10) @map("taux_tva") @db.Decimal(5, 2)
+  montantTva          Decimal?  @map("montant_tva") @db.Decimal(12, 2)
+  montantTtc          Decimal?  @map("montant_ttc") @db.Decimal(12, 2)
+  ascenseurArret      Boolean   @default(false) @map("ascenseur_arret")
+  avisLvo             String?   @map("avis_lvo") @db.Text
+  estimatifLvoHt      Decimal?  @map("estimatif_lvo_ht") @db.Decimal(12, 2)
+  montantNegocieHt    Decimal?  @map("montant_negocie_ht") @db.Decimal(12, 2)
+  economieHt          Decimal?  @map("economie_ht") @db.Decimal(12, 2)
+  statut              String    @default("EN_ATTENTE") @db.VarChar(50)
+  documentUrl         String?   @map("document_url") @db.Text
+  documentNom         String?   @map("document_nom") @db.VarChar(500)
+  documentSizeBytes   BigInt?   @map("document_size_bytes")
+  signatureAdminUrl   String?   @map("signature_admin_url") @db.Text
+  motifRefus          String?   @map("motif_refus") @db.Text
+  conditionsPaiement  String?   @map("conditions_paiement") @db.Text
+  batiment            String?   @db.VarChar(200)
+  uploadedByContactId String?   @map("uploaded_by_contact_id") @db.Uuid
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  client   Client?            @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  appareil Appareil?          @relation(fields: [appareilId], references: [id], onDelete: SetNull)
+  messages NegociationMessage[]
+
+  @@map("devis_groupement")
+}
+
+// ─── Devis Groupement — Messages de négociation ──────────────────────────────
+
+model NegociationMessage {
+  id          String   @id @default(uuid()) @db.Uuid
+  devisId     String   @map("devis_id") @db.Uuid
+  auteurRole  String   @map("auteur_role") @db.VarChar(20)
+  auteurNom   String?  @map("auteur_nom") @db.VarChar(200)
+  message     String   @db.Text
+  prixPropose Decimal? @map("prix_propose") @db.Decimal(12, 2)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  devis DevisGroupement @relation(fields: [devisId], references: [id], onDelete: Cascade)
+
+  @@map("negociation_messages")
+}
+

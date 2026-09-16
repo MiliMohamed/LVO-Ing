@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "./lvo-brand.css";
+@import "./site-and-crm-supplement.css";
+
+@theme inline {
+  --font-sans: var(--font-dm);
+}

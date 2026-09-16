@@ -1,0 +1,446 @@
+export type LoginResponse = {
+  token: string;
+  refreshToken: string;
+  email: string;
+  role: string;
+  userId: number;
+  agenceId: number;
+};
+
+export type UserProfile = {
+  id: number;
+  email: string;
+  role: string;
+  prenom: string | null;
+  nom: string | null;
+  telephone: string | null;
+  hasAvatar: boolean;
+  agenceId: number | null;
+  agenceNom: string | null;
+};
+
+export type DashboardCounts = {
+  contacts: number;
+  clients: number;
+  sites: number;
+  offresActives: number;
+  commandesActives: number;
+  factures: number;
+};
+
+export type ContactRow = {
+  id: number;
+  civilite: string;
+  nom: string;
+  prenom: string;
+  entreprise: string;
+  fonction: string;
+  email: string;
+  telephone: string;
+  mobile: string;
+  ownerUserId?: number | null;
+  /** Indique si un mot de passe espace client est défini (jamais le hash) */
+  hasClientPassword?: boolean;
+};
+
+export type ClientRow = {
+  id: number;
+  raisonSociale: string;
+  entite: string;
+  email: string;
+  telephone: string;
+  createdAtIso: string;
+  siret?: string | null;
+  codePostal?: string | null;
+  /** Responsable côté client (suivi dossier) */
+  responsableEmail?: string | null;
+};
+
+export type SiteRow = {
+  id: number;
+  nom: string;
+  typeSite: string;
+  clientNom: string;
+  /** Entité agence du client propriétaire (filtre périmètre) */
+  clientEntite?: string | null;
+  statut?: "ACTIF" | "ARCHIVE";
+  /** Phase 6 (R3) */
+  gestionnairePrincipal?: string | null;
+  gestionnairesActifs?: string[];
+  /** Registre équipements — nombre actifs + hors service */
+  equipementsCount?: number;
+  /** Image du site (base64 data URL) */
+  imageDataUrl?: string | null;
+};
+
+export type EquipementType = "ASCENSEUR" | "MONTE_CHARGE" | "MONTE_VOITURE" | "PLATEFORME" | "DAE";
+
+export type SiteArborescenceTreeNode = {
+  id: number;
+  parentId: number | null;
+  nom: string;
+  nodeType: "FOLDER" | "FILE";
+  sortOrder: number;
+  sizeBytes: number | null;
+  contentType: string | null;
+  createdAt: string;
+  children: SiteArborescenceTreeNode[];
+};
+
+export type SiteEquipementRow = {
+  id: number;
+  siteId: number;
+  type: EquipementType;
+  marque: string;
+  modele: string;
+  numeroSerie: string;
+  anneeInstallation: number | null;
+  capaciteKg: number | null;
+  etages: string | null;
+  statut: "ACTIF" | "HORS_SERVICE" | "RETIRE";
+  notes: string | null;
+  createdAt: string;
+};
+
+export type CrmNotificationKind = "TASK_DUE" | "OFFRE_RELANCE" | "FACTURE_RETARD" | "INFO";
+
+export type CrmNotificationRow = {
+  id: number;
+  userId: number;
+  kind: CrmNotificationKind;
+  title: string;
+  message: string;
+  href: string | null;
+  entityType: string | null;
+  entityId: number | null;
+  read: boolean;
+  createdAt: string;
+  source: "seed" | "system";
+};
+
+export type CrmNotificationsResponse = {
+  items: CrmNotificationRow[];
+  unreadCount: number;
+};
+
+/** Phase 6 — GET /api/sites/:id/gestionnaires */
+/** Référentiel des types d'équipements (extensible à la volée) */
+export type TypeEquipementRow = {
+  id: number;
+  libelle: string;
+  actif: boolean;
+};
+
+/** Ligne d'inventaire quantitatif équipements — formulaire Site (facultatif) */
+export type EquipementQteLigne = {
+  typeLibelle: string;
+  quantite: number;
+};
+
+export type SiteGestionnaireRow = {
+  id: number;
+  siteId: number;
+  clientNom: string;
+  contactId: number | null;
+  contactNom: string | null;
+  isPrincipal: boolean;
+  dateDebut: string;
+  dateFin: string | null;
+  notes: string | null;
+};
+
+/** Phase 5 — GET /api/audit-log (ADMIN) */
+export type AuditLogRow = {
+  id: number;
+  entity_type: string;
+  entity_id: number;
+  action: string;
+  changes: Record<string, unknown> | null;
+  performed_by: string;
+  performed_at: string;
+  ip_address: string | null;
+  user_agent: string | null;
+};
+
+export type OffreRow = {
+  id: number;
+  numeroOffre: string;
+  typeMission: string;
+  typeMissionsJson?: string | null;
+  statut: string;
+  montantHt: number;
+  dateOffre: string | null;
+  clientNom: string;
+  siteNom: string;
+  phasesMode?: "ALL" | "SELECTION" | "CUSTOM";
+  phasesLinesJson?: string | null;
+  echeancierFacturationJson?: string | null;
+  echeancierExecutionJson?: string | null;
+  tauxTva?: number;
+  consultantEmail?: string | null;
+  gestionnaireNom?: string | null;
+  gestionnaireContact?: string | null;
+  /** @deprecated — lecture seule si anciennes données */
+  gestionnaireEmail?: string | null;
+  missionsJson?: string | null;
+  /** Décision client depuis espace client : { decision, decidedAt, decidedBy, commentaire? } */
+  clientDecisionJson?: string | null;
+  /** Présent côté API liste (nombre de lignes missionsJson) */
+  missionsCount?: number;
+  /** Présent côté API liste — libellé affichage gestionnaire */
+  gestionnaireLibelle?: string;
+  /** Présent côté API liste — types de mission (ex. MS + MCN) */
+  missionsLibelle?: string;
+  /** JSON — paramètres de saisie bruts du calcul auto par type (Audit/MM/MOE/MS) */
+  missionCalcJson?: string | null;
+  /** JSON : { phase, montant, modalite }[] — échéancier final calculé */
+  echeancierRowsJson?: string | null;
+};
+
+// ── Calcul auto des honoraires/échéancier — Audit / CTQ / MM / MOE / MS ────────────
+// Miroir des types serveur (server/src/documents/offre-mission-calc.ts). Le montant HT de ces
+// 5 types est dérivé côté serveur à la sauvegarde ; ces objets ne servent que de saisie.
+
+/** Audit et CTQ (Contrôle Technique Quinquennal) partagent exactement la même saisie et le même
+ * calcul (prix unitaire × nb ascenseurs) — seul le libellé affiché diffère. */
+export type AuditMissionCalc = { prixUnitaireHt: number; nbAscenseurs: number };
+export type MmMissionCalc = { prixUnitaireMoisHt: number; nbAscenseurs: number };
+export type MoePhaseCode = "AVANT_PROJET" | "DCE_AMT" | "DET" | "GPA";
+/** LIBRE = montant saisi directement ; UNITAIRE = prixUnitaireHt × nbAscenseurs ; POURCENTAGE =
+ * (pourcentage / 100) × prixUnitaireHt × nbAscenseurs. */
+export type MoePhaseCalcMode = "LIBRE" | "UNITAIRE" | "POURCENTAGE";
+export type MoePhaseCalc = {
+  code: MoePhaseCode;
+  selected: boolean;
+  calcMode: MoePhaseCalcMode;
+  montantHt: number;
+  prixUnitaireHt: number;
+  nbAscenseurs: number;
+  pourcentage: number;
+  echeancierTexte: string;
+  delaiTexte: string;
+};
+export type MoeMissionCalc = { phases: MoePhaseCalc[] };
+export type MsMissionCalc = { texteMissionHtml: string; montantHt: number; echeancierTexte: string; delaiTexte: string };
+export type MissionCalc = AuditMissionCalc | MmMissionCalc | MoeMissionCalc | MsMissionCalc;
+
+export type CommandeRow = {
+  id: number;
+  numeroCommande: string;
+  dateCommande: string | null;
+  montantHt: number;
+  montantFacture: number;
+  typeMission: string;
+  typeMissionsJson?: string | null;
+  statut?: string | null;
+  siteNom: string;
+  clientNom: string;
+  numeroClient?: string | null;
+  /** Offre d'origine — figé à la création */
+  offreId?: number | null;
+  gestionnaireNom?: string | null;
+  gestionnaireContact?: string | null;
+  modePaiementCommande?: "UNIQUE" | "ECHELONNE" | null;
+  echeancierPaiementJson?: string | null;
+  /** Dérivé liste GET — affichage missions multiples */
+  missionsLibelle?: string;
+};
+
+/** Ligne d'échéancier de paiement réelle d'une commande (GET /api/commandes/:id/echeances) —
+ * distinct de CommandeRow.echeancierPaiementJson (simple note du mode de paiement). */
+export type EcheancePaiementRow = {
+  id: number;
+  commandeId: number;
+  ordre: number;
+  libelle: string;
+  pourcentage: number | null;
+  montantHt: number;
+  dateEcheance: string;
+  statut: "A_VENIR" | "FACTUREE" | "PAYEE" | "ANNULEE";
+  factureId: number | null;
+  createdAt: string;
+};
+
+/**
+ * Vue fusionnée pour le Gantt trésorerie (GET /api/echeances-paiement) — combine, sans doublon,
+ * les vraies EcheancePaiement, le mode de paiement déjà saisi sur les commandes
+ * (echeancierPaiementJson) et l'échéancier de facturation déjà saisi sur les offres
+ * (echeancierFacturationJson) : montre les vraies données existantes sans exiger de ressaisie.
+ */
+export type EcheanceVueRow = {
+  id: string;
+  commandeId: number | null;
+  offreId: number | null;
+  ordre: number;
+  libelle: string;
+  pourcentage: number | null;
+  montantHt: number;
+  dateEcheance: string;
+  statut: "A_VENIR" | "FACTUREE" | "PAYEE" | "ANNULEE";
+  factureId: number | null;
+  source: "ECHEANCIER" | "COMMANDE_PAIEMENT" | "OFFRE_FACTURATION";
+  numeroCommande?: string;
+  numeroOffre?: string;
+  clientNom: string;
+  siteNom: string;
+};
+
+/** Ligne issue de l’échéancier facturation (regroupement par mois) */
+export type EcheanceFacturationMoisRow = {
+  moisFacturation: string;
+  offreId: number;
+  numeroOffre: string;
+  clientNom: string;
+  siteNom: string;
+  typeMission: string;
+  libelle: string;
+  pourcentage: number;
+  montantHtEstime: number;
+  numeroCommande: string;
+  commandeId: number;
+};
+
+export type HistoryAnnulationRow = {
+  id: number;
+  entityType: string;
+  entityId: number;
+  reference: string;
+  motif: string;
+  commentaire: string | null;
+  montantHt: number;
+  clientNom: string;
+  cancelledAt: string;
+};
+
+/** Statut métier facture (cycle document) */
+export type StatutFacturation = "CREEE" | "ENVOYEE" | "ANNULEE" | "PAYEE";
+
+export type FactureRow = {
+  id: number;
+  numeroFacture: string;
+  dateFacture: string | null;
+  dateEcheance?: string | null;
+  numeroCommande: string;
+  numeroCommandeClient?: string | null;
+  clientNom: string;
+  montantHt: number;
+  frais: number;
+  modeReglement: string;
+  montantPaye?: number;
+  commandeId?: number;
+  statutFacturation?: StatutFacturation;
+  statutPaiement?: string;
+};
+
+/** Bibliothèque MMS — métadonnées d'une analyse archivée */
+export type MmsRapportMeta = {
+  id: number;
+  prestataire: string;
+  client: string;
+  trimestre: string;
+  annee: number;
+  createdAt: string;
+  createdByUserId: number;
+  nbAppareils: number;
+  nbInterventions: number;
+  nbPannes: number;
+  nbVisites: number;
+  penaliteTotale: number;
+  excelNom: string;
+  wordNom: string;
+  pdfNom: string | null;
+  excelSizeBytes: number;
+  wordSizeBytes: number;
+  pdfSizeBytes: number | null;
+  hasExcel: boolean;
+  hasWord: boolean;
+  hasPdf: boolean;
+};
+
+/** Phase 3 — GET /api/recouvrement/kpis */
+export type RecouvrementKpis = {
+  totalImpayeHt: number;
+  totalImpayeTtc?: number;
+  facturesEnRetard: number;
+  dsoJours?: number;
+  /** Top 5 clients : nom + montant impayé HT */
+  topClientsEnRetard?: { clientNom: string; montantHt: number }[];
+};
+
+/** Phase 3 — GET /api/recouvrement/factures-impayees */
+export type FactureImpayeeRow = {
+  id: number;
+  numeroFacture: string;
+  clientNom: string;
+  montantHt: number;
+  montantTtc?: number;
+  dateFacture: string | null;
+  dateEcheance: string | null;
+  joursRetard: number;
+  niveauRelance: number;
+  statutPaiement?: string;
+};
+
+// ── Espace Client — Contrats ────────────────────────────────────────────────
+export type ClientContratStatut = "ACTIF" | "EXPIRE" | "RESILIE" | "EN_RENOUVELLEMENT";
+
+export type ClientContratRow = {
+  id: number;
+  entreprise: string;
+  reference: string;
+  intitule: string;
+  siteId: number | null;
+  siteNom: string;
+  typeContrat: string;
+  dateDebut: string;
+  dateFin: string;
+  montantAnnuelHt: number;
+  prestataire: string;
+  statut: ClientContratStatut;
+  conditionsRenouvellement: string | null;
+  clauseRevisionTarifaire: string | null;
+  avenantsJson: string | null;
+  demandeRenouvellementAt: string | null;
+};
+
+// ── Espace Client — Interventions & Pannes ──────────────────────────────────
+export type ClientInterventionStatut = "CREEE" | "ASSIGNEE" | "EN_COURS" | "RESOLUE" | "A_VALIDER";
+export type ClientInterventionPriorite = "NORMALE" | "URGENTE" | "CRITIQUE";
+export type ClientInterventionType = "PANNE" | "MAINTENANCE_PREVENTIVE" | "VISITE_REGLEMENTAIRE" | "MISE_EN_CONFORMITE" | "AUTRE";
+
+export type ClientInterventionRow = {
+  id: number;
+  entreprise: string;
+  reference: string;
+  siteId: number | null;
+  siteNom: string;
+  equipementId: number | null;
+  equipementLibelle: string | null;
+  type: ClientInterventionType;
+  priorite: ClientInterventionPriorite;
+  statut: ClientInterventionStatut;
+  description: string;
+  prestataire: string | null;
+  declaredAt: string;
+  assignedAt: string | null;
+  resolvedAt: string | null;
+  compteRendu: string | null;
+  declaredByContactId: number;
+  declaredByName: string;
+};
+
+export type ClientEquipementOption = {
+  id: number;
+  libelle: string;
+  type: string;
+  statut: string;
+};
+
+/** Phase 3 — GET /api/recouvrement/transactions-en-attente (Quonto, score 60–89) */
+export type TransactionAttenteRow = {
+  id: number | string;
+  libelle: string;
+  montant: number;
+  dateOperation: string;
+  score: number;
+};

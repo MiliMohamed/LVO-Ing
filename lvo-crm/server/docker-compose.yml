@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lvo-crm-standalone-db
+    environment:
+      POSTGRES_DB: lvo_crm_standalone
+      POSTGRES_USER: lvo_crm
+      POSTGRES_PASSWORD: lvo_crm_dev_change_me
+    ports:
+      # Host 5434 : instance dédiée au service CRM séparé, distincte du Postgres partagé
+      # de l'ancien projet (5433) pour éviter tout conflit si les deux tournent en parallèle.
+      - "5434:5432"
+    volumes:
+      - lvo_crm_standalone_pgdata:/var/lib/postgresql/data
+
+volumes:
+  lvo_crm_standalone_pgdata:
