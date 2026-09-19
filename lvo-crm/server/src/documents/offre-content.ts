@@ -583,8 +583,35 @@ export const COURRIER_OUTRO_PARAGRAPHS: string[] = [
   "Afin de formaliser notre accord, nous vous demanderons de bien vouloir nous retourner " +
     "un exemplaire de notre ordre de mission signé.",
   "N'hésitez pas à nous contacter pour toute information que vous jugerez nécessaire.",
-  "Veuillez agréer, Monsieur, l'expression de nos respectueuses salutations.",
+  // {{CIVILITE}} est remplacé à la génération par « Monsieur », « Madame » ou, quand la civilité
+  // du destinataire est inconnue, « Madame, Monsieur » (cf. civiliteAppel dans crm.ts).
+  "Veuillez agréer, {{CIVILITE}}, l'expression de nos respectueuses salutations.",
 ];
+
+/**
+ * Formule d'appel d'après la civilité enregistrée sur le contact (« M. », « Mme », « Mlle »…).
+ * Les trames réelles adaptent bien cette formule : LVO-MM-26035 (M. Philippe LABORDA) écrit
+ * « Monsieur, », LVO-audit-26050 (Jeanne KEITA) écrit « Madame, ».
+ * Sans civilité exploitable, on retombe sur la forme neutre « Madame, Monsieur ».
+ */
+export function civiliteAppel(civilite: string | null | undefined): string {
+  const c = (civilite ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, "");
+  if (["m", "mr", "monsieur"].includes(c)) return "Monsieur";
+  if (["mme", "mlle", "madame", "mademoiselle"].includes(c)) return "Madame";
+  return "Madame, Monsieur";
+}
+
+/**
+ * Déduit la civilité d'un libellé saisi librement (ex. « Mme Jeanne KEITA », « M. Jean Dupont »)
+ * — utilisé quand le représentant de l'offre n'est pas un contact rattaché mais du texte libre.
+ */
+export function civiliteDepuisLibelle(libelle: string | null | undefined): string | null {
+  const m = /^\s*(M\.|M|Mr\.?|Monsieur|Mme\.?|Mlle\.?|Madame|Mademoiselle)\b/i.exec(libelle ?? "");
+  return m ? m[1] : null;
+}
 
 export const LVO_SIGNATAIRE = "Hatem LEMBARKI";
 export const LVO_SIGNATAIRE_FONCTION = "Fondateur Gérant";

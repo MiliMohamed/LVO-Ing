@@ -51,7 +51,7 @@ import { generateDefaultPassword, hashPassword } from "../auth.js";
 import { getPrisma, MINIO_BUCKETS, minioUpload, minioDownload } from "../db.js";
 import { tryExtractBonCommande } from "../lib/bon-commande-extractor.js";
 import { decodeDataUrlImage, renderOffreDocx, type OffreRenderData } from "../documents/offre-docx.js";
-import { buildMoeMissionBody, expectedPhaseCount, getMissionBody, MISSION_LABELS, type MissionBody } from "../documents/offre-content.js";
+import { buildMoeMissionBody, civiliteAppel, civiliteDepuisLibelle, expectedPhaseCount, getMissionBody, MISSION_LABELS, type MissionBody } from "../documents/offre-content.js";
 import { htmlToBlocks } from "../documents/offre-html-blocks.js";
 import { computeOffreFromMissionCalc } from "../documents/offre-mission-calc.js";
 import { convertDocxToPdf } from "../documents/gotenberg.js";
@@ -2900,7 +2900,13 @@ function formatDateFr(iso: string | null): string {
   return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(d);
 }
 
-function resolveRepresentant(o: OffreRow): string {
+/**
+ * Destinataire du courrier : libellé affiché et civilité associée. La civilité vient du contact
+ * gestionnaire principal du site quand il y en a un ; sinon elle est déduite du libellé saisi
+ * librement sur l'offre (« Mme Jeanne KEITA »…). Elle détermine la formule d'appel du courrier
+ * (« Monsieur, » / « Madame, »), comme dans les trames réelles.
+ */
+function resolveDestinataire(o: OffreRow): { libelle: string; civilite: string | null } {
   const site = sites.find((s) => s.nom === o.siteNom);
   if (site) {
     const principal = gestionnairesActifsRows(site.id).find((g) => g.isPrincipal);
@@ -2909,17 +2915,25 @@ function resolveRepresentant(o: OffreRow): string {
       if (c) {
         const civilite = c.civilite ? `${c.civilite} ` : "";
         const fonction = c.fonction ? ` (${c.fonction})` : "";
-        return `${civilite}${c.prenom} ${c.nom}${fonction}`.trim();
+        return { libelle: `${civilite}${c.prenom} ${c.nom}${fonction}`.trim(), civilite: c.civilite || null };
       }
     }
-    if (principal?.contactNom) return principal.contactNom;
+    if (principal?.contactNom) {
+      return { libelle: principal.contactNom, civilite: civiliteDepuisLibelle(principal.contactNom) };
+    }
   }
-  return (o.gestionnaireContact?.trim() || o.gestionnaireNom?.trim() || "").trim();
+  const libelle = (o.gestionnaireContact?.trim() || o.gestionnaireNom?.trim() || "").trim();
+  return { libelle, civilite: civiliteDepuisLibelle(libelle) };
+}
+
+function resolveRepresentant(o: OffreRow): string {
+  return resolveDestinataire(o).libelle;
 }
 
 function buildOffreRenderData(o: OffreRow): OffreRenderData {
   const site = sites.find((s) => s.nom === o.siteNom);
   const client = clients.find((c) => c.raisonSociale === o.clientNom);
+  const destinataire = resolveDestinataire(o);
   const missionLabel = MISSION_LABELS[o.typeMission.toUpperCase()] ?? o.typeMission;
 
   type PhaseLine = { code: string; libelle: string; montantHt: number; inclus?: boolean };
@@ -3008,7 +3022,8 @@ function buildOffreRenderData(o: OffreRow): OffreRenderData {
     sitePhoto: decodeDataUrlImage(site?.imageDataUrl),
     clientNom: o.clientNom,
     clientDirection: client?.entite ?? "",
-    clientRepresentant: resolveRepresentant(o),
+    clientRepresentant: destinataire.libelle,
+    civiliteAppel: civiliteAppel(destinataire.civilite),
     missionLabel,
     objet: `Mission de conseil et d'assistance technique — ${o.siteNom}`,
     honoraires,

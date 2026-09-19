@@ -125,6 +125,9 @@ export type OffreRenderData = {
   clientNom: string;
   clientDirection: string;
   clientRepresentant: string;
+  /** Formule d'appel du courrier : « Monsieur », « Madame » ou « Madame, Monsieur » — déduite de
+   * la civilité du destinataire (contact rattaché ou libellé saisi), cf. civiliteAppel(). */
+  civiliteAppel: string;
   missionLabel: string;
   objet: string;
   honoraires: { libelle: string; montant: number }[];
@@ -595,7 +598,7 @@ function renderCourrier(d: OffreRenderData): (Paragraph | Table)[] {
   out.push(emptyP());
   out.push(p(`Mission : ${d.missionLabel}`, { size: SZ.body, bold: true }));
   out.push(emptyP());
-  out.push(p("Monsieur,", { size: SZ.body }));
+  out.push(p(`${d.civiliteAppel},`, { size: SZ.body }));
   out.push(emptyP());
   for (const para of COURRIER_INTRO_PARAGRAPHS) {
     out.push(p(para, { size: SZ.body }));
@@ -604,7 +607,7 @@ function renderCourrier(d: OffreRenderData): (Paragraph | Table)[] {
   for (const disc of COURRIER_DISCIPLINES) out.push(bulletP(disc));
   out.push(emptyP());
   for (const para of COURRIER_OUTRO_PARAGRAPHS) {
-    out.push(p(para, { size: SZ.body }));
+    out.push(p(para.replace("{{CIVILITE}}", d.civiliteAppel), { size: SZ.body }));
     out.push(emptyP());
   }
   const cachet = readCachet();
