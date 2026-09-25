@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import {
   computeMissionCalcTotal,
   computeMmDetail,
+  DEFAULT_MOE_POURCENTAGE,
   MOE_PHASE_LABELS,
   MOE_PHASE_ORDER,
   moePhaseMontant,
@@ -150,8 +151,8 @@ export function MissionCalcFields({ typeMission, value, onChange, dateOffreIso, 
           {MOE_PHASE_ORDER.map((code) => {
             const phase = c.phases.find((p) => p.code === code);
             if (!phase) return null;
-            // Le choix du mode de calcul (prix unitaire / % du prix de mission) ne s'applique
-            // qu'à la phase DET — les 3 autres phases gardent l'ancienne logique (montant libre).
+            // Le choix du mode de calcul (prix / % du montant des travaux) ne s'applique qu'à la
+            // phase DET — les 3 autres phases gardent l'ancienne logique (montant libre).
             const allowCalcMode = code === "DET";
             const effectiveCalcMode = allowCalcMode ? phase.calcMode : "LIBRE";
             return (
@@ -172,11 +173,26 @@ export function MissionCalcFields({ typeMission, value, onChange, dateOffreIso, 
                         <select
                           className="crm-select"
                           value={phase.calcMode}
-                          onChange={(e) => updatePhase(code, { calcMode: e.target.value as MoePhaseCalc["calcMode"] })}
+                          onChange={(e) => {
+                            const calcMode = e.target.value as MoePhaseCalc["calcMode"];
+                            updatePhase(
+                              code,
+                              calcMode === "POURCENTAGE"
+                                ? {
+                                    calcMode,
+                                    montantTravauxHt: phase.montantTravauxHt ?? 0,
+                                    pourcentage: phase.pourcentage || DEFAULT_MOE_POURCENTAGE,
+                                  }
+                                : { calcMode },
+                            );
+                          }}
                         >
-                          <option value="LIBRE">Montant libre</option>
-                          <option value="UNITAIRE">Prix unitaire × nb ascenseurs</option>
-                          <option value="POURCENTAGE">% du prix de mission × nb ascenseurs</option>
+                          <option value="LIBRE">Prix</option>
+                          <option value="POURCENTAGE">% du montant des travaux</option>
+                          {/* Mode historique : visible uniquement sur les offres déjà enregistrées ainsi. */}
+                          {phase.calcMode === "UNITAIRE" ? (
+                            <option value="UNITAIRE">Prix unitaire × nb ascenseurs</option>
+                          ) : null}
                         </select>
                       </label>
                     ) : null}
@@ -197,6 +213,34 @@ export function MissionCalcFields({ typeMission, value, onChange, dateOffreIso, 
                           }
                         />
                       </label>
+                    ) : effectiveCalcMode === "POURCENTAGE" ? (
+                      <>
+                        <label className="crm-field">
+                          <span className="crm-label">Montant des travaux HT (€)</span>
+                          <input
+                            className="crm-input"
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            value={phase.montantTravauxHt ?? ""}
+                            onChange={(e) => updatePhase(code, { montantTravauxHt: Number(e.target.value) || 0 })}
+                          />
+                        </label>
+                        <label className="crm-field">
+                          <span className="crm-label">Pourcentage (%)</span>
+                          <input
+                            className="crm-input"
+                            type="number"
+                            min={0}
+                            step="0.1"
+                            value={phase.pourcentage}
+                            onChange={(e) => updatePhase(code, { pourcentage: Number(e.target.value) || 0 })}
+                          />
+                        </label>
+                        <p className="crm-hint crm-span-2 m-0">
+                          Montant calculé : <strong>{moneyFr(moePhaseMontant(phase))}</strong>
+                        </p>
+                      </>
                     ) : (
                       <>
                         <label className="crm-field">
@@ -221,19 +265,6 @@ export function MissionCalcFields({ typeMission, value, onChange, dateOffreIso, 
                             onChange={(e) => updatePhase(code, { prixUnitaireHt: Number(e.target.value) || 0 })}
                           />
                         </label>
-                        {effectiveCalcMode === "POURCENTAGE" ? (
-                          <label className="crm-field">
-                            <span className="crm-label">Pourcentage (%)</span>
-                            <input
-                              className="crm-input"
-                              type="number"
-                              min={0}
-                              step="0.1"
-                              value={phase.pourcentage}
-                              onChange={(e) => updatePhase(code, { pourcentage: Number(e.target.value) || 0 })}
-                            />
-                          </label>
-                        ) : null}
                         <p className="crm-hint crm-span-2 m-0">
                           Montant calculé : <strong>{moneyFr(moePhaseMontant(phase))}</strong>
                         </p>

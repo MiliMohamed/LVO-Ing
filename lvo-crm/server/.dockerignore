@@ -1,0 +1,10 @@
+.git
+node_modules
+dist
+# Données runtime : volume Docker
+data
+uploads
+.env
+.env.*
+!.env.example
+*.log

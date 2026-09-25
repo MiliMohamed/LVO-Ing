@@ -1,0 +1,5 @@
+# Scripts et configs exécutés sur le VPS Linux : LF obligatoire (CRLF casse sh/Caddy).
+*.sh text eol=lf
+deploy/** text eol=lf
+*.yml text eol=lf
+Dockerfile text eol=lf

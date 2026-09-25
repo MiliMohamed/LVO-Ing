@@ -128,3 +128,23 @@ Cellule par cellule sur le tableau d'honoraires MM : fonds, filets (`single sz1 
 | `server/src/routes/crm.ts` | Transmet `typeMission` au renderer (choix des largeurs de colonnes) |
 
 Aucune modification du schéma de données, des routes, de la numérotation ni du versionnage.
+
+---
+
+## Ajout — trame CTQ réelle (`LVO-CTQ-26033_résidence SAINT MICHEL TRINITE.docx`)
+
+Jusqu'ici le CTQ recopiait le corps de mission de l'Audit. Il suit désormais sa propre trame :
+
+| Point | Avant | Après (trame CTQ) |
+|---|---|---|
+| Corps de mission | Corps Audit (collecte, évaluation, rapport a–e) + encadré « Délais de remise » | Texte CTQ verbatim : 1. Faire réaliser le CTQ (art. R. 125-2-4 CCH, 3 objectifs) · 2. Rapport de Contrôle Technique (5 points) · 3. Prestation optionnelle « Constat de levée des réserves » (250 € HT / ascenseur / visite). Pas d'encadré de délai. |
+| Encart type de mission | « CTQ Complet » | « Contrôle Technique Quinquennal » |
+| Bannière + ligne « Mission : » | « Contrôle Technique Quinquennal » | « Contrôle Technique Quinquennal N ascenseur(s) » |
+| Tableau d'honoraires | « CTQ ASCENSEUR » | « Contrôle Technique Quinquennal » |
+| Échéancier | « CTQ ASCENSEUR » | « CONTRÔLE TECHNIQUE QUINQUENNAL » (la trame écrit « AUDIT TECHNIQUE ASCENSEUR », coquille non reprise) |
+
+Géométrie inchangée : les largeurs relevées dans la trame CTQ (5155/3871 · 3685/1739/3602 · 2816/6210)
+sont exactement celles de l'Audit. Design, police, couleurs et tableaux restent ceux des autres types.
+
+Écart assumé : la trame ajoute une ligne « GESTIONNAIRE » (syndic) dans le bloc POUR ; le modèle de
+données de l'offre n'a pas ce champ, la ligne n'est donc pas générée.

@@ -49,6 +49,7 @@ export function emptyMissionCalc(typeMission: string, nbAscenseursSuggestion?: n
           prixUnitaireHt: 0,
           nbAscenseurs: nbAscenseursSuggestion || 1,
           pourcentage: DEFAULT_MOE_POURCENTAGE,
+          montantTravauxHt: 0,
           echeancierTexte: "",
           delaiTexte: "",
         })),
@@ -92,11 +93,13 @@ export function moePhaseMontant(p: MoePhaseCalc): number {
   switch (p.calcMode) {
     case "UNITAIRE":
       return Math.round((Number(p.prixUnitaireHt) || 0) * (Number(p.nbAscenseurs) || 0) * 100) / 100;
-    case "POURCENTAGE":
-      return (
-        Math.round(((Number(p.pourcentage) || 0) / 100) * (Number(p.prixUnitaireHt) || 0) * (Number(p.nbAscenseurs) || 0) * 100) /
-        100
-      );
+    case "POURCENTAGE": {
+      const base =
+        p.montantTravauxHt != null
+          ? Number(p.montantTravauxHt) || 0
+          : (Number(p.prixUnitaireHt) || 0) * (Number(p.nbAscenseurs) || 0);
+      return Math.round(((Number(p.pourcentage) || 0) / 100) * base * 100) / 100;
+    }
     default:
       return Number(p.montantHt) || 0;
   }

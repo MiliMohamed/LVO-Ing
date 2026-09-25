@@ -1397,11 +1397,24 @@ crmRouter.get("/facturation/echeances-par-mois", (req, res) => {
 });
 
 crmRouter.get("/settings", (_req, res) => {
-  res.json({
-    defaultConsultantEmail: crmAppSettings.defaultConsultantEmail,
-    tvaMetropolePercent: crmAppSettings.tvaMetropolePercent,
-    tvaDomPercent: crmAppSettings.tvaDomPercent,
-  });
+  res.json({ ...crmAppSettings });
+});
+
+/** Mise à jour des tarifs de l'encart coût des offres (revalorisés chaque 1er janvier). */
+crmRouter.patch("/settings", requireRoles("ADMIN"), (req, res) => {
+  const b = req.body as { coutHoraireHt?: unknown; coutJournalierHt?: unknown };
+  const next = { ...crmAppSettings };
+  for (const key of ["coutHoraireHt", "coutJournalierHt"] as const) {
+    if (b[key] === undefined) continue;
+    const n = Number(b[key]);
+    if (!Number.isFinite(n) || n <= 0) {
+      res.status(400).json({ error: `${key} doit être un montant positif` });
+      return;
+    }
+    next[key] = n;
+  }
+  Object.assign(crmAppSettings, next);
+  res.json({ ...crmAppSettings });
 });
 
 crmRouter.get("/phases-referentiel", (req, res) => {
@@ -2889,8 +2902,6 @@ crmRouter.get("/offres/:id/signature-status", (req, res) => {
 
 // ─── Génération du document d'offre (Word/PDF) ─────────────────────────────────
 
-const COUT_HORAIRE_DEFAUT = 65;
-const COUT_JOURNALIER_DEFAUT = 480;
 const VALIDITE_OFFRE_DEFAUT = "3 mois";
 
 function formatDateFr(iso: string | null): string {
@@ -2928,6 +2939,19 @@ function resolveDestinataire(o: OffreRow): { libelle: string; civilite: string |
 
 function resolveRepresentant(o: OffreRow): string {
   return resolveDestinataire(o).libelle;
+}
+
+/** « Objet : <site> - <adresse> », format des trames (LVO-CTQ-26033, LVO-audit-26050, LVO-MOE-26026). */
+function objetOffre(siteNom: string, adresse: string | null | undefined): string {
+  const a = adresse?.trim();
+  return a ? `${siteNom} - ${a}` : siteNom;
+}
+
+/** Société gestionnaire affichée (« GESTIONNAIRE » / « C/O … ») — omise quand c'est le client lui-même. */
+function gestionnaireSociete(o: OffreRow): string | null {
+  const g = o.gestionnaireNom?.trim();
+  if (!g || g.includes("@") || g.toLowerCase() === (o.clientNom ?? "").trim().toLowerCase()) return null;
+  return g;
 }
 
 function buildOffreRenderData(o: OffreRow): OffreRenderData {
@@ -3023,17 +3047,18 @@ function buildOffreRenderData(o: OffreRow): OffreRenderData {
     clientNom: o.clientNom,
     clientDirection: client?.entite ?? "",
     clientRepresentant: destinataire.libelle,
+    gestionnaireNom: gestionnaireSociete(o),
     civiliteAppel: civiliteAppel(destinataire.civilite),
     missionLabel,
-    objet: `Mission de conseil et d'assistance technique — ${o.siteNom}`,
+    objet: objetOffre(o.siteNom, site?.adresse),
     honoraires,
     totalHt,
     echeancier,
     delais,
     tva: o.tauxTva ?? crmAppSettings.tvaDomPercent,
     validite: VALIDITE_OFFRE_DEFAUT,
-    coutHoraire: COUT_HORAIRE_DEFAUT,
-    coutJournalier: COUT_JOURNALIER_DEFAUT,
+    coutHoraire: crmAppSettings.coutHoraireHt,
+    coutJournalier: crmAppSettings.coutJournalierHt,
     missionBody,
     mmHonoraires,
     auditHonoraires,

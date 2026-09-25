@@ -195,6 +195,12 @@ export async function saveAllToDb(): Promise<void> {
 
   // 5b. Types d'équipements (référentiel) + inventaire quantitatif par site
   for (const t of typesEquipement) {
+    // La migration 20260824185417 pré-insère les types par défaut sans legacy_id : on les
+    // rattache par libellé, sinon le create ci-dessous viole l'unicité sur `libelle`.
+    await prisma.typeEquipement.updateMany({
+      where: { libelle: t.libelle, legacyId: null },
+      data:  { legacyId: t.id },
+    });
     const r = await prisma.typeEquipement.upsert({
       where:  { legacyId: t.id },
       update: { libelle: t.libelle, actif: t.actif },

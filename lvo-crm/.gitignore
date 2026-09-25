@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# Dépendances / builds
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# Données runtime de l'API (volumes Docker en prod)
+server/data/
+server/uploads/
+
+# Fichiers de verrou Office
+~$*
+
+*.log
+*.zip

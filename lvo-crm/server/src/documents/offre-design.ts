@@ -132,7 +132,7 @@ export const TABLE_COLS: Record<
 > = {
   // LVO-audit-26050_gymnase de Vincendo.docx
   A: { honoraires: [5155, 3871], echeancier: [3685, 1739, 3602], delais: [2816, 6210] },
-  // CTQ partage la trame Audit (même structure, seul le libellé change).
+  // CTQ : largeurs relevées dans LVO-CTQ-26033 — identiques à la trame Audit.
   CTQ: { honoraires: [5155, 3871], echeancier: [3685, 1739, 3602], delais: [2816, 6210] },
   // LVO-MM-26035_CHM.docx
   MM: { honoraires: [4855, 4171], echeancier: [3664, 1577, 3785], delais: [2608, 6418] },

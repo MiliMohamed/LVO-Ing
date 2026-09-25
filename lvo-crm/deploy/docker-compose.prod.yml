@@ -1,0 +1,153 @@
+# Déploiement production du CRM LVO (landing + /login + /crm) — VPS OVH.
+# Périmètre : front CRM, API CRM, Postgres dédié, MinIO, Gotenberg, Caddy.
+# Hors périmètre : backend Spring, mms-analyzer, site public / portails (monorepo lvo-web),
+# ONLYOFFICE (voir DEPLOY.md).
+#
+#   cd deploy
+#   cp .env.prod.example .env && <remplir .env>
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Seul Caddy publie des ports (80/443). Tout le reste parle sur le réseau Docker interne.
+
+name: lvo-crm
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      CRM_DOMAIN: ${CRM_DOMAIN:?CRM_DOMAIN requis}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL requis}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - crm-frontend
+      - crm-server
+    logging: *logging
+
+  crm-frontend:
+    image: ${REGISTRY:-lvo}/crm-frontend:${TAG:-latest}
+    build:
+      context: ../frontend
+      args:
+        API_BASE_URL: http://crm-server:8081
+        NEXT_PUBLIC_ONLYOFFICE_URL: ${NEXT_PUBLIC_ONLYOFFICE_URL:-}
+    restart: unless-stopped
+    environment:
+      TZ: Indian/Reunion
+    depends_on:
+      crm-server:
+        condition: service_healthy
+    logging: *logging
+
+  crm-server:
+    image: ${REGISTRY:-lvo}/crm-server:${TAG:-latest}
+    build:
+      context: ../server
+      target: run
+    restart: unless-stopped
+    # Laisse le temps à la sauvegarde finale (handler SIGTERM) avant le SIGKILL.
+    stop_grace_period: 30s
+    environment:
+      TZ: Indian/Reunion
+      API_PORT: "8081"
+      DATABASE_URL: postgresql://lvo_crm:${POSTGRES_PASSWORD}@postgres:5432/lvo_crm?schema=public
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET requis}
+      CRM_SERVICE_TOKEN: ${CRM_SERVICE_TOKEN:?CRM_SERVICE_TOKEN requis}
+      QUONTO_WEBHOOK_SECRET: ${QUONTO_WEBHOOK_SECRET:-}
+      CORS_ORIGINS: https://${CRM_DOMAIN}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: "9000"
+      MINIO_USE_SSL: "false"
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:?MINIO_ROOT_USER requis}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD requis}
+      GOTENBERG_URL: http://gotenberg:3000
+      ONLYOFFICE_CALLBACK_BASE_URL: http://crm-server:8081
+    volumes:
+      - crm_data:/app/data
+      - crm_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      crm-migrate:
+        condition: service_completed_successfully
+      minio:
+        condition: service_started
+      gotenberg:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8081/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging: *logging
+
+  # One-shot : applique les migrations Prisma puis s'arrête. Rejoué à chaque `up`.
+  crm-migrate:
+    image: ${REGISTRY:-lvo}/crm-migrate:${TAG:-latest}
+    build:
+      context: ../server
+      target: build
+    command: ["npx", "prisma", "migrate", "deploy"]
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql://lvo_crm:${POSTGRES_PASSWORD}@postgres:5432/lvo_crm?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *logging
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      TZ: Indian/Reunion
+      POSTGRES_DB: lvo_crm
+      POSTGRES_USER: lvo_crm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD requis}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lvo_crm -d lvo_crm"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+
+  minio:
+    # Docker Hub ne distribue plus MinIO : image officielle sur quay.io.
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    restart: unless-stopped
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    logging: *logging
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pgdata:
+  minio_data:
+  crm_data:
+  crm_uploads:

@@ -206,8 +206,8 @@ export type OffreRow = {
 export type AuditMissionCalc = { prixUnitaireHt: number; nbAscenseurs: number };
 export type MmMissionCalc = { prixUnitaireMoisHt: number; nbAscenseurs: number };
 export type MoePhaseCode = "AVANT_PROJET" | "DCE_AMT" | "DET" | "GPA";
-/** LIBRE = montant saisi directement ; UNITAIRE = prixUnitaireHt × nbAscenseurs ; POURCENTAGE =
- * (pourcentage / 100) × prixUnitaireHt × nbAscenseurs. */
+/** LIBRE = prix saisi directement ; POURCENTAGE = (pourcentage / 100) × montantTravauxHt.
+ * UNITAIRE (prixUnitaireHt × nbAscenseurs) : historique, plus proposé à la saisie. */
 export type MoePhaseCalcMode = "LIBRE" | "UNITAIRE" | "POURCENTAGE";
 export type MoePhaseCalc = {
   code: MoePhaseCode;
@@ -217,6 +217,8 @@ export type MoePhaseCalc = {
   prixUnitaireHt: number;
   nbAscenseurs: number;
   pourcentage: number;
+  /** Base du mode POURCENTAGE (DET) — absent sur les anciennes offres, cf. serveur. */
+  montantTravauxHt?: number;
   echeancierTexte: string;
   delaiTexte: string;
 };

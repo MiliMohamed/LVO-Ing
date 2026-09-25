@@ -13,8 +13,9 @@ export type DelaiLine = { prestation: string; delai: string };
 export type AuditMissionCalc = { prixUnitaireHt: number; nbAscenseurs: number };
 export type MmMissionCalc = { prixUnitaireMoisHt: number; nbAscenseurs: number };
 export type MoePhaseCode = "AVANT_PROJET" | "DCE_AMT" | "DET" | "GPA";
-/** LIBRE = montant saisi directement (historique) ; UNITAIRE = prixUnitaireHt × nbAscenseurs ;
- * POURCENTAGE = (pourcentage / 100) × prixUnitaireHt × nbAscenseurs. */
+/** LIBRE = prix saisi directement ; POURCENTAGE = (pourcentage / 100) × montantTravauxHt.
+ * UNITAIRE (prixUnitaireHt × nbAscenseurs) n'est plus proposé à la saisie mais reste calculé pour
+ * les offres déjà enregistrées avec ce mode. */
 export type MoePhaseCalcMode = "LIBRE" | "UNITAIRE" | "POURCENTAGE";
 export type MoePhaseCalc = {
   code: MoePhaseCode;
@@ -24,6 +25,10 @@ export type MoePhaseCalc = {
   prixUnitaireHt: number;
   nbAscenseurs: number;
   pourcentage: number;
+  /** Montant HT des travaux, base du mode POURCENTAGE (DET). Absent sur les offres enregistrées
+   * avant son introduction : le mode POURCENTAGE retombe alors sur l'ancienne base
+   * prixUnitaireHt × nbAscenseurs. */
+  montantTravauxHt?: number;
   echeancierTexte: string;
   delaiTexte: string;
 };
@@ -106,25 +111,25 @@ function result(
   };
 }
 
-/** Libellé fixe repris tel quel du gabarit réel (LVOaudit26050_gymnase_de_Vincendo.docx) —
- * ne varie pas avec le nombre d'ascenseurs, contrairement au détail affiché à côté. CTQ (Contrôle
- * Technique Quinquennal) réutilise exactement la même logique de calcul et le même corps de
- * mission qu'Audit (cf. offre-content.ts), seul le libellé change — demande explicite. */
-const AUDIT_LIKE_LIBELLE: Record<"A" | "CTQ", string> = {
-  A: "AUDIT TECHNIQUE ASCENSEUR",
-  CTQ: "CTQ ASCENSEUR",
+/** Libellés fixes repris des gabarits réels — ne varient pas avec le nombre d'ascenseurs,
+ * contrairement au détail affiché à côté. Audit : LVO-audit-26050_gymnase de Vincendo.docx.
+ * CTQ : LVO-CTQ-26033_résidence SAINT MICHEL TRINITE.docx (même calcul qu'Audit ; la trame
+ * écrit « AUDIT TECHNIQUE ASCENSEUR » dans l'échéancier, coquille de copier-coller non reprise). */
+const AUDIT_LIKE_LIBELLE: Record<"A" | "CTQ", { honoraires: string; echeancier: string }> = {
+  A: { honoraires: "AUDIT TECHNIQUE ASCENSEUR", echeancier: "AUDIT TECHNIQUE ASCENSEUR" },
+  CTQ: { honoraires: "Contrôle Technique Quinquennal", echeancier: "CONTRÔLE TECHNIQUE QUINQUENNAL" },
 };
 
 function computeAuditLike(code: "A" | "CTQ", calc: AuditMissionCalc): MissionCalcResult {
   const prixUnitaireHt = n(calc.prixUnitaireHt);
   const nbAscenseurs = n(calc.nbAscenseurs);
   const montantHt = Math.round(prixUnitaireHt * nbAscenseurs * 100) / 100;
-  const libelle = AUDIT_LIKE_LIBELLE[code];
+  const { honoraires: libelle, echeancier } = AUDIT_LIKE_LIBELLE[code];
   const auditDetail: AuditComputedDetail = { libelle, nbAscenseurs, prixUnitaireHt, montantHt };
   return result(
     montantHt,
     [{ code, libelle, montantHt }],
-    [{ phase: libelle, montant: montantHt, modalite: "À l'envoi du rapport" }],
+    [{ phase: echeancier, montant: montantHt, modalite: "À l'envoi du rapport" }],
     [
       { prestation: "Relevé sur site", delai: "Suivant demande du maître d'ouvrage et charge de travail" },
       { prestation: "Transmission du rapport", delai: "3 semaines maximum après relevé sur site" },
@@ -158,17 +163,32 @@ function computeMm(calc: MmMissionCalc, dateOffreIso: string | null): MissionCal
   );
 }
 
-/** Montant HT effectif d'une phase MOE selon son mode de calcul — LIBRE reprend la saisie
- * directe (comportement historique), UNITAIRE et POURCENTAGE le dérivent du nombre d'ascenseurs. */
+/** Base du mode POURCENTAGE : le montant des travaux, ou l'ancienne base prix unitaire × nb
+ * ascenseurs pour les offres enregistrées avant l'introduction de `montantTravauxHt`. */
+function moePourcentageBase(p: MoePhaseCalc): number {
+  return p.montantTravauxHt != null ? n(p.montantTravauxHt) : n(p.prixUnitaireHt) * n(p.nbAscenseurs);
+}
+
+/** Montant HT effectif d'une phase MOE selon son mode de calcul. */
 function moePhaseMontant(p: MoePhaseCalc): number {
   switch (p.calcMode) {
     case "UNITAIRE":
       return Math.round(n(p.prixUnitaireHt) * n(p.nbAscenseurs) * 100) / 100;
     case "POURCENTAGE":
-      return Math.round(((n(p.pourcentage) / 100) * n(p.prixUnitaireHt) * n(p.nbAscenseurs)) * 100) / 100;
+      return Math.round((n(p.pourcentage) / 100) * moePourcentageBase(p) * 100) / 100;
     default:
       return n(p.montantHt);
   }
+}
+
+/** Libellé de la ligne honoraires : pour une phase au pourcentage des travaux, la base de calcul
+ * est rappelée sous le nom de la phase (ex. « 7 % du montant des travaux (150 000,00 € HT) »). */
+function moePhaseHonorairesLibelle(p: MoePhaseCalc): string {
+  const label = MOE_PHASE_LABELS[p.code];
+  if (p.calcMode !== "POURCENTAGE" || p.montantTravauxHt == null) return label;
+  const pct = n(p.pourcentage).toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+  const travaux = n(p.montantTravauxHt).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `${label}\n${pct} % du montant des travaux (${travaux} € HT)`;
 }
 
 function computeMoe(calc: MoeMissionCalc): MissionCalcResult {
@@ -182,7 +202,7 @@ function computeMoe(calc: MoeMissionCalc): MissionCalcResult {
   const montantHt = Math.round(selected.reduce((s, p) => s + moePhaseMontant(p), 0) * 100) / 100;
   const phasesLines: PhaseLine[] = selected.map((p) => ({
     code: p.code,
-    libelle: MOE_PHASE_LABELS[p.code],
+    libelle: moePhaseHonorairesLibelle(p),
     montantHt: moePhaseMontant(p),
   }));
   const echeancierRows: EcheancierRow[] = selected.map((p) => ({

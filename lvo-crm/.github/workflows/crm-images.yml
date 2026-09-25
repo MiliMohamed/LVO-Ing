@@ -1,0 +1,58 @@
+# Build des images du CRM et publication sur GitHub Container Registry.
+# Le VPS ne builde rien : il fait `deploy.sh` → pull + up -d.
+# Images : ghcr.io/<owner>/crm-frontend, crm-server, crm-migrate — tags `latest` et SHA.
+name: CRM images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "server/**"
+      - ".github/workflows/crm-images.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - image: crm-frontend
+            context: frontend
+            target: run
+          - image: crm-server
+            context: server
+            target: run
+          - image: crm-migrate
+            context: server
+            target: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Nom du registry (minuscules)
+        id: reg
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          target: ${{ matrix.target }}
+          push: true
+          tags: |
+            ${{ steps.reg.outputs.name }}/${{ matrix.image }}:latest
+            ${{ steps.reg.outputs.name }}/${{ matrix.image }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}

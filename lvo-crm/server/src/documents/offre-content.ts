@@ -267,35 +267,91 @@ const AUDIT_DELAIS: ContentBlock = boxed(
     "date de réalisation de la visite sur site et de la collecte des données.",
 );
 
-/** Corps de mission commun à Audit et CTQ (Contrôle Technique Quinquennal) — CTQ réutilise
- * exactement le même contenu, seul le libellé du type ("Audit Complet" → "CTQ Complet") et le
- * titre du rapport ("Rapport d'Audit" → "Rapport CTQ") changent, sur demande explicite. */
-function buildAuditLikeBlocks(missionTitle: string, reportTitle: string): ContentBlock[] {
-  return [
-    typeLabel(missionTitle),
-    heading("Contenu de la Mission"),
-    ...AUDIT_COLLECTE_ANALYSE,
-    heading(reportTitle),
-    paragraph(
-      "À l'issue de la mission, LVO-INGENIERIE remettra un rapport écrit détaillé présentant les " +
-        "résultats de l'étude et les conclusions de la mission.",
-    ),
-    paragraph("Le rapport comprendra notamment :"),
-    subbullet("a. Description des équipements ;"),
-    subbullet("b. Analyse de l'existant et des améliorations envisageables ;"),
-    subbullet("c. Évaluation de la maintenance réalisée ;"),
-    subbullet("d. Analyse de conformité réglementaire ;"),
-    subbullet(
-      "e. Recommandations de modernisation, incluant les options techniques, les délais de " +
-        "réalisation et les estimations budgétaires.",
-    ),
-    heading("DÉLAIS DE REMISE DU RAPPORT"),
-    AUDIT_DELAIS,
-  ];
-}
+const AUDIT_BLOCKS: ContentBlock[] = [
+  typeLabel("Audit Complet"),
+  heading("Contenu de la Mission"),
+  ...AUDIT_COLLECTE_ANALYSE,
+  heading("2. Rapport d'Audit"),
+  paragraph(
+    "À l'issue de la mission, LVO-INGENIERIE remettra un rapport écrit détaillé présentant les " +
+      "résultats de l'étude et les conclusions de la mission.",
+  ),
+  paragraph("Le rapport comprendra notamment :"),
+  subbullet("a. Description des équipements ;"),
+  subbullet("b. Analyse de l'existant et des améliorations envisageables ;"),
+  subbullet("c. Évaluation de la maintenance réalisée ;"),
+  subbullet("d. Analyse de conformité réglementaire ;"),
+  subbullet(
+    "e. Recommandations de modernisation, incluant les options techniques, les délais de " +
+      "réalisation et les estimations budgétaires.",
+  ),
+  heading("DÉLAIS DE REMISE DU RAPPORT"),
+  AUDIT_DELAIS,
+];
 
-const AUDIT_BLOCKS: ContentBlock[] = buildAuditLikeBlocks("Audit Complet", "2. Rapport d'Audit");
-const CTQ_BLOCKS: ContentBlock[] = buildAuditLikeBlocks("CTQ Complet", "2. Rapport CTQ");
+// ─── Contrôle Technique Quinquennal — texte verbatim porté depuis
+// LVO-CTQ-26033_résidence SAINT MICHEL TRINITE.docx (trame de référence). Contrairement à
+// l'Audit, la trame CTQ n'a pas d'encadré « DÉLAIS DE REMISE DU RAPPORT » : les délais ne
+// figurent que dans le tableau « DÉLAIS ET CALENDRIER PRÉVISIONNEL ». ─────────────────────
+
+const CTQ_BLOCKS: ContentBlock[] = [
+  typeLabel("Contrôle Technique Quinquennal"),
+  heading("Contenu de la Mission"),
+  heading("1. Faire réaliser le Contrôle Technique Quinquennal"),
+  paragraph(
+    "Réalisation du Contrôle Technique Quinquennal défini à l'article R. 125-2-4 du Code de la " +
+      "Construction et de l'Habitation et ce, dans le respect des exigences réglementaires lui " +
+      "étant applicables.",
+  ),
+  paragraph("Le contrôle technique a pour objectif :"),
+  bullet(
+    "De vérifier la présence et le bon état des dispositifs de sécurité exigés par le décret " +
+      "n° 2000-810 du 24 août 2000 pour les ascenseurs relevant de son champ d'application ;",
+  ),
+  bullet(
+    "De contrôler, pour les autres ascenseurs, la présence et le bon état des dispositifs de " +
+      "sécurité prévus aux articles R. 125-1-1 et R. 125-1-2, ou la mise en œuvre effective des " +
+      "mesures équivalentes prévues à l'article R. 125-1-3 ;",
+  ),
+  bullet(
+    "D'identifier toute anomalie ou défaillance susceptible de compromettre la sécurité des " +
+      "personnes ou le bon fonctionnement des appareils.",
+  ),
+
+  heading("2. Rapport de Contrôle Technique"),
+  paragraph("À l'issue de la mission, LVO-INGENIERIE remettra un rapport comprenant :"),
+  bullet("Les caractéristiques techniques principales de l'ascenseur contrôlé ;"),
+  bullet(
+    "Une synthèse des résultats du contrôle technique, précisant notamment les documents mis à " +
+      "disposition du contrôleur, les équipements vérifiés ou non vérifiés, ainsi que les travaux " +
+      "obligatoires à réaliser selon les échéances réglementaires ;",
+  ),
+  bullet(
+    "La liste des travaux de mise en sécurité ou en conformité incombant au Client, " +
+      "conformément aux dispositions réglementaires applicables, notamment les articles " +
+      "R. 125-1-2 à R. 125-1-4 du Code de la construction et de l'habitation ou le décret du " +
+      "24 août 2000, avec indication des échéances correspondantes ;",
+  ),
+  bullet(
+    "Le relevé des anomalies et observations susceptibles de compromettre la sécurité des " +
+      "personnes, en précisant leur nature et leur localisation ;",
+  ),
+  bullet("Une annexe des réserves de maintenance observées."),
+
+  heading("3. Prestation Optionnelle : Constat de levée des réserves"),
+  paragraph("Le propriétaire ou son représentant transmettra au prestataire la liste des anomalies à traiter."),
+  paragraph(
+    "À sa demande, LVO-INGENIERIE pourra réaliser une visite contradictoire afin de vérifier la " +
+      "levée des anomalies relevant du contrat de maintenance, sous réserve de la réception " +
+      "préalable d'une attestation de levée des anomalies établie par le prestataire. Un " +
+      "procès-verbal sera transmis à l'issue de chaque visite.",
+  ),
+  paragraph(
+    "Le coût est fixé à 250 € HT par ascenseur et par visite, y compris pour toute visite " +
+      "supplémentaire demandée par écrit. La facturation interviendra à la remise du " +
+      "procès-verbal.",
+  ),
+];
 
 // ─── Maîtrise d'Œuvre — texte verbatim porté depuis LVO-MOE-26026_Stade en eau vive.docx
 // (trame de référence) ────────────────────────────────────────────────────────────────
@@ -524,7 +580,7 @@ export type MissionBody = { type: string; libelle: string; blocks: ContentBlock[
  * s'appuient uniquement sur le tableau de phases réel de l'offre (cf. plan, décision 1). */
 const MISSION_BODIES: Record<string, MissionBody> = {
   A: { type: "A", libelle: "Audit Complet", blocks: AUDIT_BLOCKS },
-  CTQ: { type: "CTQ", libelle: "CTQ Complet", blocks: CTQ_BLOCKS },
+  CTQ: { type: "CTQ", libelle: "Contrôle Technique Quinquennal", blocks: CTQ_BLOCKS },
   MOE: { type: "MOE", libelle: "Maîtrise d'Œuvre", blocks: MOE_BLOCKS },
   MM: { type: "MM", libelle: "Maintenance Management", blocks: MM_BLOCKS },
   MS: { type: "MS", libelle: "Recommandations + AOR", blocks: MS_BLOCKS },

@@ -70,8 +70,8 @@ export type MmHonorairesDetail = {
 };
 
 export type AuditHonorairesDetail = {
-  /** "AUDIT TECHNIQUE ASCENSEUR" pour Audit, "CTQ ASCENSEUR" pour CTQ — même tableau, libellé
-   * différent, cf. offre-mission-calc.ts. */
+  /** "AUDIT TECHNIQUE ASCENSEUR" pour Audit, "Contrôle Technique Quinquennal" pour CTQ — même
+   * tableau, libellé différent, cf. offre-mission-calc.ts. */
   libelle: string;
   nbAscenseurs: number;
   prixUnitaireHt: number;
@@ -125,6 +125,9 @@ export type OffreRenderData = {
   clientNom: string;
   clientDirection: string;
   clientRepresentant: string;
+  /** Société gestionnaire (syndic, bailleur…) quand elle diffère du client — ligne
+   * « GESTIONNAIRE » du bloc POUR et « C/O … » du courrier, cf. LVO-CTQ-26033 et LVO-audit-26050. */
+  gestionnaireNom?: string | null;
   /** Formule d'appel du courrier : « Monsieur », « Madame » ou « Madame, Monsieur » — déduite de
    * la civilité du destinataire (contact rattaché ou libellé saisi), cf. civiliteAppel(). */
   civiliteAppel: string;
@@ -146,6 +149,18 @@ export type OffreRenderData = {
    * + ligne TOTAL) au lieu du tableau générique. */
   auditHonoraires?: AuditHonorairesDetail | null;
 };
+
+/** Nombre à la française (« 8,5 », « 2,1 ») — la TVA des trames s'écrit avec une virgule. */
+function nombreFr(v: number | string): string {
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) : String(v);
+}
+
+/** Montant sans décimales quand il est rond (« 175 € », « 1 225 € »), comme l'encart coût des trames. */
+function moneyEntier(v: number): string {
+  if (!Number.isInteger(v)) return money(v);
+  return v.toLocaleString("fr-FR").replace(/ | /g, " ") + " €";
+}
 
 function money(v: number | null | undefined): string {
   if (v == null || !Number.isFinite(v)) return "0,00 €";
@@ -523,6 +538,7 @@ function threeColTable(
 function infoTable(d: OffreRenderData): Table {
   const rows: [string, string][] = [
     ["POUR", [d.clientNom, d.clientDirection].filter(Boolean).join("\n")],
+    ...(d.gestionnaireNom ? ([["GESTIONNAIRE", d.gestionnaireNom]] as [string, string][]) : []),
     ["REPRÉSENTÉ PAR", d.clientRepresentant || ""],
     ["DOSSIER ÉTABLI PAR", LVO_SIGNATAIRE],
     ["DATE", d.dateOffre],
@@ -549,6 +565,14 @@ function topBarP(): Paragraph {
   });
 }
 
+/** Libellé de mission de la bannière et du courrier. La trame CTQ (LVO-CTQ-26033) y ajoute le
+ * nombre d'appareils : « Contrôle Technique Quinquennal 1 ascenseur ». */
+function missionLabelComplet(d: OffreRenderData): string {
+  const nb = d.auditHonoraires?.nbAscenseurs ?? 0;
+  if (d.typeMission !== "CTQ" || nb <= 0) return d.missionLabel;
+  return `${d.missionLabel} ${nb} ascenseur${nb > 1 ? "s" : ""}`;
+}
+
 // ── Sections ──────────────────────────────────────────────────────────────────
 
 function renderPageDeGarde(d: OffreRenderData): (Paragraph | Table)[] {
@@ -562,7 +586,7 @@ function renderPageDeGarde(d: OffreRenderData): (Paragraph | Table)[] {
     centeredBox(ORANGE, BANNER_BORDERS, BANNER_MARGIN, [
       { text: "OFFRE DE SERVICE", size: SZ.banner, bold: true, color: WHITE },
       { text: "Mission Bureau d'Études Ascenseurs", size: SZ.strong, color: WHITE },
-      { text: d.missionLabel, size: SZ.strong, bold: true, color: WHITE },
+      { text: missionLabelComplet(d), size: SZ.strong, bold: true, color: WHITE },
     ]),
   );
   out.push(emptyP());
@@ -590,13 +614,14 @@ function renderCourrier(d: OffreRenderData): (Paragraph | Table)[] {
   out.push(emptyP());
   out.push(p(d.clientNom, { size: SZ.body, bold: true }));
   if (d.clientDirection) out.push(p(d.clientDirection, { size: SZ.body }));
+  if (d.gestionnaireNom) out.push(p(`C/O ${d.gestionnaireNom}`, { size: SZ.body }));
   out.push(emptyP());
   out.push(p(`À l'attention de ${d.clientRepresentant || ""}`, { size: SZ.body, color: GREY_VALUE }));
   out.push(emptyP());
   out.push(p(`Réf : ${d.reference}`, { size: SZ.body, bold: true }));
   out.push(p(`Objet : ${d.objet}`, { size: SZ.body, bold: true }));
   out.push(emptyP());
-  out.push(p(`Mission : ${d.missionLabel}`, { size: SZ.body, bold: true }));
+  out.push(p(`Mission : ${missionLabelComplet(d)}`, { size: SZ.body, bold: true }));
   out.push(emptyP());
   out.push(p(`${d.civiliteAppel},`, { size: SZ.body }));
   out.push(emptyP());
@@ -741,7 +766,7 @@ function renderHonoraires(d: OffreRenderData): (Paragraph | Table)[] {
         alignment: AlignmentType.CENTER,
         children: [
           new TextRun({
-            text: `Coût horaire LVO-INGENIERIE : ${money(d.coutHoraire)} HT       |       Coût Journalier : ${money(d.coutJournalier)} HT`,
+            text: `Coût horaire LVO-INGENIERIE : ${moneyEntier(d.coutHoraire)} HT       |       Coût Journalier : ${moneyEntier(d.coutJournalier)} HT`,
             size: SZ.cell,
             bold: true,
             color: NAVY,
@@ -750,7 +775,7 @@ function renderHonoraires(d: OffreRenderData): (Paragraph | Table)[] {
         ],
       }),
       new Paragraph({
-        children: [new TextRun({ text: `TVA applicable : ${d.tva} %`, size: SZ.note, color: GREY_TEXT, font: FONT })],
+        children: [new TextRun({ text: `TVA applicable : ${nombreFr(d.tva)} %`, size: SZ.note, color: GREY_TEXT, font: FONT })],
       }),
       new Paragraph({
         children: [

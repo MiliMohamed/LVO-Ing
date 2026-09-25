@@ -1,0 +1,32 @@
+{
+	email {$ACME_EMAIL}
+}
+
+# Certificat Let's Encrypt obtenu et renouvelé automatiquement par Caddy.
+{$CRM_DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	# API : directement vers Express (évite un saut par le proxy Next et ses limites de corps).
+	# /internal et /health ne sont volontairement pas exposés.
+	handle /api/* {
+		request_body {
+			max_size 50MB
+		}
+		reverse_proxy crm-server:8081
+	}
+
+	# Landing, /login, /crm/*
+	handle {
+		reverse_proxy crm-frontend:3100
+	}
+}
+
+# www. et domaine nu éventuels : ajouter ici un bloc `redir` si besoin.

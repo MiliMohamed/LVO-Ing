@@ -496,11 +496,14 @@ export type ClientInterventionRow = {
 };
 
 /** Phase 9 — paramètres applicatifs démo */
-export const crmAppSettings = {
+export const crmAppSettings: StoreSnapshot["crmAppSettings"] = {
   defaultConsultantEmail: "consultant@lvo-ing.fr",
   tvaMetropolePercent: 20,
   tvaDomPercent: 8.5,
-} as const;
+  // Encart coût des trames d'offre (Audit, CTQ, MM, MOE) — revalorisé chaque 1er janvier.
+  coutHoraireHt: 175,
+  coutJournalierHt: 1225,
+};
 
 const DOM_TOM_NOMS = ["REUNION", "GUADELOUPE", "MARTINIQUE", "GUYANE", "MAYOTTE"];
 
@@ -946,6 +949,8 @@ export type StoreSnapshot = {
     defaultConsultantEmail: string;
     tvaMetropolePercent: number;
     tvaDomPercent: number;
+    coutHoraireHt: number;
+    coutJournalierHt: number;
   };
 };
 

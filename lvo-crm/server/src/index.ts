@@ -55,7 +55,10 @@ async function main() {
   for (const s of sites) provisionSiteArborescence(s.id);
 
   const app = express();
-  app.use(cors({ origin: true, credentials: true }));
+  // En prod le navigateur passe par le proxy Next (même origine) : CORS_ORIGINS liste les
+  // seules origines externes admises. Non défini (dev) → toute origine reflétée.
+  const corsOrigins = process.env.CORS_ORIGINS?.split(",").map((o) => o.trim()).filter(Boolean);
+  app.use(cors({ origin: corsOrigins?.length ? corsOrigins : true, credentials: true }));
 
   app.use((req, res, next) => {
     if (req.method !== "GET") {
@@ -180,6 +183,17 @@ async function main() {
     const db = await checkDatabase();
     res.status(db.ok ? 200 : 503).json(db);
   });
+
+  // `docker stop` / redéploiement : la sauvegarde est différée (schedulePersistStore), on
+  // l'exécute une dernière fois avant de sortir pour ne pas perdre les dernières mutations.
+  for (const sig of ["SIGTERM", "SIGINT"] as const) {
+    process.once(sig, () => {
+      console.log(`[store] ${sig} reçu : sauvegarde finale…`);
+      persistStore()
+        .catch((e) => console.warn("[store] Échec sauvegarde finale :", (e as Error).message))
+        .finally(() => process.exit(0));
+    });
+  }
 
   app.listen(PORT, () => {
     console.log(`LVO CRM API listening on http://localhost:${PORT}`);
