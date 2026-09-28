@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { CrmSidebar } from "@/components/crm/CrmSidebar";
 import { CrmTopNav } from "@/components/crm/CrmTopNav";
@@ -12,25 +12,55 @@ import { canAccessRecouvrement, canViewNavCounts, normalizeRole } from "@/lib/rb
 import type { RecouvrementKpis } from "@/lib/types";
 import { readRole, readToken } from "@/lib/token-storage";
 
+/** Modales CRM (CrmEntityModal, aperçus) et dialogues PrimeReact (CrmDialog). */
+const MODAL_SELECTOR = ".crm-modal-backdrop, .p-dialog-mask";
+
+function subscribeStorage(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  return () => window.removeEventListener("storage", onChange);
+}
+
+function subscribeModals(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.body, { childList: true, subtree: true });
+  return () => observer.disconnect();
+}
+
 export function CrmShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [recouvrementRetard, setRecouvrementRetard] = useState<number | null>(null);
-  const [session, setSession] = useState<{ ready: boolean; hasToken: boolean }>({ ready: false, hasToken: false });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    const hasToken = !!readToken();
-    setSession({ ready: true, hasToken });
-    if (!hasToken) router.replace("/login");
-  }, [router]);
+  // null côté serveur / pendant l'hydratation : le token (sessionStorage) n'est lisible qu'au navigateur.
+  const hasToken = useSyncExternalStore<boolean | null>(
+    subscribeStorage,
+    () => !!readToken(),
+    () => null,
+  );
+  const ready = hasToken !== null;
 
-  const hasToken = session.hasToken;
+  // Replie la sidebar tant qu'une modale est ouverte, quelle que soit la page.
+  const modalOpen = useSyncExternalStore(
+    subscribeModals,
+    () => !!document.querySelector(MODAL_SELECTOR),
+    () => false,
+  );
+  const [prevModalOpen, setPrevModalOpen] = useState(modalOpen);
+  if (modalOpen !== prevModalOpen) {
+    setPrevModalOpen(modalOpen);
+    if (modalOpen) setSidebarOpen(false);
+  }
+
+  useEffect(() => {
+    if (hasToken === false) router.replace("/login");
+  }, [hasToken, router]);
+
   const role = normalizeRole(readRole());
-  const countsEnabled = session.ready && hasToken && canViewNavCounts(role);
+  const countsEnabled = ready && !!hasToken && canViewNavCounts(role);
   const { counts, loading: countsLoading } = useDashboardCounts(countsEnabled);
 
   useEffect(() => {
-    if (!session.ready || !hasToken) return;
+    if (!ready || !hasToken) return;
     const role = normalizeRole(readRole());
     if (!canAccessRecouvrement(role)) return;
     const token = readToken();
@@ -46,9 +76,9 @@ export function CrmShell({ children }: { children: React.ReactNode }) {
     return () => {
       cancel = true;
     };
-  }, [session.ready, hasToken]);
+  }, [ready, hasToken]);
 
-  if (!session.ready || !hasToken) {
+  if (!ready || !hasToken) {
     return (
       <div className="lvo-crm-root flex min-h-screen items-center justify-center gap-3">
         <ProgressSpinner style={{ width: "2rem", height: "2rem" }} strokeWidth="4" />
@@ -58,7 +88,7 @@ export function CrmShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="lvo-crm-root">
+    <div className={`lvo-crm-root${modalOpen ? " crm-modal-open" : ""}`}>
       <CrmTopNav role={role} counts={counts} countsLoading={countsLoading} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
       <div className="crm-layout">
         {sidebarOpen && (

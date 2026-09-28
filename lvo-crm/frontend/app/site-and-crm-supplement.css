@@ -2201,3 +2201,18 @@ label.crm-field {
   background: var(--orange-bg, rgba(255, 107, 0, 0.1));
   color: var(--navy);
 }
+
+/* —— Sidebar repliée pendant qu'une modale est ouverte (cf. CrmShell) —— */
+.lvo-crm-root .crm-sidebar {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lvo-crm-root .crm-main {
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lvo-crm-root.crm-modal-open .crm-sidebar {
+  transform: translateX(-100%);
+  box-shadow: none;
+}
+.lvo-crm-root.crm-modal-open .crm-main {
+  margin-left: 0;
+}
